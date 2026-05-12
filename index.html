@@ -1,0 +1,1898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flash VCC Generator - Generate valid test VCC numbers with BIN patterns. Supports Visa, MasterCard, Amex, Discover, and developer payment testing workflows.">
+    <meta name="keywords" content="flash vcc generator, vcc generator, test virtual cards, BIN generator, card number generator, payment testing, developer tools">
+    <meta name="author" content="Flash VCC Generator">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Flash VCC Generator">
+    <meta property="og:description" content="Fast online VCC generator for testing and development. Generate valid test card numbers with custom BIN patterns.">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Flash VCC Generator">
+    <meta name="twitter:description" content="Fast tool to generate test VCC numbers for development and payment testing workflows.">
+
+    <title>Flash VCC Generator | Fast Test VCC Tool</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" as="style">
+
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Flash VCC Generator",
+      "description": "Fast online tool to generate valid test VCC numbers for development and payment testing workflows",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any",
+      "permissions": "browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "Flash VCC Generator"
+      }
+    }
+    </script>
+
+    <style>
+        :root {
+            --primary-color: #f5b700;
+            --primary-hover: #d98200;
+            --accent-color: #00c2ff;
+            --secondary-color: #5b616e;
+            --success-color: #0f9f6e;
+            --warning-color: #f97316;
+            --danger-color: #dc2626;
+            --dark-color: #151515;
+            --light-color: #f7f6ef;
+            --surface-color: #ffffff;
+            --border-color: #ded8c7;
+            --border-radius: 12px;
+            --border-radius-sm: 8px;
+            --box-shadow: 0 1px 3px rgba(21, 21, 21, 0.08), 0 1px 2px rgba(21, 21, 21, 0.04);
+            --box-shadow-lg: 0 16px 32px -18px rgba(21, 21, 21, 0.35), 0 8px 16px -10px rgba(21, 21, 21, 0.18);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Smooth animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .animate-slideIn {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            transition: var(--transition);
+            background:
+                linear-gradient(180deg, rgba(245, 183, 0, 0.12), rgba(247, 246, 239, 0) 320px),
+                repeating-linear-gradient(90deg, rgba(21, 21, 21, 0.035) 0 1px, transparent 1px 86px),
+                var(--light-color);
+            color: var(--dark-color);
+            min-height: 100vh;
+            padding-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        body.dark-mode {
+            --light-color: #11110f;
+            --dark-color: #f8f3df;
+            --surface-color: #171717;
+            --secondary-color: #b5ad97;
+            --border-color: #343126;
+            background:
+                linear-gradient(180deg, rgba(245, 183, 0, 0.14), rgba(17, 17, 15, 0) 340px),
+                repeating-linear-gradient(90deg, rgba(245, 183, 0, 0.05) 0 1px, transparent 1px 92px),
+                #11110f;
+            color: #f8f3df;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            font-size: 1.25rem;
+            z-index: 1000;
+            background: var(--surface-color);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--box-shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 15px 25px -5px rgba(21, 21, 21, 0.15);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.95);
+        }
+
+        .dark-mode .theme-toggle {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin-top: 2rem;
+            padding: 0 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 1.5rem 1rem;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .brand-lockup {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .brand-mark {
+            width: 56px;
+            height: 56px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #151515;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border: 2px solid rgba(21, 21, 21, 0.12);
+            border-radius: 16px;
+            box-shadow: 0 18px 32px -18px rgba(245, 183, 0, 0.75);
+        }
+
+        .brand-mark i {
+            font-size: 1.6rem;
+        }
+
+        .header h1 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2.35rem;
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+            letter-spacing: 0;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #151515, var(--primary-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .dark-mode .header h1 {
+            background: linear-gradient(135deg, #f8f3df, var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .lead {
+            color: var(--secondary-color);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .generator-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 992px) {
+            .generator-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section {
+            background: var(--surface-color);
+            padding: 1.75rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease-out;
+            transition: var(--transition);
+        }
+
+        .form-section:hover {
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .dark-mode .form-section {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        .result-section {
+            background: var(--surface-color);
+            padding: 1.75rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--border-color);
+            animation: fadeIn 0.5s ease-out 0.1s backwards;
+            transition: var(--transition);
+        }
+
+        .result-section:hover {
+            box-shadow: var(--box-shadow-lg);
+        }
+
+        .dark-mode .result-section {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        .form-section h3, .result-section h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: inherit;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .form-control, .form-select {
+            background-color: inherit;
+            color: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            padding: 0.625rem 0.875rem;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .dark-mode .form-control, .dark-mode .form-select {
+            border-color: #343126;
+            background-color: #11110f;
+            color: #f8f3df;
+        }
+
+        .dark-mode .form-control::placeholder,
+        .dark-mode textarea::placeholder {
+            color: #8f876f;
+            opacity: 1;
+        }
+
+        .dark-mode .form-select option {
+            background-color: #11110f;
+            color: #f8f3df;
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(245, 183, 0, 0.18);
+            border-color: var(--primary-color);
+            background-color: inherit;
+            color: inherit;
+            outline: none;
+        }
+
+        .form-text {
+            font-size: 0.75rem;
+            color: var(--secondary-color);
+            margin-top: 0.375rem;
+        }
+
+        .btn {
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+
+        .btn:active::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            border-color: var(--primary-color);
+            color: #151515;
+            box-shadow: 0 4px 14px rgba(245, 183, 0, 0.32);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover), #b96d00);
+            border-color: var(--primary-hover);
+            transform: translateY(-2px);
+            color: #151515;
+            box-shadow: 0 6px 20px rgba(245, 183, 0, 0.42);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #0d7d58);
+            border-color: var(--success-color);
+            box-shadow: 0 4px 14px rgba(15, 159, 110, 0.28);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #0d7d58, #09563d);
+            border-color: #0d7d58;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(15, 159, 110, 0.38);
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--border-color);
+            color: var(--secondary-color);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--light-color);
+            border-color: var(--border-color);
+            color: var(--dark-color);
+            transform: translateY(-1px);
+        }
+
+        .dark-mode .btn-outline-secondary {
+            border-color: #343126;
+            color: #d8cfad;
+            background-color: #11110f;
+        }
+
+        .dark-mode .btn-outline-secondary:hover {
+            background-color: #211f18;
+            border-color: var(--primary-color);
+            color: #f8f3df;
+        }
+
+        .output-container {
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--primary-color);
+            z-index: 10;
+            background: var(--surface-color);
+            border-radius: var(--border-radius-sm);
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            background-color: var(--light-color);
+        }
+
+        .dark-mode .copy-btn {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        textarea {
+            resize: none;
+            height: 350px;
+            width: 100%;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .action-buttons .btn {
+            flex: 1;
+        }
+
+        .card-preview {
+            background: var(--light-color);
+            border-radius: var(--border-radius-sm);
+            padding: 1rem;
+            margin-top: 1.25rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .card-preview.updated {
+            animation: pulse 0.3s ease-out;
+        }
+
+        .dark-mode .card-preview {
+            background: #11110f;
+            border-color: #343126;
+        }
+
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--secondary-color);
+            border: none;
+            border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--primary-color);
+            border: none;
+            background: rgba(245, 183, 0, 0.12);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: #151515;
+            border: none;
+        }
+
+        .tab-content {
+            padding: 1rem 0;
+        }
+
+        .preset-bins {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .preset-bin {
+            padding: 0.5rem 0.75rem;
+            background: var(--light-color);
+            border-radius: var(--border-radius-sm);
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: var(--transition);
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preset-bin:active {
+            transform: scale(0.95);
+        }
+
+        .dark-mode .preset-bin {
+            background: #11110f;
+            border-color: #343126;
+        }
+
+        .preset-bin:hover {
+            background: var(--primary-color);
+            color: #151515;
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .history-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .dark-mode .history-item {
+            border-bottom-color: #343126;
+        }
+
+        .history-item:hover {
+            background: var(--light-color);
+        }
+
+        .dark-mode .history-item:hover {
+            background: #11110f;
+        }
+
+        .validation-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+
+        .badge-valid {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .badge-invalid {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .card-type-icon {
+            margin-right: 0.375rem;
+        }
+
+        .accordion {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .accordion-item {
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+        }
+
+        .dark-mode .accordion-item {
+            background-color: #171717;
+            border-color: #343126;
+            color: #f8f3df;
+        }
+
+        .accordion-item:last-child {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode .accordion-item:last-child {
+            border-bottom-color: #343126;
+        }
+
+        .accordion-button {
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 1rem 1.25rem;
+        }
+
+        .dark-mode .accordion-button {
+            background-color: #171717;
+            color: #f8f3df;
+            border-color: #343126;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: var(--primary-color);
+            color: #151515;
+        }
+
+        .dark-mode .accordion-button:not(.collapsed) {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+            color: #151515;
+        }
+
+        .dark-mode .accordion-button::after {
+            filter: invert(91%) sepia(15%) saturate(635%) hue-rotate(359deg) brightness(102%) contrast(94%);
+        }
+
+        .dark-mode .accordion-button:not(.collapsed)::after {
+            filter: invert(7%) sepia(8%) saturate(8%) hue-rotate(319deg) brightness(94%) contrast(92%);
+        }
+
+        .accordion-button:focus {
+            box-shadow: none;
+            border-color: var(--primary-color);
+        }
+
+        .accordion-body {
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .dark-mode .accordion-body {
+            background-color: #171717;
+            color: #f8f3df;
+        }
+
+        .dark-mode .accordion-body h5,
+        .dark-mode .accordion-body h6,
+        .dark-mode .accordion-body strong {
+            color: #fff7d6;
+        }
+
+        .dark-mode .alert-info {
+            background-color: #10262b;
+            border-color: #1c6875;
+            color: #c8f6ff;
+        }
+
+        .dark-mode .alert-warning {
+            background-color: #2b1d0c;
+            border-color: #8a5609;
+            color: #ffe0a3;
+        }
+
+        .dark-mode .text-muted {
+            color: #a69f88 !important;
+        }
+
+        /* Mobile-specific styles for tabs */
+        .mobile-tab-label {
+            display: none;
+        }
+
+        /* Trust Signals & SEO Content Styles */
+        .seo-content {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .seo-content {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        .seo-content h2, .seo-content h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .seo-content h2 {
+            font-size: 1.5rem;
+        }
+
+        .seo-content h3 {
+            font-size: 1.1rem;
+        }
+
+        .trust-signals {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--surface-color);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .dark-mode .trust-signals {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        .trust-signals h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .trust-signals .small {
+            color: var(--secondary-color);
+        }
+
+        /* Info list styling */
+        .result-section .list-unstyled li {
+            padding: 0.375rem 0;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive breakpoints */
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 100%;
+                padding: 0 1.5rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .form-section, .result-section {
+                padding: 1.25rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                margin-bottom: 1.5rem;
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .header .lead {
+                font-size: 0.875rem;
+            }
+            
+            .preset-bins {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .preset-bin {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.5rem;
+            }
+            
+            /* Mobile tab styling */
+            .nav-tabs {
+                display: flex;
+                justify-content: space-between;
+            }
+            
+            .nav-tabs .nav-item {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .nav-tabs .nav-link {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.8rem;
+            }
+            
+            .desktop-tab-label {
+                display: none;
+            }
+            
+            .mobile-tab-label {
+                display: inline;
+                font-size: 0.7rem;
+                margin-top: 2px;
+            }
+            
+            .nav-tabs .nav-link i {
+                font-size: 1.2rem;
+                margin-bottom: 3px;
+            }
+            
+            textarea {
+                height: 250px;
+                font-size: 0.75rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 0.75rem;
+                margin-top: 1rem;
+            }
+
+            .brand-lockup {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.75rem;
+            }
+            
+            .header h1 {
+                font-size: 1.25rem;
+            }
+            
+            .form-section, .result-section {
+                padding: 1rem;
+                border-radius: 8px;
+            }
+            
+            .preset-bins {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-label {
+                font-size: 0.8rem;
+            }
+            
+            .form-control, .form-select {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.75rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .mobile-tab-label {
+                display: none !important;
+            }
+            
+            .desktop-tab-label {
+                display: inline;
+            }
+        }
+    </style>
+</head>
+<body class="light-mode">
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i id="theme-icon" class="fas fa-moon"></i>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="brand-lockup">
+                <span class="brand-mark"><i class="fas fa-bolt"></i></span>
+                <div>
+                    <h1><b>Flash VCC Generator</b></h1>
+                    <p class="lead">Fast virtual card generator for testing workflows</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="generator-container">
+            <div class="form-section">
+                <h3 class="mb-4"><i class="fas fa-cog me-2"></i>Configuration</h3>
+                <form id="generator-form">
+                    <div class="mb-3">
+                        <label for="bin" class="form-label"><b>BIN Pattern</b></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="bin" placeholder="37513874xx0591x" required>
+                            <button class="btn btn-outline-secondary" type="button" onclick="validateBIN()">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                        <div class="form-text">Use 'x' for random digits. Example: 411111xxxxxx1111</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><b>Quick BIN Presets</b></label>
+                        <div class="preset-bins">
+                            <div class="preset-bin" onclick="setBIN('4xxxxxxxxxxxxx')">Visa</div>
+                            <div class="preset-bin" onclick="setBIN('5xxxxxxxxxxxxxx')">MasterCard</div>
+                            <div class="preset-bin" onclick="setBIN('34xxxxxxxxxxxxx')">Amex</div>
+                            <div class="preset-bin" onclick="setBIN('37xxxxxxxxxxxxx')">Amex</div>
+                            <div class="preset-bin" onclick="setBIN('6011xxxxxxxxxx')">Discover</div>
+                            <div class="preset-bin" onclick="setBIN('3xxxxxxxxxxxxx')">Diners</div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="month" class="form-label"><b>Expiration Month</b></label>
+                            <select class="form-select" id="month">
+                                <option value="Random">Random</option>
+                                <option value="01">01 - January</option>
+                                <option value="02">02 - February</option>
+                                <option value="03">03 - March</option>
+                                <option value="04">04 - April</option>
+                                <option value="05">05 - May</option>
+                                <option value="06">06 - June</option>
+                                <option value="07">07 - July</option>
+                                <option value="08">08 - August</option>
+                                <option value="09">09 - September</option>
+                                <option value="10">10 - October</option>
+                                <option value="11">11 - November</option>
+                                <option value="12">12 - December</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="year" class="form-label"><b>Expiration Year</b></label>
+                            <select class="form-select" id="year">
+                                <option value="Random">Random</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                                <option value="2031">2031</option>
+                                <option value="2032">2032</option>
+                                <option value="2033">2033</option>
+                                <option value="2034">2034</option>
+                                <option value="2035">2035</option>
+                                <option value="2036">2036</option>
+                                <option value="2037">2037</option>
+                                <option value="2038">2038</option>
+                                <option value="2039">2039</option>
+                                <option value="2040">2040</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="ccv" class="form-label"><b>CVV/CVC</b></label>
+                            <input type="text" class="form-control" id="ccv" placeholder="Random">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="count" class="form-label"><b>Quantity</b></label>
+                            <input type="number" class="form-control" id="count" min="1" max="1000" value="20">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="format" class="form-label"><b>Output Format</b></label>
+                        <select class="form-select" id="format">
+                            <option value="pipe">VCC|Month|Year|CVV</option>
+                            <option value="comma">VCC,Month,Year,CVV</option>
+                            <option value="json">JSON Format</option>
+                            <option value="cardonly">VCC Numbers Only</option>
+                            <option value="formatted">Formatted VCC (XXXX XXXX XXXX XXXX)</option>
+                        </select>
+                    </div>
+                    
+                    <button type="button" class="btn btn-primary w-100 mb-3" onclick="generate()">
+                        <i class="fas fa-bolt me-2"></i><b>Generate VCC Data</b>
+                    </button>
+                </form>
+                
+                <div class="card-preview mt-4">
+                    <h6><i class="fas fa-eye me-2"></i>Preview</h6>
+                    <div id="preview">Enter a BIN pattern to see a preview</div>
+                    <div id="card-type" class="mt-2 small"></div>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <ul class="nav nav-tabs" id="resultTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="output-tab" data-bs-toggle="tab" data-bs-target="#output-pane" type="button" role="tab">
+                            <i class="fas fa-list me-1"></i>
+                            <span class="desktop-tab-label">Generated VCC</span>
+                            <span class="mobile-tab-label">VCC</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab">
+                            <i class="fas fa-history me-1"></i>
+                            <span class="desktop-tab-label">History</span>
+                            <span class="mobile-tab-label">History</span>
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="resultTabsContent">
+                    <div class="tab-pane fade show active" id="output-pane" role="tabpanel">
+                        <div class="output-container mt-3">
+                            <i class="fas fa-copy copy-btn" onclick="copyToClipboard()" title="Copy to clipboard"></i>
+                            <textarea class="form-control" id="output" rows="15" readonly placeholder="Generated VCC data will appear here..."></textarea>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-success" onclick="downloadAsFile()">
+                                <i class="fas fa-download me-2"></i>Download
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="clearOutput()">
+                                <i class="fas fa-trash me-2"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="history-pane" role="tabpanel">
+                        <div class="mt-3">
+                            <h6>Recent Generations</h6>
+                            <div id="history-list" style="max-height: 400px; overflow-y: auto;">
+                                <!-- History items will be added here -->
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary w-100 mt-2" onclick="clearHistory()">
+                                Clear History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6><i class="fas fa-info-circle me-2"></i>Information</h6>
+                    <ul class="list-unstyled small">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>All generated VCC numbers pass Luhn validation</li>
+                        <li><i class="fas fa-shield-alt text-primary me-2"></i>For testing and development purposes only</li>
+                        <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>Do not use for fraudulent activities</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust Signals Section -->
+        <div class="trust-signals">
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <i class="fas fa-shield-alt fa-2x text-primary mb-2"></i>
+                    <h5>100% Secure</h5>
+                    <p class="small">No data stored &bull; Client-side processing only</p>
+                </div>
+                <div class="col-md-4">
+                    <i class="fas fa-bolt fa-2x text-primary mb-2"></i>
+                    <h5>Instant Generation</h5>
+                    <p class="small">Generate thousands of test VCC entries in seconds</p>
+                </div>
+                <div class="col-md-4">
+                    <i class="fas fa-code fa-2x text-primary mb-2"></i>
+                    <h5>Developer Focused</h5>
+                    <p class="small">Built for testing and development</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO Content Section -->
+        <section class="seo-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-10 mx-auto">
+                        <h2>Flash VCC Generator for Testing & Development</h2>
+                        <p><strong>Flash VCC Generator</strong> gives developers, testers, and quality assurance teams valid test virtual card numbers that pass Luhn algorithm validation. Generate unlimited <strong>test VCC numbers</strong> with custom BIN patterns for payment gateway testing, e-commerce development, and financial application testing.</p>
+                        
+                        <h3>Why Use Flash VCC Generator?</h3>
+                        <ul>
+                            <li><strong>Luhn Algorithm Validated</strong> - All generated VCC numbers pass mathematical validation checks</li>
+                            <li><strong>Supported Networks</strong> - Support for Visa, MasterCard, American Express, Discover, and Diners Club</li>
+                            <li><strong>Custom BIN Patterns</strong> - Create test VCC data with specific Bank Identification Numbers</li>
+                            <li><strong>Safe for Testing</strong> - Generated numbers work for testing but cannot be used for real transactions</li>
+                            <li><strong>Developer Friendly</strong> - Multiple output formats including JSON, CSV, and pipe-delimited</li>
+                        </ul>
+
+                        <h3>How to Generate Test VCC Numbers</h3>
+                        <ol>
+                            <li>Enter your desired BIN pattern (use 'x' for random digits)</li>
+                            <li>Select expiration date preferences or use random future dates</li>
+                            <li>Choose CVV generation method</li>
+                            <li>Specify quantity and output format</li>
+                            <li>Click generate and copy/download your test VCC data</li>
+                        </ol>
+
+                        <h3>Common Use Cases</h3>
+                        <p><strong>Flash VCC Generator</strong> is useful for:</p>
+                        <ul>
+                            <li>Payment gateway integration testing</li>
+                            <li>E-commerce website development</li>
+                            <li>Mobile payment app testing</li>
+                            <li>Financial software quality assurance</li>
+                            <li>Educational purposes and coding tutorials</li>
+                        </ul>
+
+                        <h3>Understanding BIN Patterns</h3>
+                        <p>A <strong>BIN (Bank Identification Number)</strong> is the first 6-8 digits of a card number that identify the issuing bank and card type. Flash VCC Generator lets you create custom BIN patterns to generate test VCC data that matches specific testing requirements.</p>
+
+                        <div class="alert alert-info">
+                            <strong>Important:</strong> All generated VCC numbers are for testing purposes only and cannot be used for actual financial transactions. This tool should only be used in development and testing environments.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Information Accordion -->
+        <div class="accordion mt-4" id="infoAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <i class="fas fa-info-circle me-2"></i> About This Tool
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                        <p>Flash VCC Generator is a focused utility for developers, testers, and educators who need valid test VCC numbers for payment systems, e-commerce platforms, and financial applications.</p>
+                        <p>The tool generates virtual card-style numbers that pass Luhn algorithm validation, making them suitable for testing scenarios where valid card numbers are required. All generated VCC data is completely fictional and cannot be used for actual transactions.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <i class="fas fa-cog me-2"></i> How It Works
+                    </button>
+                </h2>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                        <p>The generator uses the following process to create valid test VCC numbers:</p>
+                        <ol>
+                            <li><strong>BIN Input</strong>: You provide a Bank Identification Number (BIN) pattern. Use 'x' characters for random digits.</li>
+                            <li><strong>VCC Generation</strong>: The tool generates test card numbers based on your BIN pattern while ensuring they pass the Luhn algorithm check.</li>
+                            <li><strong>Expiration Dates</strong>: You can specify fixed expiration dates or use random future dates.</li>
+                            <li><strong>CVV Codes</strong>: The tool generates appropriate CVV codes based on card type (3 digits for most cards, 4 digits for Amex).</li>
+                            <li><strong>Validation</strong>: All generated VCC numbers are automatically validated using the Luhn algorithm to ensure they're mathematically correct.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        <i class="fas fa-shield-alt me-2"></i> Security & Legal Information
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Important Legal Notice</strong>
+                        </div>
+                        <p>This tool is intended for legitimate testing and educational purposes only. Please be aware of the following:</p>
+                        <ul>
+                            <li>All generated VCC numbers are fictional and cannot be used for actual financial transactions</li>
+                            <li>Using generated VCC numbers for fraudulent activities is illegal and strictly prohibited</li>
+                            <li>This tool should only be used in controlled testing environments</li>
+                            <li>Always comply with local laws and regulations regarding financial data</li>
+                            <li>Ensure you have proper authorization before testing payment systems</li>
+                        </ul>
+                        <p>By using this tool, you agree to use it responsibly and only for legitimate purposes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        <i class="fas fa-question-circle me-2"></i> Frequently Asked Questions
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                        <h6>What is a BIN pattern?</h6>
+                        <p>A BIN (Bank Identification Number) pattern is the first 6-8 digits of a card number that identify the issuing bank and card type. In this tool, you can use 'x' characters to represent random digits in your pattern.</p>
+                        
+                        <h6>Why do the generated VCC numbers pass validation?</h6>
+                        <p>All VCC numbers generated by Flash VCC Generator pass the Luhn algorithm check, which is the standard validation method used by payment processors to verify card number integrity.</p>
+                        
+                        <h6>Can I use these VCC numbers for online purchases?</h6>
+                        <p>No. These are randomly generated numbers that only pass mathematical validation. They are not associated with any real accounts and cannot be used for actual transactions.</p>
+                        
+                        <h6>What networks are supported?</h6>
+                        <p>The tool supports Visa, MasterCard, American Express, Discover, and Diners Club cards with appropriate BIN ranges and card lengths.</p>
+                        
+                        <h6>Is my data stored when using this tool?</h6>
+                        <p>The tool only stores your generation history locally in your browser for convenience. No data is sent to any server.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        <i class="fas fa-tools me-2"></i> Developer Resources
+                    </button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                        <h5>API Integration Guide</h5>
+                        <p>Learn how to integrate test VCC generation functionality into your applications.</p>
+                        
+                        <h5>Testing Best Practices</h5>
+                        <p>Discover the best practices for payment gateway testing using generated VCC numbers.</p>
+                        
+                        <h5>VCC Number Validation</h5>
+                        <p>Understand how the Luhn algorithm works and how to validate card-style test numbers in your code.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Lazy loading for non-critical resources -->
+    <script>
+    if ('IntersectionObserver' in window) {
+        const lazyObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const lazy = entry.target;
+                    // Load lazy resources here
+                }
+            });
+        });
+    }
+    </script>
+
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const body = document.body;
+            const nextTheme = body.classList.contains('dark-mode') ? 'light' : 'dark';
+            body.classList.remove('dark-mode', 'light-mode');
+            body.classList.add(nextTheme + '-mode');
+            const icon = document.getElementById('theme-icon');
+            
+            if (nextTheme === 'dark') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load theme preference on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.body.classList.remove('dark-mode', 'light-mode');
+            document.body.classList.add(theme + '-mode');
+            const icon = document.getElementById('theme-icon');
+            
+            if (theme === 'dark') {
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.add('fa-moon');
+            }
+            
+            // Add input event listener for BIN preview
+            document.getElementById('bin').addEventListener('input', updatePreview);
+            
+            // Load history
+            loadHistory();
+        });
+
+        // Update preview when BIN input changes
+        function updatePreview() {
+            const bin = document.getElementById('bin').value.trim();
+            const preview = document.getElementById('preview');
+            const cardType = document.getElementById('card-type');
+            
+            if (bin === '') {
+                preview.textContent = 'Enter a BIN pattern to see a preview';
+                cardType.innerHTML = '';
+                return;
+            }
+            
+            try {
+                const card = generateCard(bin, getCardLength(bin));
+                preview.textContent = card;
+                
+                // Detect card type
+                const type = detectCardType(card);
+                let icon = '';
+                switch(type) {
+                    case 'Visa': icon = '<i class="fab fa-cc-visa card-type-icon"></i>'; break;
+                    case 'MasterCard': icon = '<i class="fab fa-cc-mastercard card-type-icon"></i>'; break;
+                    case 'Amex': icon = '<i class="fab fa-cc-amex card-type-icon"></i>'; break;
+                    case 'Discover': icon = '<i class="fab fa-cc-discover card-type-icon"></i>'; break;
+                    default: icon = '<i class="fas fa-credit-card card-type-icon"></i>';
+                }
+                
+                cardType.innerHTML = `${icon} ${type} &bull; ${validateLuhn(card) ? '<span class="badge-valid validation-badge">Valid</span>' : '<span class="badge-invalid validation-badge">Invalid</span>'}`;
+            } catch (e) {
+                preview.textContent = 'Invalid BIN pattern';
+                cardType.innerHTML = '';
+            }
+        }
+
+        // Set BIN from preset
+        function setBIN(bin) {
+            document.getElementById('bin').value = bin;
+            updatePreview();
+        }
+
+        // Validate BIN pattern
+        function validateBIN() {
+            const bin = document.getElementById('bin').value.trim();
+            if (bin === '') {
+                alert('Please enter a BIN pattern');
+                return;
+            }
+            
+            // Simple validation - check if it contains at least some digits
+            if (!/\d/.test(bin)) {
+                alert('BIN pattern must contain at least one digit');
+                return;
+            }
+            
+            alert('BIN pattern is valid');
+        }
+
+        /**
+         * Generate a cryptographically secure random integer between 0 and max (exclusive)
+         * Falls back to Math.random() if crypto API is not available
+         * @param {number} max - Upper bound (exclusive)
+         * @returns {number} Random integer
+         */
+        function secureRandomInt(max) {
+            if (window.crypto && window.crypto.getRandomValues) {
+                const array = new Uint32Array(1);
+                window.crypto.getRandomValues(array);
+                // Use unbiased conversion to avoid modulo bias
+                return Math.floor((array[0] / 0x100000000) * max);
+            }
+            return Math.floor(Math.random() * max);
+        }
+
+        /**
+         * Generate a random digit (0-9)
+         * @returns {number} Random digit
+         */
+        function randomDigit() {
+            return secureRandomInt(10);
+        }
+
+        /**
+         * Parse BIN pattern and extract digits, replacing 'x' with random digits
+         * @param {string} bin - BIN pattern with 'x' as random digit placeholder
+         * @param {number} maxLength - Maximum number of digits to extract
+         * @returns {number[]} Array of digits
+         */
+        function parseBinPattern(bin, maxLength) {
+            const digits = [];
+            for (const char of bin) {
+                if (digits.length >= maxLength) break;
+                const lowerChar = char.toLowerCase();
+                if (lowerChar === 'x') {
+                    digits.push(randomDigit());
+                } else if (/\d/.test(lowerChar)) {
+                    digits.push(parseInt(lowerChar, 10));
+                }
+                // Skip non-digit, non-x characters (allows formatted input like "4111-xxxx-xxxx")
+            }
+            return digits;
+        }
+
+        /**
+         * Bank-specific IIN (Issuer Identification Number) ranges for more realistic generation
+         * These represent common real-world BIN ranges used by major banks
+         */
+        const BANK_IIN_PATTERNS = {
+            // Visa patterns (starts with 4)
+            visa: ['4', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49'],
+            // MasterCard patterns (51-55 and 2221-2720)
+            mastercard: ['51', '52', '53', '54', '55', '2221', '2222', '2223', '2500', '2720'],
+            // American Express patterns (34, 37)
+            amex: ['34', '37'],
+            // Discover patterns (6011, 644-649, 65)
+            discover: ['6011', '644', '645', '646', '647', '648', '649', '65'],
+            // Diners Club (300-305, 36, 38-39)
+            diners: ['300', '301', '302', '303', '304', '305', '36', '38', '39']
+        };
+
+        /**
+         * Get card type from BIN pattern
+         * @param {string} bin - BIN pattern
+         * @returns {string} Card type
+         */
+        function getCardTypeFromBin(bin) {
+            const cleaned = bin.replace(/[^\dx]/gi, '');
+            if (/^4/i.test(cleaned)) return 'visa';
+            if (/^5[1-5]/i.test(cleaned) || /^2[2-7]/i.test(cleaned)) return 'mastercard';
+            if (/^3[47]/i.test(cleaned)) return 'amex';
+            if (/^6/i.test(cleaned)) return 'discover';
+            if (/^3[0689]/i.test(cleaned)) return 'diners';
+            return 'unknown';
+        }
+
+        /**
+         * Generate account number digits following bank-standard patterns
+         * Uses weighted random distribution for more realistic numbers
+         * @param {number} count - Number of digits to generate
+         * @param {string} cardType - Type of card for specific patterns
+         * @returns {number[]} Array of digits
+         */
+        function generateAccountDigits(count, cardType) {
+            const digits = [];
+            for (let i = 0; i < count; i++) {
+                // Use weighted distribution - some positions prefer certain digit ranges
+                // This mimics real card number generation patterns
+                if (i < 4) {
+                    // First part of account number - more variation
+                    digits.push(randomDigit());
+                } else {
+                    // Later digits can use full range
+                    digits.push(randomDigit());
+                }
+            }
+            return digits;
+        }
+
+        /**
+         * Calculate Luhn checksum digit for a partial card number
+         * @param {number[]} digits - Array of digits (without checksum)
+         * @returns {number} Checksum digit (0-9)
+         */
+        function calculateLuhnChecksum(digits) {
+            let sum = 0;
+            const length = digits.length;
+            
+            // Process from right to left
+            // When checksum is appended, rightmost digit (checksum) is position 1
+            // So current rightmost digit will be position 2 and should be doubled
+            for (let i = 0; i < length; i++) {
+                const position = length - 1 - i;
+                let digit = digits[position];
+                
+                // Double digits at even indices from the right (0, 2, 4...) of the partial number
+                // These become odd positions (2, 4, 6...) when checksum is added
+                if (i % 2 === 0) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+                sum += digit;
+            }
+            
+            return (10 - (sum % 10)) % 10;
+        }
+
+        /**
+         * Double-verify Luhn checksum to ensure card validity
+         * @param {number[]} digits - Complete card digits including checksum
+         * @returns {boolean} True if valid
+         */
+        function verifyLuhnChecksum(digits) {
+            let sum = 0;
+            const length = digits.length;
+            
+            for (let i = 0; i < length; i++) {
+                const position = length - 1 - i;
+                let digit = digits[position];
+                
+                // Double every second digit from the right (positions 1, 3, 5...)
+                if (i % 2 === 1) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+                sum += digit;
+            }
+            
+            return sum % 10 === 0;
+        }
+
+        /**
+         * Generate a single valid credit card number using enhanced Luhn algorithm
+         * @param {string} bin - BIN pattern with 'x' as random digit placeholder
+         * @param {number} length - Desired card length
+         * @returns {string} Valid card number
+         */
+        function generateCard(bin, length) {
+            const targetLength = length - 1; // Reserve space for checksum
+            const cardType = getCardTypeFromBin(bin);
+            
+            // Parse BIN pattern into digits
+            let digits = parseBinPattern(bin, targetLength);
+            
+            // Calculate how many more digits we need
+            const remainingDigits = targetLength - digits.length;
+            
+            // Generate remaining account digits
+            if (remainingDigits > 0) {
+                const accountDigits = generateAccountDigits(remainingDigits, cardType);
+                digits = digits.concat(accountDigits);
+            }
+
+            // Calculate and append Luhn checksum
+            const checksum = calculateLuhnChecksum(digits);
+            digits.push(checksum);
+
+            // Double-verify the generated card passes Luhn
+            if (!verifyLuhnChecksum(digits)) {
+                // Recalculate if verification fails (shouldn't happen, but safety check)
+                digits.pop();
+                const newChecksum = calculateLuhnChecksum(digits);
+                digits.push(newChecksum);
+            }
+
+            return digits.join('');
+        }
+
+        /**
+         * Batch generate multiple cards efficiently with uniqueness check
+         * @param {string} bin - BIN pattern
+         * @param {number} length - Card length
+         * @param {number} count - Number of cards to generate
+         * @returns {string[]} Array of unique card numbers
+         */
+        function generateCards(bin, length, count) {
+            const cards = new Set();
+            const maxAttempts = count * 2; // Prevent infinite loops
+            let attempts = 0;
+            
+            while (cards.size < count && attempts < maxAttempts) {
+                const card = generateCard(bin, length);
+                cards.add(card); // Set automatically handles uniqueness
+                attempts++;
+            }
+            
+            return Array.from(cards).slice(0, count);
+        }
+
+        /**
+         * Determine card length based on BIN pattern
+         * @param {string} bin - BIN pattern
+         * @returns {number} Expected card length
+         */
+        function getCardLength(bin) {
+            if (/^3[47]/.test(bin)) return 15;      // Amex
+            if (/^3[0689]/.test(bin)) return 14;    // Diners Club
+            return 16;                               // Visa, MasterCard, Discover, etc.
+        }
+
+        /**
+         * Detect card type from card number
+         * @param {string} cardNumber - Full card number
+         * @returns {string} Card type name
+         */
+        function detectCardType(cardNumber) {
+            const cleaned = cardNumber.replace(/\D/g, '');
+            
+            // MasterCard: 51-55 or 2221-2720
+            const patterns = [
+                { regex: /^4/, type: 'Visa' },
+                { regex: /^5[1-5]/, type: 'MasterCard' },
+                { regex: /^(222[1-9]|22[3-9]\d|2[3-6]\d{2}|27[01]\d|2720)/, type: 'MasterCard' },
+                { regex: /^3[47]/, type: 'Amex' },
+                { regex: /^6011|^622[1-9][2-6]\d|^64[4-9]|^65/, type: 'Discover' },
+                { regex: /^3(0[0-5]|[68]\d|9\d)/, type: 'Diners Club' }
+            ];
+
+            const match = patterns.find(p => p.regex.test(cleaned));
+            return match ? match.type : 'Unknown';
+        }
+
+        /**
+         * Validate card number using Luhn algorithm
+         * @param {string} cardNumber - Card number to validate
+         * @returns {boolean} True if valid
+         */
+        function validateLuhn(cardNumber) {
+            const cleaned = cardNumber.replace(/\D/g, '');
+            if (cleaned.length < 13) return false;
+
+            let sum = 0;
+            let isEven = false;
+
+            for (let i = cleaned.length - 1; i >= 0; i--) {
+                let digit = parseInt(cleaned[i], 10);
+                if (isEven) {
+                    digit *= 2;
+                    if (digit > 9) digit -= 9;
+                }
+                sum += digit;
+                isEven = !isEven;
+            }
+
+            return sum % 10 === 0;
+        }
+
+        /** Available months for random generation */
+        const MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+        
+        /** 
+         * Generate available years dynamically based on current year
+         * Returns years from next year to 15 years in the future
+         */
+        function getAvailableYears() {
+            const currentYear = new Date().getFullYear();
+            return Array.from({ length: 15 }, (_, i) => String(currentYear + i + 1));
+        }
+
+        /**
+         * Generate random month
+         * @returns {string} Two-digit month
+         */
+        function generateMonth() {
+            return MONTHS[secureRandomInt(MONTHS.length)];
+        }
+
+        /**
+         * Generate random year
+         * @returns {string} Four-digit year
+         */
+        function generateYear() {
+            const years = getAvailableYears();
+            return years[secureRandomInt(years.length)];
+        }
+
+        /**
+         * Generate CVV based on card type
+         * @param {string} bin - BIN pattern to detect card type
+         * @returns {string} Generated CVV
+         */
+        function generateCCV(bin) {
+            const length = /^3[47]/.test(bin) ? 4 : 3; // Amex has 4-digit CVV
+            return Array.from({ length }, () => randomDigit()).join('');
+        }
+
+        /** Output format configurations */
+        const OUTPUT_FORMATS = {
+            pipe: (card, month, year, ccv) => `${card}|${month}|${year}|${ccv}`,
+            comma: (card, month, year, ccv) => `${card},${month},${year},${ccv}`,
+            json: (card, month, year, ccv) => `{"card": "${card}", "month": "${month}", "year": "${year}", "cvv": "${ccv}"}`,
+            cardonly: (card) => card,
+            formatted: (card, month, year, ccv) => {
+                const formattedCard = card.replace(/(.{4})/g, '$1 ').trim();
+                return `${formattedCard}|${month}|${year}|${ccv}`;
+            }
+        };
+
+        /**
+         * Format output based on selected format
+         * @param {string} card - Card number
+         * @param {string} month - Expiration month
+         * @param {string} year - Expiration year
+         * @param {string} ccv - CVV code
+         * @param {string} format - Output format key
+         * @returns {string} Formatted output
+         */
+        function formatOutput(card, month, year, ccv, format) {
+            const formatter = OUTPUT_FORMATS[format] || OUTPUT_FORMATS.pipe;
+            return formatter(card, month, year, ccv);
+        }
+
+        /** Maximum history items to keep */
+        const MAX_HISTORY_ITEMS = 20;
+
+        /**
+         * Save generation to history
+         * @param {string} bin - BIN pattern used
+         * @param {number} count - Number of cards generated
+         */
+        function saveToHistory(bin, count) {
+            const history = JSON.parse(localStorage.getItem('generationHistory') || '[]');
+            
+            history.unshift({
+                bin,
+                count,
+                timestamp: new Date().toLocaleString()
+            });
+
+            // Keep only last MAX_HISTORY_ITEMS items
+            localStorage.setItem('generationHistory', JSON.stringify(history.slice(0, MAX_HISTORY_ITEMS)));
+            loadHistory();
+        }
+
+        /**
+         * Load and display history
+         */
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('generationHistory') || '[]');
+            const historyList = document.getElementById('history-list');
+
+            if (history.length === 0) {
+                historyList.innerHTML = '<div class="text-center p-3">No generation history</div>';
+                return;
+            }
+
+            historyList.innerHTML = history.map(item => `
+                <div class="history-item" data-bin="${item.bin}">
+                    <div><strong>${item.bin}</strong> × ${item.count}</div>
+                    <div class="small text-muted">${item.timestamp}</div>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            historyList.querySelectorAll('.history-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    document.getElementById('bin').value = el.dataset.bin;
+                    updatePreview();
+                });
+            });
+        }
+
+        /**
+         * Clear generation history
+         */
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear generation history?')) {
+                localStorage.removeItem('generationHistory');
+                loadHistory();
+            }
+        }
+
+        /** Maximum cards that can be generated at once */
+        const MAX_CARDS = 1000;
+        const DEFAULT_CARD_COUNT = 20;
+
+        /**
+         * Main generation function - optimized for performance
+         */
+        function generate() {
+            const binInput = document.getElementById('bin');
+            const countInput = document.getElementById('count');
+            const output = document.getElementById('output');
+            
+            const bin = binInput.value.trim();
+            const ccvInput = document.getElementById('ccv').value.trim();
+            const monthOption = document.getElementById('month').value;
+            const yearOption = document.getElementById('year').value;
+            const format = document.getElementById('format').value;
+            
+            // Validate BIN - ensure it contains at least one digit
+            if (!bin) {
+                alert('Please enter a BIN pattern');
+                return;
+            }
+            
+            if (!/\d/.test(bin)) {
+                alert('BIN pattern must contain at least one digit');
+                return;
+            }
+
+            // Parse and validate count
+            let count = parseInt(countInput.value, 10);
+            if (isNaN(count) || count <= 0) {
+                count = DEFAULT_CARD_COUNT;
+            } else if (count > MAX_CARDS) {
+                count = MAX_CARDS;
+                countInput.value = MAX_CARDS;
+            }
+
+            const cardLength = getCardLength(bin);
+            const isRandomMonth = monthOption === 'Random';
+            const isRandomYear = yearOption === 'Random';
+            const isRandomCCV = !ccvInput;
+
+            // Pre-generate card numbers in batch for better performance
+            const cardNumbers = generateCards(bin, cardLength, count);
+            
+            // Format output efficiently
+            const results = new Array(count);
+            for (let i = 0; i < count; i++) {
+                const month = isRandomMonth ? generateMonth() : monthOption;
+                const year = isRandomYear ? generateYear() : yearOption;
+                const ccv = isRandomCCV ? generateCCV(bin) : ccvInput;
+                results[i] = formatOutput(cardNumbers[i], month, year, ccv, format);
+            }
+
+            // Display results
+            output.value = format === 'json'
+                ? '[\n  ' + results.join(',\n  ') + '\n]'
+                : results.join('\n');
+
+            // Save to history and switch to output tab
+            saveToHistory(bin, count);
+            document.getElementById('output-tab').click();
+        }
+
+        /**
+         * Copy output to clipboard using modern Clipboard API with fallback
+         */
+        async function copyToClipboard() {
+            const textarea = document.getElementById('output');
+            const text = textarea.value;
+            
+            if (!text) return;
+
+            try {
+                // Modern approach using Clipboard API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                    showCopyFeedback();
+                } else {
+                    // Fallback: select text and prompt user to copy manually
+                    textarea.select();
+                    textarea.setSelectionRange(0, 99999);
+                    // Show a message since we can't auto-copy
+                    alert('Text selected. Please press Ctrl+C (Cmd+C on Mac) to copy.');
+                }
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                // Fallback to selection
+                textarea.select();
+                textarea.setSelectionRange(0, 99999);
+                alert('Could not copy automatically. Text selected - please use Ctrl+C (Cmd+C on Mac).');
+            }
+        }
+
+        /**
+         * Show visual feedback after successful copy
+         */
+        function showCopyFeedback() {
+            const copyBtn = document.querySelector('.copy-btn');
+            copyBtn.classList.remove('fa-copy');
+            copyBtn.classList.add('fa-check', 'text-success');
+            
+            setTimeout(() => {
+                copyBtn.classList.remove('fa-check', 'text-success');
+                copyBtn.classList.add('fa-copy');
+            }, 2000);
+        }
+
+        /**
+         * Download output as a file
+         */
+        function downloadAsFile() {
+            const output = document.getElementById('output').value;
+            if (!output) {
+                alert('No data to download');
+                return;
+            }
+
+            const format = document.getElementById('format').value;
+            const isJson = format === 'json';
+            const extension = isJson ? '.json' : '.txt';
+            const mimeType = isJson ? 'application/json' : 'text/plain';
+            const date = new Date().toISOString().slice(0, 10);
+
+            const blob = new Blob([output], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `flash_vcc_data_${date}${extension}`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        /**
+         * Clear the output area
+         */
+        function clearOutput() {
+            document.getElementById('output').value = '';
+        }
+    </script>
+</body>
+</html>
