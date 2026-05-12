@@ -2,23 +2,37 @@
  * Live Check proxy endpoint.
  *
  * Forwards a single card entry to the upstream chkr.cc API and relays the
- * response back to the browser. We proxy on the server because:
- *   - chkr.cc does not advertise permissive CORS for browser clients.
- *   - Centralizing the call lets us rate-limit, cache, and sanitize.
+ * response back to the browser.
  *
- * Contract:
- *   POST /api/live-check
- *   body: { "data": "<pan>|<mm>|<yyyy>|<cvv>" }
- *   resp: { ok: boolean, upstream: <chkr.cc payload>, status: "live"|"die"|"unknown"|"error", ... }
+ * Rate-limit strategy:
+ *   1. In-process FIFO queue with a minimum interval between outbound calls.
+ *      All concurrent /api/live-check requests share the same token bucket so
+ *      the browser can fire 3-4 in parallel while we still make one outbound
+ *      call every ~360ms - well under chkr.cc's documented free-tier limit.
+ *   2. Exponential backoff with jitter on 429. We retry in-process (up to 3
+ *      times) so a single user request still produces a definitive result
+ *      instead of a client-visible "try again later".
+ *   3. On network errors (timeout / socket hangup) we do one additional
+ *      retry since those are usually transient.
  *
- * The endpoint is intentionally one-card-per-request. The UI fans out with a
- * small concurrency so we stay well under any serverless execution budget and
- * can show per-card progress in the browser.
+ * This keeps the browser code simple: it fires one request per card, reads
+ * the result, and shows a progress bar.
  */
 
 const UPSTREAM_URL = 'https://api.chkr.cc/';
-const UPSTREAM_TIMEOUT_MS = 20000;
+const UPSTREAM_TIMEOUT_MS = 25000;
 const MAX_DATA_LENGTH = 64;
+
+// Throttle: minimum gap between outbound requests. chkr.cc's public tier
+// tolerates ~3 req/s comfortably; we aim for ~2.8 req/s with jitter to avoid
+// thundering herd patterns.
+const MIN_UPSTREAM_INTERVAL_MS = 360;
+const INTERVAL_JITTER_MS = 90;
+
+// Retry policy for 429 and transient network errors.
+const MAX_RETRIES = 3;
+const BASE_BACKOFF_MS = 800;
+const MAX_BACKOFF_MS = 6000;
 
 function onlyDigits(value) {
   return String(value || '').replace(/\D/g, '');
@@ -31,11 +45,6 @@ function normalizeYear(value) {
   return raw.slice(0, 4);
 }
 
-/**
- * Accepts either a preformatted "pan|mm|yyyy|cvv" string or a structured body
- * with separate fields, and returns the canonical pipe-delimited form that
- * chkr.cc expects. Returns null when the input is unusable.
- */
 function normalizeData(body) {
   if (!body || typeof body !== 'object') return null;
 
@@ -79,9 +88,6 @@ async function fetchWithTimeout(url, init, timeoutMs) {
 }
 
 async function readBody(req) {
-  // Vercel parses JSON automatically when Content-Type is application/json,
-  // but the dev server sometimes leaves req.body undefined, so fall back to
-  // the raw stream.
   if (req.body && typeof req.body === 'object') return req.body;
   if (typeof req.body === 'string' && req.body) {
     try { return JSON.parse(req.body); } catch { return null; }
@@ -96,6 +102,141 @@ async function readBody(req) {
     });
     req.on('error', () => resolve(null));
   });
+}
+
+/* ============================================================================
+ * Token-bucket throttle shared across concurrent serverless invocations
+ * within the same Node process. In Vercel each concurrent request may land
+ * on the same or different instance; within a single instance we enforce
+ * spacing, and we rely on backoff + retry for the cross-instance case.
+ * ============================================================================
+ */
+
+let lastUpstreamCallAt = 0;
+const pendingCalls = [];
+let schedulerRunning = false;
+
+function jittered(ms) {
+  return ms + Math.floor(Math.random() * INTERVAL_JITTER_MS);
+}
+
+async function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Reserve a slot to call the upstream. Returns once it is this caller's turn,
+ * guaranteeing a minimum interval since the previous call.
+ */
+function reserveSlot() {
+  return new Promise((resolve) => {
+    pendingCalls.push(resolve);
+    if (!schedulerRunning) runScheduler();
+  });
+}
+
+async function runScheduler() {
+  schedulerRunning = true;
+  try {
+    while (pendingCalls.length > 0) {
+      const now = Date.now();
+      const sinceLast = now - lastUpstreamCallAt;
+      const wait = Math.max(0, jittered(MIN_UPSTREAM_INTERVAL_MS) - sinceLast);
+      if (wait > 0) await sleep(wait);
+      const next = pendingCalls.shift();
+      lastUpstreamCallAt = Date.now();
+      next();
+    }
+  } finally {
+    schedulerRunning = false;
+  }
+}
+
+/**
+ * Forced global pause. When we observe a 429 we treat it as "upstream is
+ * unhappy right now" and delay *everyone* for the suggested cooldown, not
+ * just the calling request.
+ */
+let globalPauseUntil = 0;
+function requestGlobalPause(ms) {
+  const until = Date.now() + ms;
+  if (until > globalPauseUntil) globalPauseUntil = until;
+}
+
+async function waitForGlobalPause() {
+  const remaining = globalPauseUntil - Date.now();
+  if (remaining > 0) await sleep(remaining);
+}
+
+function backoffMs(attempt) {
+  const exp = Math.min(MAX_BACKOFF_MS, BASE_BACKOFF_MS * Math.pow(2, attempt));
+  return Math.floor(exp / 2 + Math.random() * (exp / 2));
+}
+
+function parseRetryAfter(header) {
+  if (!header) return 0;
+  const secs = Number(header);
+  if (Number.isFinite(secs) && secs >= 0) return Math.min(MAX_BACKOFF_MS, Math.ceil(secs * 1000));
+  const date = Date.parse(header);
+  if (!Number.isNaN(date)) return Math.max(0, Math.min(MAX_BACKOFF_MS, date - Date.now()));
+  return 0;
+}
+
+async function callUpstream(data) {
+  const response = await fetchWithTimeout(
+    UPSTREAM_URL,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Origin': 'https://chkr.cc',
+        'Referer': 'https://chkr.cc/',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Accept-Language': 'en-US,en;q=0.9',
+      },
+      body: JSON.stringify({ data }),
+    },
+    UPSTREAM_TIMEOUT_MS,
+  );
+
+  const text = await response.text();
+  let upstream;
+  try { upstream = JSON.parse(text); } catch { upstream = { raw: text }; }
+  return { response, upstream };
+}
+
+/**
+ * Call upstream with retry + backoff. Only retries on 429 and transient
+ * network errors; other HTTP errors are returned as-is so the caller can
+ * inspect them.
+ */
+async function callUpstreamWithRetry(data) {
+  let lastError;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    await waitForGlobalPause();
+    await reserveSlot();
+    try {
+      const { response, upstream } = await callUpstream(data);
+
+      if (response.status === 429) {
+        const retryAfter = parseRetryAfter(response.headers.get('retry-after'));
+        const wait = Math.max(retryAfter, backoffMs(attempt));
+        requestGlobalPause(wait);
+        if (attempt === MAX_RETRIES) {
+          return { response, upstream, attempts: attempt + 1 };
+        }
+        continue;
+      }
+
+      return { response, upstream, attempts: attempt + 1 };
+    } catch (err) {
+      lastError = err;
+      if (attempt === MAX_RETRIES) break;
+      await sleep(backoffMs(attempt));
+    }
+  }
+  throw lastError;
 }
 
 module.exports = async function handler(req, res) {
@@ -123,41 +264,17 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const upstreamResponse = await fetchWithTimeout(
-      UPSTREAM_URL,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          // chkr.cc has shown friendlier behavior when the request mimics the
-          // first-party browser UI. These headers are not authentication; they
-          // just keep us on the default public quota.
-          'Origin': 'https://chkr.cc',
-          'Referer': 'https://chkr.cc/',
-          'User-Agent': 'Mozilla/5.0 (compatible; FlashVCC-LiveCheck/1.0)',
-        },
-        body: JSON.stringify({ data }),
-      },
-      UPSTREAM_TIMEOUT_MS,
-    );
+    const { response, upstream, attempts } = await callUpstreamWithRetry(data);
 
-    const text = await upstreamResponse.text();
-    let upstream;
-    try {
-      upstream = JSON.parse(text);
-    } catch {
-      upstream = { raw: text };
-    }
-
-    if (!upstreamResponse.ok) {
-      const retryAfter = upstreamResponse.headers.get('retry-after');
+    if (!response.ok) {
+      const retryAfter = response.headers.get('retry-after');
       if (retryAfter) res.setHeader('Retry-After', retryAfter);
-      res.status(upstreamResponse.status).json({
+      res.status(response.status).json({
         ok: false,
-        status: 'error',
-        httpStatus: upstreamResponse.status,
-        error: upstream && upstream.message ? upstream.message : `Upstream returned HTTP ${upstreamResponse.status}.`,
+        status: response.status === 429 ? 'rate_limited' : 'error',
+        httpStatus: response.status,
+        attempts,
+        error: upstream && upstream.message ? upstream.message : `Upstream returned HTTP ${response.status}.`,
         upstream,
       });
       return;
@@ -166,6 +283,7 @@ module.exports = async function handler(req, res) {
     res.status(200).json({
       ok: true,
       status: classifyStatus(upstream),
+      attempts,
       upstream,
     });
   } catch (error) {

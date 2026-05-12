@@ -827,6 +827,24 @@
             background: linear-gradient(90deg, rgba(249, 115, 22, 0.05), transparent);
         }
 
+        .live-card-index {
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-right: 0.5rem;
+        }
+
+        .live-card-pan {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.92rem;
+            letter-spacing: 0.02em;
+            word-break: break-all;
+        }
+
+        .live-message-error {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+
         .live-badge {
             background: rgba(21, 21, 21, 0.08);
             color: var(--dark-color);
@@ -2302,8 +2320,7 @@
          * ============================================================ */
 
         const LIVE_CHECK_CONCURRENCY = 3;
-        const LIVE_CHECK_REQUEST_TIMEOUT_MS = 22000;
-        const LIVE_CHECK_RATE_LIMIT_COOLDOWN_MS = 4000;
+        const LIVE_CHECK_REQUEST_TIMEOUT_MS = 45000;
 
         const liveCheckState = {
             running: false,
@@ -2348,6 +2365,13 @@
             return `${pan.slice(0, 6)}${'*'.repeat(pan.length - 10)}${pan.slice(-4)}`;
         }
 
+        function formatLiveCardLine(entry) {
+            // Mirror the generated output: pan|mm|yyyy|cvv, unmasked, so the
+            // user can spot which exact line a result came from.
+            if (!entry.valid) return entry.card || 'No card number';
+            return `${entry.card}|${entry.month}|${entry.year}|${entry.cvv}`;
+        }
+
         function renderLiveRow(entry, state) {
             const row = document.createElement('div');
             row.className = `checker-row live-row status-${state.status}`;
@@ -2358,7 +2382,13 @@
 
             const title = document.createElement('div');
             title.className = 'checker-card';
-            title.textContent = `#${entry.index} ${maskPan(entry.card) || 'No card number'}`;
+            const idx = document.createElement('span');
+            idx.className = 'live-card-index';
+            idx.textContent = `#${entry.index}`;
+            const pan = document.createElement('span');
+            pan.className = 'live-card-pan';
+            pan.textContent = formatLiveCardLine(entry);
+            title.append(idx, pan);
 
             const badge = document.createElement('span');
             badge.className = `checker-badge live-badge status-${state.status}`;
@@ -2371,28 +2401,52 @@
             meta.className = 'checker-meta';
             const metaParts = [];
             if (entry.month && entry.year) metaParts.push(`exp ${entry.month}/${entry.year}`);
-            if (entry.cvv) metaParts.push(`cvv(${entry.cvv.length})`);
-            if (state.message) metaParts.push(state.message);
+            if (entry.cvv) metaParts.push(`cvv ${entry.cvv}`);
+            if (state.status === 'pending' && state.message) metaParts.push(state.message);
+            if (state.attempts && state.attempts > 1) metaParts.push(`${state.attempts} attempts`);
             meta.textContent = metaParts.join(' · ');
             row.appendChild(meta);
 
+            const card = state.upstream && state.upstream.card;
+            const country = card && card.country;
+
             const details = document.createElement('div');
             details.className = 'live-details';
-            const card = state.upstream && state.upstream.card;
+            const addDetail = (label, value) => {
+                if (!value) return;
+                const span = document.createElement('span');
+                const b = document.createElement('b');
+                b.textContent = value;
+                span.append(`${label}: `, b);
+                details.appendChild(span);
+            };
+
             if (card) {
-                if (card.bank) details.insertAdjacentHTML('beforeend', `<span>Bank: <b>${escapeHtml(card.bank)}</b></span>`);
-                if (card.type) details.insertAdjacentHTML('beforeend', `<span>Type: <b>${escapeHtml(card.type)}</b></span>`);
-                if (card.category) details.insertAdjacentHTML('beforeend', `<span>Category: <b>${escapeHtml(card.category)}</b></span>`);
-                if (card.country && (card.country.name || card.country.emoji)) {
-                    details.insertAdjacentHTML('beforeend', `<span>Country: <b>${escapeHtml(`${card.country.emoji || ''} ${card.country.name || ''}`.trim())}</b></span>`);
+                addDetail('Bank', card.bank);
+                addDetail('Type', card.type);
+                addDetail('Category', card.category);
+                addDetail('Brand', card.brand);
+                if (country) {
+                    const countryText = [country.emoji, country.name, country.code ? `(${country.code})` : '']
+                        .filter(Boolean).join(' ').trim();
+                    addDetail('Country', countryText);
+                    addDetail('Currency', country.currency);
                 }
+            }
+            if (typeof state.upstream?.code === 'number') {
+                addDetail('Upstream', `code ${state.upstream.code} · ${state.upstream.status || ''}`.trim());
             }
             if (details.childElementCount > 0) row.appendChild(details);
 
-            if (state.upstream && state.upstream.message && state.status !== 'error') {
+            if (state.upstream && state.upstream.message) {
                 const msg = document.createElement('div');
                 msg.className = 'live-message';
                 msg.textContent = state.upstream.message;
+                row.appendChild(msg);
+            } else if (state.status === 'error' && state.message) {
+                const msg = document.createElement('div');
+                msg.className = 'live-message live-message-error';
+                msg.textContent = state.message;
                 row.appendChild(msg);
             }
 
@@ -2459,15 +2513,13 @@
 
             const payload = await response.json().catch(() => ({ ok: false, error: 'Invalid JSON response.' }));
 
-            if (response.status === 429) {
-                return { status: 'error', message: 'Rate limited by upstream. Slowing down...', upstream: payload, rateLimited: true };
-            }
-
             if (!response.ok || !payload.ok) {
+                const msg = (payload && payload.error) || `HTTP ${response.status}`;
                 return {
-                    status: 'error',
-                    message: (payload && payload.error) || `HTTP ${response.status}`,
+                    status: response.status === 429 ? 'error' : 'error',
+                    message: response.status === 429 ? `Rate limited: ${msg}` : msg,
                     upstream: payload && payload.upstream,
+                    attempts: payload && payload.attempts,
                 };
             }
 
@@ -2475,6 +2527,7 @@
                 status: payload.status || 'unknown',
                 message: (payload.upstream && payload.upstream.message) || '',
                 upstream: payload.upstream || null,
+                attempts: payload.attempts,
             };
         }
 
@@ -2496,21 +2549,9 @@
             try {
                 const state = await queryLiveChecker(entry, controller.signal);
                 if (controller.signal.aborted) return;
-
-                if (state.rateLimited) {
-                    // Back off and retry once. The upstream is shared so we
-                    // want to be polite rather than hammer it.
-                    await new Promise(resolve => setTimeout(resolve, LIVE_CHECK_RATE_LIMIT_COOLDOWN_MS));
-                    if (controller.signal.aborted) return;
-                    const retry = await queryLiveChecker(entry, controller.signal);
-                    placeholder.replaceWith(renderLiveRow(entry, retry));
-                    counts[retry.status] = (counts[retry.status] || 0) + 1;
-                    liveCheckState.results.push({ entry, state: retry });
-                } else {
-                    placeholder.replaceWith(renderLiveRow(entry, state));
-                    counts[state.status] = (counts[state.status] || 0) + 1;
-                    liveCheckState.results.push({ entry, state });
-                }
+                placeholder.replaceWith(renderLiveRow(entry, state));
+                counts[state.status] = (counts[state.status] || 0) + 1;
+                liveCheckState.results.push({ entry, state });
             } catch (error) {
                 if (controller.signal.aborted) return;
                 const state = {
@@ -2672,17 +2713,34 @@
                 generated_at: new Date().toISOString(),
                 source: 'chkr.cc via /api/live-check',
                 total: liveCheckState.results.length,
-                results: liveCheckState.results.map(item => ({
-                    index: item.entry.index,
-                    card: maskPan(item.entry.card),
-                    card_raw: item.entry.card,
-                    month: item.entry.month,
-                    year: item.entry.year,
-                    cvv_length: item.entry.cvv.length,
-                    status: item.state.status,
-                    message: item.state.message || '',
-                    details: item.state.upstream && item.state.upstream.card ? item.state.upstream.card : null,
-                })),
+                results: liveCheckState.results.map(item => {
+                    const upstreamCard = item.state.upstream && item.state.upstream.card;
+                    return {
+                        index: item.entry.index,
+                        line: item.entry.dataString,
+                        card: item.entry.card,
+                        month: item.entry.month,
+                        year: item.entry.year,
+                        cvv: item.entry.cvv,
+                        status: item.state.status,
+                        upstream_code: item.state.upstream && item.state.upstream.code,
+                        upstream_status: item.state.upstream && item.state.upstream.status,
+                        message: (item.state.upstream && item.state.upstream.message) || item.state.message || '',
+                        attempts: item.state.attempts || 1,
+                        details: upstreamCard ? {
+                            bank: upstreamCard.bank || null,
+                            type: upstreamCard.type || null,
+                            category: upstreamCard.category || null,
+                            brand: upstreamCard.brand || null,
+                            country: upstreamCard.country ? {
+                                name: upstreamCard.country.name || null,
+                                code: upstreamCard.country.code || null,
+                                emoji: upstreamCard.country.emoji || null,
+                                currency: upstreamCard.country.currency || null,
+                            } : null,
+                        } : null,
+                    };
+                }),
             };
             const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
