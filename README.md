@@ -33,12 +33,15 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 ## BIN Lookup
 
 - Click the search icon next to the BIN Pattern field, or open the **BIN Info** tab.
-- Server-side proxy at `/api/bin-lookup` queries a 4-stage provider chain:
-  1. **Local master DB** (bundled 159k BINs from iannuttall/binlist-data, sub-millisecond in-process lookup — no network required).
-  2. `bins.antipublic.cc` — Cloudflare-cached public API.
-  3. `rustbin.site` — 25/min keyless fallback.
-  4. `lookup.binlist.net` — legacy fallback, hard-capped.
-- First provider with a usable answer wins; the provider chain is displayed so you can see which source answered and how long each call took.
+- Server-side proxy at `/api/bin-lookup` queries a 6-stage provider chain:
+  1. **Local master DB** (bundled 159k BINs, sub-millisecond in-process lookup — no network).
+  2. `bins.antipublic.cc` — Cloudflare-cached public JSON API.
+  3. `binlist.io` (HTML scrape) — parses `<div class="bin-fields">` blocks.
+  4. `rustbin.site` — 25/min keyless JSON fallback.
+  5. `bincheck.io` (HTML scrape) — table-row scraping, includes currency + category.
+  6. `lookup.binlist.net` — legacy fallback, hard-capped.
+- First provider with a usable answer wins. The provider chain is displayed so you can see which source answered and how long each call took.
+- Scrapers use browser-style headers and are subject to upstream availability; they act as failovers when the JSON APIs are rate-limited or down.
 - Returns normalized issuer profile: scheme, type (credit/debit/prepaid), category, brand, bank (name / url / phone / city), country (with flag), and currency.
 
 ## BIN Library

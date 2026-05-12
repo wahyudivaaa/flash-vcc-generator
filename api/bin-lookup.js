@@ -408,11 +408,28 @@ async function providerBinlist(bin) {
   return detail;
 }
 
+/* ============================================================================
+ * Scraper providers - fetch and parse public BIN detail pages. Shares shape
+ * with the API providers so the chain stays uniform.
+ * ========================================================================== */
+
+const scrapers = require('./_lib/bin-scrape');
+
+async function providerScrapeBinlistIo(bin) {
+  return await scrapers.scrapeBinlistIo(bin);
+}
+
+async function providerScrapeBincheckIo(bin) {
+  return await scrapers.scrapeBincheckIo(bin);
+}
+
 const PROVIDERS = [
-  { id: 'local-master', label: 'local master DB',   run: providerLocalMaster, local: true },
-  { id: 'antipublic',   label: 'bins.antipublic.cc', run: providerAntipublic },
-  { id: 'rustbin',      label: 'rustbin.site',       run: providerRustbin },
-  { id: 'binlist',      label: 'lookup.binlist.net', run: providerBinlist },
+  { id: 'local-master',      label: 'local master DB',     run: providerLocalMaster, local: true },
+  { id: 'antipublic',        label: 'bins.antipublic.cc',  run: providerAntipublic },
+  { id: 'scrape-binlist-io', label: 'binlist.io (scrape)', run: providerScrapeBinlistIo },
+  { id: 'rustbin',           label: 'rustbin.site',        run: providerRustbin },
+  { id: 'scrape-bincheck-io',label: 'bincheck.io (scrape)',run: providerScrapeBincheckIo },
+  { id: 'binlist',           label: 'lookup.binlist.net',  run: providerBinlist },
 ];
 
 /**
