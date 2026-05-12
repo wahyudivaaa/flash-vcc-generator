@@ -11,6 +11,7 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 - Validate output with the Luhn algorithm
 - Run batch test checks for format, network, expiry, CVV, and duplicates
 - Run live upstream checks against `api.chkr.cc` via a server-side proxy (Live / Die / Unknown)
+- Look up BIN details (bank, scheme, type, category, country, currency) from a chain of public BIN databases
 - Avoid local storage of generated numbers
 
 ## Usage
@@ -28,6 +29,13 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 - Forwards one entry at a time to `https://api.chkr.cc/` from the server to avoid CORS and to centralize rate limiting.
 - Frontend processes entries with concurrency 3 and shows a real-time progress bar.
 - Results show card bank, type, category, and country when available. Live lines can be copied or exported as JSON.
+
+## BIN Lookup
+
+- Click the search icon next to the BIN Pattern field, or open the **BIN Info** tab.
+- Server-side proxy at `/api/bin-lookup` queries, in order: `bins.antipublic.cc`, `rustbin.site`, `lookup.binlist.net`.
+- First provider with a successful response wins; the provider chain is displayed so you can see which source answered and how long each call took.
+- Returns normalized issuer profile: scheme, type (credit/debit/prepaid), category, brand, bank (name / url / phone / city), country (with flag), and currency.
 
 ## Local Development
 

@@ -897,6 +897,195 @@
             opacity: 0.9;
         }
 
+        /* ======================= BIN Info ======================= */
+
+        .bin-notice {
+            border-left: 3px solid var(--accent-color);
+            background: linear-gradient(90deg, rgba(0, 194, 255, 0.12), rgba(0, 194, 255, 0.03));
+        }
+
+        .dark-mode .bin-notice {
+            background: linear-gradient(90deg, rgba(0, 194, 255, 0.22), rgba(0, 194, 255, 0.05));
+        }
+
+        .bin-notice code {
+            background: rgba(21, 21, 21, 0.08);
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            font-size: 0.76rem;
+        }
+
+        .dark-mode .bin-notice code {
+            background: rgba(248, 243, 223, 0.14);
+        }
+
+        .bin-summary .checker-stat strong {
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.02em;
+        }
+
+        .bin-detail-card {
+            margin-top: 0.75rem;
+            padding: 1rem 1.1rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--primary-color);
+            border-radius: var(--border-radius-sm);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .dark-mode .bin-detail-card {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        .bin-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .bin-detail-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--dark-color);
+        }
+
+        .bin-detail-flag {
+            font-size: 1.4rem;
+            vertical-align: middle;
+            margin-right: 0.35rem;
+        }
+
+        .bin-detail-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.22rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: rgba(245, 183, 0, 0.15);
+            color: var(--primary-hover);
+        }
+
+        .dark-mode .bin-detail-pill {
+            background: rgba(245, 183, 0, 0.25);
+            color: var(--primary-color);
+        }
+
+        .bin-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.8rem 1rem;
+        }
+
+        .bin-detail-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            font-size: 0.82rem;
+        }
+
+        .bin-detail-cell .bin-detail-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .bin-detail-cell .bin-detail-value {
+            color: var(--dark-color);
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .bin-detail-cell .bin-detail-value.muted {
+            color: var(--secondary-color);
+            font-weight: 500;
+            font-style: italic;
+        }
+
+        .bin-detail-cell a.bin-detail-value {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .bin-detail-cell a.bin-detail-value:hover {
+            text-decoration: underline;
+        }
+
+        .bin-detail-footer {
+            margin-top: 0.8rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed var(--border-color);
+            font-size: 0.72rem;
+            color: var(--secondary-color);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem 1rem;
+        }
+
+        .bin-detail-footer b {
+            color: var(--dark-color);
+            margin-right: 0.2rem;
+        }
+
+        .bin-provider-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(21, 21, 21, 0.06);
+            color: var(--dark-color);
+        }
+
+        .dark-mode .bin-provider-chip {
+            background: rgba(248, 243, 223, 0.08);
+        }
+
+        .bin-provider-chip.status-ok {
+            background: rgba(15, 159, 110, 0.15);
+            color: var(--success-color);
+        }
+
+        .bin-provider-chip.status-error {
+            background: rgba(220, 38, 38, 0.12);
+            color: var(--danger-color);
+        }
+
+        .bin-provider-chip.status-rate_limited {
+            background: rgba(249, 115, 22, 0.15);
+            color: var(--warning-color);
+        }
+
+        .bin-provider-chip.status-not_found {
+            background: rgba(91, 97, 110, 0.15);
+            color: var(--secondary-color);
+        }
+
+        .bin-loading {
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--secondary-color);
+            font-size: 0.88rem;
+        }
+
+        .bin-loading .fa-spinner {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
         .accordion {
             border-radius: var(--border-radius);
             overflow: hidden;
@@ -1224,8 +1413,11 @@
                         <label for="bin" class="form-label"><b>BIN Pattern</b></label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="bin" placeholder="37513874xx0591x" required>
-                            <button class="btn btn-outline-secondary" type="button" onclick="validateBIN()">
+                            <button class="btn btn-outline-secondary" type="button" onclick="validateBIN()" title="Validate BIN format">
                                 <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-outline-warning" type="button" onclick="runBinLookup()" id="bin-lookup-btn" title="Live BIN lookup (bank, country, brand)">
+                                <i class="fas fa-search-dollar"></i>
                             </button>
                         </div>
                         <div class="form-text">Use 'x' for random digits. Example: 411111xxxxxx1111</div>
@@ -1345,6 +1537,13 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="bin-info-tab" data-bs-toggle="tab" data-bs-target="#bin-info-pane" type="button" role="tab">
+                            <i class="fas fa-landmark me-1"></i>
+                            <span class="desktop-tab-label">BIN Info</span>
+                            <span class="mobile-tab-label">BIN</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab">
                             <i class="fas fa-history me-1"></i>
                             <span class="desktop-tab-label">History</span>
@@ -1433,6 +1632,27 @@
 
                             <div id="live-results" class="checker-results">
                                 <div class="checker-empty">Generate VCC data, then run a live check to query the upstream service.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="bin-info-pane" role="tabpanel">
+                        <div class="checker-panel mt-3">
+                            <div class="checker-notice bin-notice">
+                                <i class="fas fa-landmark me-1"></i>
+                                <strong>Live BIN lookup.</strong>
+                                Queries <code>bins.antipublic.cc</code>, with automatic fallback to <code>rustbin.site</code> and <code>lookup.binlist.net</code>. Returns issuing bank, scheme, type, category, country, and currency.
+                            </div>
+
+                            <div id="bin-info-summary" class="checker-summary bin-summary" style="display:none;">
+                                <div class="checker-stat"><span>BIN</span><strong id="bin-info-bin">--</strong></div>
+                                <div class="checker-stat"><span>Provider</span><strong id="bin-info-provider">--</strong></div>
+                                <div class="checker-stat"><span>Scheme</span><strong id="bin-info-scheme">--</strong></div>
+                                <div class="checker-stat"><span>Type</span><strong id="bin-info-type">--</strong></div>
+                            </div>
+
+                            <div id="bin-info-content" class="checker-results">
+                                <div class="checker-empty">Enter a BIN pattern above and click the <i class="fas fa-search-dollar"></i> button to look up the issuer details.</div>
                             </div>
                         </div>
                     </div>
@@ -2751,6 +2971,259 @@
             a.click();
             a.remove();
             URL.revokeObjectURL(url);
+        }
+
+        /* ============================================================
+         * BIN Lookup (upstream: /api/bin-lookup → multi-provider chain)
+         * ============================================================ */
+
+        const BIN_LOOKUP_TIMEOUT_MS = 25000;
+
+        let binLookupController = null;
+
+        function extractBinPrefix(raw) {
+            // Accept any generator pattern ("4111 11xx xxxx xxxx", "457173")
+            // and return just the leading digits before the first `x`.
+            if (!raw) return '';
+            const trimmed = String(raw).trim();
+            const prefix = trimmed.split(/[xX*?]/)[0] || '';
+            const digits = prefix.replace(/\D/g, '');
+            return digits.slice(0, 8);
+        }
+
+        function renderBinLoading(bin) {
+            const content = document.getElementById('bin-info-content');
+            if (!content) return;
+            content.replaceChildren();
+            const loading = document.createElement('div');
+            loading.className = 'bin-loading';
+            loading.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Looking up BIN <b>${escapeHtmlSafe(bin)}</b>...`;
+            content.appendChild(loading);
+            const summary = document.getElementById('bin-info-summary');
+            if (summary) summary.style.display = 'none';
+        }
+
+        function renderBinError(bin, message, attempts) {
+            const content = document.getElementById('bin-info-content');
+            if (!content) return;
+            const summary = document.getElementById('bin-info-summary');
+            if (summary) summary.style.display = 'none';
+
+            const wrap = document.createElement('div');
+            wrap.className = 'bin-detail-card';
+            wrap.style.borderLeftColor = 'var(--danger-color)';
+            wrap.innerHTML = `
+                <div class="bin-detail-header">
+                    <div class="bin-detail-title">BIN ${escapeHtmlSafe(bin)} — lookup failed</div>
+                    <span class="bin-detail-pill" style="background:rgba(220,38,38,0.15); color:var(--danger-color);">
+                        <i class="fas fa-exclamation-triangle"></i> Error
+                    </span>
+                </div>
+                <div class="bin-detail-cell">
+                    <span class="bin-detail-label">Message</span>
+                    <span class="bin-detail-value">${escapeHtmlSafe(message)}</span>
+                </div>
+            `;
+
+            if (Array.isArray(attempts) && attempts.length) {
+                const footer = document.createElement('div');
+                footer.className = 'bin-detail-footer';
+                const label = document.createElement('b');
+                label.textContent = 'Providers tried:';
+                footer.appendChild(label);
+                attempts.forEach(attempt => {
+                    const chip = document.createElement('span');
+                    chip.className = `bin-provider-chip status-${attempt.status || 'error'}`;
+                    chip.innerHTML = `<i class="fas fa-circle"></i> ${escapeHtmlSafe(attempt.label || attempt.provider)} · ${escapeHtmlSafe(attempt.status || 'error')}${attempt.http_status ? ` (${attempt.http_status})` : ''}`;
+                    chip.title = attempt.message || '';
+                    footer.appendChild(chip);
+                });
+                wrap.appendChild(footer);
+            }
+
+            content.replaceChildren(wrap);
+        }
+
+        function titleize(value) {
+            if (!value) return '';
+            return String(value).trim()
+                .toLowerCase()
+                .split(/\s+/)
+                .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+                .join(' ');
+        }
+
+        function escapeHtmlSafe(value) {
+            if (value == null) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function schemeSlug(scheme) {
+            if (!scheme) return '';
+            const s = String(scheme).toLowerCase();
+            if (s.includes('visa')) return 'visa';
+            if (s.includes('master')) return 'mastercard';
+            if (s.includes('amex') || s.includes('american')) return 'amex';
+            if (s.includes('discover')) return 'discover';
+            if (s.includes('jcb')) return 'jcb';
+            if (s.includes('union')) return 'unionpay';
+            if (s.includes('diners')) return 'diners';
+            return '';
+        }
+
+        function renderBinDetail(payload) {
+            const { bin, detail, attempts, provider } = payload;
+            const content = document.getElementById('bin-info-content');
+            const summary = document.getElementById('bin-info-summary');
+            if (!content || !detail) return;
+
+            // Summary strip at the top.
+            document.getElementById('bin-info-bin').textContent = bin;
+            document.getElementById('bin-info-provider').textContent = provider || '-';
+            document.getElementById('bin-info-scheme').textContent = titleize(detail.scheme) || '-';
+            document.getElementById('bin-info-type').textContent = titleize(detail.type) || '-';
+            if (summary) summary.style.display = '';
+
+            const card = document.createElement('div');
+            card.className = 'bin-detail-card';
+
+            const header = document.createElement('div');
+            header.className = 'bin-detail-header';
+            const title = document.createElement('div');
+            title.className = 'bin-detail-title';
+            const flag = detail.country && detail.country.emoji ? detail.country.emoji : '💳';
+            title.innerHTML = `<span class="bin-detail-flag">${escapeHtmlSafe(flag)}</span> BIN ${escapeHtmlSafe(bin)}`;
+
+            const pill = document.createElement('span');
+            pill.className = 'bin-detail-pill';
+            const schemeName = titleize(detail.scheme) || 'Unknown';
+            pill.innerHTML = `<i class="fas fa-credit-card"></i> ${escapeHtmlSafe(schemeName)}`;
+
+            header.append(title, pill);
+            card.appendChild(header);
+
+            const grid = document.createElement('div');
+            grid.className = 'bin-detail-grid';
+
+            const addCell = (label, value, { linkHref, muted } = {}) => {
+                const cell = document.createElement('div');
+                cell.className = 'bin-detail-cell';
+                const lbl = document.createElement('span');
+                lbl.className = 'bin-detail-label';
+                lbl.textContent = label;
+                cell.appendChild(lbl);
+
+                if (linkHref && value) {
+                    const a = document.createElement('a');
+                    a.className = 'bin-detail-value';
+                    a.href = linkHref;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.textContent = value;
+                    cell.appendChild(a);
+                } else {
+                    const v = document.createElement('span');
+                    v.className = 'bin-detail-value' + (!value || muted ? ' muted' : '');
+                    v.textContent = value || '—';
+                    cell.appendChild(v);
+                }
+                return cell;
+            };
+
+            // Core issuer fields
+            grid.appendChild(addCell('Scheme', titleize(detail.scheme)));
+            grid.appendChild(addCell('Brand', detail.brand || detail.scheme ? (detail.brand || titleize(detail.scheme)) : null));
+            grid.appendChild(addCell('Type', titleize(detail.type)));
+            grid.appendChild(addCell('Category', titleize(detail.category)));
+            grid.appendChild(addCell('Bank', detail.bank && detail.bank.name ? titleize(detail.bank.name) : null));
+            const countryDisplay = detail.country ? [detail.country.name && titleize(detail.country.name), detail.country.alpha2 && `(${detail.country.alpha2})`].filter(Boolean).join(' ') : '';
+            grid.appendChild(addCell('Country', countryDisplay));
+            grid.appendChild(addCell('Currency', detail.country && detail.country.currency));
+
+            if (detail.bank && detail.bank.city) grid.appendChild(addCell('Bank city', titleize(detail.bank.city)));
+            if (detail.bank && detail.bank.phone) grid.appendChild(addCell('Bank phone', detail.bank.phone, { linkHref: `tel:${detail.bank.phone.replace(/[^+\d]/g, '')}` }));
+            if (detail.bank && detail.bank.url) {
+                const url = /^https?:/i.test(detail.bank.url) ? detail.bank.url : `https://${detail.bank.url}`;
+                grid.appendChild(addCell('Bank URL', detail.bank.url, { linkHref: url }));
+            }
+            if (typeof detail.length === 'number') grid.appendChild(addCell('PAN length', String(detail.length)));
+            if (typeof detail.luhn === 'boolean') grid.appendChild(addCell('Luhn', detail.luhn ? 'Yes' : 'No'));
+            if (typeof detail.prepaid === 'boolean') grid.appendChild(addCell('Prepaid', detail.prepaid ? 'Yes' : 'No'));
+
+            // Scheme color accent - apply to the first cell (Scheme).
+            const slug = schemeSlug(detail.scheme);
+            if (slug && grid.firstElementChild) {
+                grid.firstElementChild.classList.add(`scheme-${slug}`);
+            }
+
+            card.appendChild(grid);
+
+            // Provider trail footer
+            if (Array.isArray(attempts) && attempts.length) {
+                const footer = document.createElement('div');
+                footer.className = 'bin-detail-footer';
+                const label = document.createElement('b');
+                label.textContent = 'Provider chain:';
+                footer.appendChild(label);
+                attempts.forEach(attempt => {
+                    const chip = document.createElement('span');
+                    chip.className = `bin-provider-chip status-${attempt.status || 'error'}`;
+                    const statusIcon = attempt.status === 'ok' ? 'fa-check-circle' : (attempt.status === 'rate_limited' ? 'fa-clock' : 'fa-times-circle');
+                    chip.innerHTML = `<i class="fas ${statusIcon}"></i> ${escapeHtmlSafe(attempt.label || attempt.provider)}${attempt.http_status ? ` (${attempt.http_status})` : ''} · ${attempt.duration_ms}ms`;
+                    chip.title = attempt.message || attempt.status || '';
+                    footer.appendChild(chip);
+                });
+                card.appendChild(footer);
+            }
+
+            content.replaceChildren(card);
+        }
+
+        async function runBinLookup() {
+            const rawInput = document.getElementById('bin').value;
+            const bin = extractBinPrefix(rawInput);
+            if (!bin || bin.length < 6) {
+                alert('Enter at least 6 leading BIN digits (the part before the first `x`).');
+                return;
+            }
+
+            // Switch to the BIN Info tab so the user sees progress.
+            const tab = document.getElementById('bin-info-tab');
+            if (tab) tab.click();
+
+            const btn = document.getElementById('bin-lookup-btn');
+            if (btn) btn.disabled = true;
+
+            if (binLookupController) binLookupController.abort();
+            binLookupController = new AbortController();
+
+            renderBinLoading(bin);
+
+            try {
+                const response = await fetchWithTimeout(`/api/bin-lookup?bin=${encodeURIComponent(bin)}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' },
+                    signal: binLookupController.signal,
+                }, BIN_LOOKUP_TIMEOUT_MS);
+
+                const payload = await response.json().catch(() => null);
+                if (!response.ok || !payload || !payload.ok) {
+                    const msg = (payload && payload.error) || `HTTP ${response.status}`;
+                    renderBinError(bin, msg, payload && payload.attempts);
+                    return;
+                }
+                renderBinDetail(payload);
+            } catch (err) {
+                const msg = err && err.name === 'AbortError' ? 'Request aborted' : (err.message || 'Network error');
+                renderBinError(bin, msg, []);
+            } finally {
+                if (btn) btn.disabled = false;
+            }
         }
 
         /** Available months for random generation */
