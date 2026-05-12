@@ -37,6 +37,22 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 - First provider with a successful response wins; the provider chain is displayed so you can see which source answered and how long each call took.
 - Returns normalized issuer profile: scheme, type (credit/debit/prepaid), category, brand, bank (name / url / phone / city), country (with flag), and currency.
 
+## BIN Library
+
+- Click the <i class="fas fa-book"></i> icon next to the BIN Pattern field to open a curated BIN picker modal.
+- 134 publicly-documented BINs organized by scheme (Visa, MasterCard, Amex, Discover, JCB, UnionPay) with live search across BIN, issuer, country, tier, and note.
+- Coverage: US majors (Chase, BoA, Citi, Wells, Cap One, Amex), UK/EU banks (HSBC, Barclays, BNP, Revolut, Monzo, N26, Wise), Asian banks (DBS, OCBC, UOB, Mizuho, ICBC, HSBC HK), 27 Indonesian bank BINs (BCA, Mandiri, BRI, BNI, CIMB, Permata), plus popular Stripe/Adyen test BINs.
+- Click any entry to auto-fill the BIN Pattern field with padding to the scheme's PAN length.
+- Data compiled from open-source BIN datasets (iannuttall/binlist-data, binlist/data, venelinkochev/bin-list-data) + public payment-network documentation. For test/dev use only.
+
+## BIN Library
+
+- Click the book icon next to the BIN Pattern field to open a searchable library of 134+ curated BINs.
+- Covers major issuers from the US (Chase, BoA, Citi, Amex, Discover), UK (HSBC, Barclays, Monzo, Starling), EU (Deutsche Bank, N26, Revolut, Wise), Asia (DBS, OCBC, UOB, Mizuho, JCB), and Indonesia (BCA, Mandiri, BRI, BNI, CIMB Niaga, Permata).
+- Filter by scheme (Visa / MasterCard / Amex / Discover / JCB / UnionPay), search by BIN, bank name, country, tier, or note.
+- Click any entry to auto-fill the BIN Pattern field, padded to the correct PAN length for the scheme.
+- Data file: [`data/bin-library.json`](data/bin-library.json). Sources: `iannuttall/binlist-data`, `binlist/data`, `venelinkochev/bin-list-data`, Wikipedia IIN list, Stripe test docs.
+
 ## Local Development
 
 ```bash

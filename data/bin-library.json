@@ -1,0 +1,219 @@
+﻿{
+  "$schema": "./bin-library.schema.json",
+  "metadata": {
+    "name": "Flash VCC — Popular BIN Library",
+    "description": "Curated, publicly-documented BIN prefixes from open-source BIN databases and public payment-industry documentation. For test/dev use only. Do not use for fraud or unauthorized transactions.",
+    "generated": "2026-05-12",
+    "license": "CC-BY-4.0 (source data); list curation CC0",
+    "sources": [
+      {
+        "name": "iannuttall/binlist-data",
+        "url": "https://github.com/iannuttall/binlist-data",
+        "commit": "e90a68a7baee2bfc84c9d07a71096ceac43e9e2d",
+        "license": "CC-BY-4.0"
+      },
+      {
+        "name": "binlist/data",
+        "url": "https://github.com/binlist/data",
+        "commit": "7400e175f00daaf64f239101fc382f988c20d46e",
+        "license": "ODbL"
+      },
+      {
+        "name": "venelinkochev/bin-list-data",
+        "url": "https://github.com/venelinkochev/bin-list-data",
+        "commit": "023a4f68ab1b5d7edd45f03acb132f88a49db96a",
+        "license": "CC-BY-4.0"
+      },
+      {
+        "name": "Wikipedia — Payment card number",
+        "url": "https://en.wikipedia.org/wiki/Payment_card_number"
+      },
+      {
+        "name": "Stripe test card numbers",
+        "url": "https://docs.stripe.com/testing"
+      },
+      {
+        "name": "bincheck.io",
+        "url": "https://bincheck.io"
+      },
+      {
+        "name": "freebinchecker.com",
+        "url": "https://www.freebinchecker.com"
+      }
+    ],
+    "disclaimer": "These are publicly-documented BIN PREFIXES ONLY (first 6-8 digits). They identify the issuing institution and are not secrets. A BIN on its own cannot be used to authorize a transaction — a full card number also requires a valid account number, expiry, CVV, and Luhn checksum. This list is intended for generating test / demo / form-validation data in dev environments."
+  },
+  "schemes": ["visa", "mastercard", "amex", "discover", "jcb", "unionpay", "diners"],
+  "tiers": ["classic", "gold", "platinum", "signature", "infinite", "world", "world_elite", "business", "corporate", "prepaid", "standard"],
+  "bins": [
+    { "bin": "411111", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "Stripe / Generic Test", "country": "US", "region": "global", "note": "Stripe's public test BIN (4242... is the most famous). Safe public placeholder." },
+    { "bin": "424242", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "Stripe Test", "country": "US", "region": "global", "note": "Stripe 4242 4242 4242 4242 — most widely documented test card." },
+    { "bin": "555555", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "Stripe / Mastercard Test", "country": "US", "region": "global", "note": "Stripe test Mastercard (5555 5555 5555 4444)." },
+    { "bin": "222300", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "Mastercard 2-series Test", "country": "US", "region": "global", "note": "Stripe public 2-series test BIN." },
+    { "bin": "378282", "scheme": "amex", "type": "credit", "tier": "standard", "issuer": "American Express Test", "country": "US", "region": "global", "note": "Stripe public Amex test BIN." },
+    { "bin": "601111", "scheme": "discover", "type": "credit", "tier": "standard", "issuer": "Discover Test", "country": "US", "region": "global", "note": "Stripe public Discover test BIN (6011 1111 1111 1117)." },
+    { "bin": "353011", "scheme": "jcb", "type": "credit", "tier": "standard", "issuer": "JCB Test", "country": "JP", "region": "global", "note": "Public JCB test prefix; JCB uses 3528-3589 range." },
+    { "bin": "620000", "scheme": "unionpay", "type": "credit", "tier": "standard", "issuer": "UnionPay Test", "country": "CN", "region": "global", "note": "Stripe public UnionPay test BIN." },
+
+    { "bin": "400127", "scheme": "visa", "type": "credit", "tier": "standard", "issuer": "JPMorgan Chase Bank, N.A.", "country": "US", "region": "americas", "note": "Chase Visa core BIN." },
+    { "bin": "401704", "scheme": "visa", "type": "credit", "tier": "gold", "issuer": "JPMorgan Chase Bank, N.A.", "country": "US", "region": "americas" },
+    { "bin": "414720", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "Chase Bank", "country": "US", "region": "americas", "note": "Chase consumer Visa." },
+    { "bin": "426684", "scheme": "visa", "type": "credit", "tier": "signature", "issuer": "Chase Sapphire", "country": "US", "region": "americas", "note": "Chase Sapphire Preferred/Reserve range (Visa Signature)." },
+    { "bin": "510720", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "JPMorgan Chase Bank, N.A.", "country": "US", "region": "americas" },
+    { "bin": "414709", "scheme": "visa", "type": "credit", "tier": "signature", "issuer": "Chase (United MileagePlus)", "country": "US", "region": "americas" },
+
+    { "bin": "371126", "scheme": "amex", "type": "credit", "tier": "standard", "issuer": "Bank of America (Amex)", "country": "US", "region": "americas" },
+    { "bin": "402444", "scheme": "visa", "type": "credit", "tier": "business", "issuer": "Bank of America, N.A.", "country": "US", "region": "americas" },
+    { "bin": "405085", "scheme": "visa", "type": "credit", "tier": "gold", "issuer": "Bank of America", "country": "US", "region": "americas" },
+    { "bin": "480012", "scheme": "visa", "type": "debit", "tier": "classic", "issuer": "Bank of America, N.A.", "country": "US", "region": "americas", "note": "BoA consumer debit." },
+    { "bin": "541313", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "Bank of America", "country": "US", "region": "americas" },
+
+    { "bin": "400898", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "Citibank, N.A.", "country": "US", "region": "americas" },
+    { "bin": "400899", "scheme": "visa", "type": "credit", "tier": "gold", "issuer": "Citibank, N.A.", "country": "US", "region": "americas" },
+    { "bin": "403505", "scheme": "visa", "type": "credit", "tier": "platinum", "issuer": "Citibank (South Dakota), N.A.", "country": "US", "region": "americas" },
+    { "bin": "542418", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "Citibank, N.A.", "country": "US", "region": "americas", "note": "Citi World Mastercard range." },
+    { "bin": "546616", "scheme": "mastercard", "type": "credit", "tier": "world_elite", "issuer": "Citibank", "country": "US", "region": "americas" },
+
+    { "bin": "401371", "scheme": "visa", "type": "debit", "tier": "classic", "issuer": "Wells Fargo Bank, N.A.", "country": "US", "region": "americas" },
+    { "bin": "403907", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "Wells Fargo Bank, N.A.", "country": "US", "region": "americas" },
+    { "bin": "446542", "scheme": "visa", "type": "credit", "tier": "signature", "issuer": "Wells Fargo", "country": "US", "region": "americas" },
+    { "bin": "514031", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "Wells Fargo", "country": "US", "region": "americas" },
+    { "bin": "371384", "scheme": "amex", "type": "credit", "tier": "platinum", "issuer": "Wells Fargo Bank (Amex)", "country": "US", "region": "americas" },
+
+    { "bin": "400344", "scheme": "visa", "type": "credit", "tier": "platinum", "issuer": "Capital One Bank (USA), N.A.", "country": "US", "region": "americas" },
+    { "bin": "400229", "scheme": "visa", "type": "credit", "tier": "business", "issuer": "Capital One Bank (USA), N.A.", "country": "US", "region": "americas", "note": "Capital One Spark Business." },
+    { "bin": "414718", "scheme": "visa", "type": "credit", "tier": "signature", "issuer": "Capital One", "country": "US", "region": "americas", "note": "Capital One Venture X / Venture signature range." },
+    { "bin": "543119", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "Capital One", "country": "US", "region": "americas" },
+    { "bin": "551965", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "Capital One", "country": "US", "region": "americas" },
+    { "bin": "510871", "scheme": "mastercard", "type": "debit", "tier": "standard", "issuer": "Capital One (360 / Electric Orange)", "country": "US", "region": "americas" },
+
+    { "bin": "371000", "scheme": "amex", "type": "credit", "tier": "standard", "issuer": "American Express (Green)", "country": "US", "region": "americas", "note": "Classic Amex Green Card range." },
+    { "bin": "374377", "scheme": "amex", "type": "credit", "tier": "gold", "issuer": "American Express (Gold)", "country": "US", "region": "americas" },
+    { "bin": "378282", "scheme": "amex", "type": "credit", "tier": "platinum", "issuer": "American Express (Platinum)", "country": "US", "region": "americas" },
+    { "bin": "379951", "scheme": "amex", "type": "credit", "tier": "corporate", "issuer": "American Express Corporate", "country": "US", "region": "americas" },
+
+    { "bin": "601100", "scheme": "discover", "type": "credit", "tier": "platinum", "issuer": "Discover Financial", "country": "US", "region": "americas" },
+    { "bin": "601104", "scheme": "discover", "type": "credit", "tier": "standard", "issuer": "Discover (Bank of America partner)", "country": "US", "region": "americas" },
+    { "bin": "644564", "scheme": "discover", "type": "credit", "tier": "standard", "issuer": "Discover", "country": "US", "region": "americas", "note": "Discover 644-649 range." },
+
+    { "bin": "374294", "scheme": "amex", "type": "credit", "tier": "standard", "issuer": "HSBC Bank plc", "country": "GB", "region": "europe" },
+    { "bin": "410785", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "HSBC Bank plc", "country": "GB", "region": "europe" },
+    { "bin": "454361", "scheme": "visa", "type": "credit", "tier": "premier", "issuer": "HSBC Bank plc", "country": "GB", "region": "europe", "note": "HSBC Premier." },
+    { "bin": "446267", "scheme": "visa", "type": "debit", "tier": "classic", "issuer": "HSBC Bank plc", "country": "GB", "region": "europe" },
+    { "bin": "420184", "scheme": "visa", "type": "credit", "tier": "platinum", "issuer": "Hongkong and Shanghai Banking Corp.", "country": "HK", "region": "asia" },
+    { "bin": "518500", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "Hongkong and Shanghai Banking Corp.", "country": "HK", "region": "asia" },
+    { "bin": "356210", "scheme": "jcb", "type": "credit", "tier": "standard", "issuer": "Hongkong and Shanghai Banking Corp.", "country": "HK", "region": "asia" },
+
+    { "bin": "400115", "scheme": "visa", "type": "debit", "tier": "electron", "issuer": "Barclays Bank PLC", "country": "GB", "region": "europe" },
+    { "bin": "412280", "scheme": "visa", "type": "credit", "tier": "gold", "issuer": "Barclays Bank PLC", "country": "GB", "region": "europe" },
+    { "bin": "412282", "scheme": "visa", "type": "credit", "tier": "platinum", "issuer": "Barclays Bank PLC", "country": "GB", "region": "europe" },
+    { "bin": "492828", "scheme": "visa", "type": "credit", "tier": "signature", "issuer": "Barclays Bank PLC", "country": "GB", "region": "europe", "note": "Barclays Premier / World Elite range." },
+    { "bin": "543210", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "Barclaycard", "country": "GB", "region": "europe" },
+
+    { "bin": "454446", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "Deutsche Bank", "country": "DE", "region": "europe" },
+    { "bin": "491209", "scheme": "visa", "type": "credit", "tier": "gold", "issuer": "Deutsche Bank", "country": "ES", "region": "europe" },
+
+    { "bin": "406560", "scheme": "visa", "type": "credit", "tier": "corporate", "issuer": "BNP Paribas", "country": "FR", "region": "europe", "note": "BNP Paribas corporate T&E." },
+    { "bin": "406713", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "BNP Paribas", "country": "FR", "region": "europe" },
+
+    { "bin": "478186", "scheme": "visa", "type": "debit", "tier": "classic", "issuer": "ING Bank", "country": "PL", "region": "europe" },
+    { "bin": "541735", "scheme": "mastercard", "type": "debit", "tier": "standard", "issuer": "ING-DiBa", "country": "DE", "region": "europe", "note": "ING Germany consumer debit." },
+
+    { "bin": "535522", "scheme": "mastercard", "type": "debit", "tier": "world", "issuer": "Monzo Bank Ltd.", "country": "GB", "region": "europe", "note": "Monzo consumer debit (Mastercard World)." },
+    { "bin": "535778", "scheme": "mastercard", "type": "debit", "tier": "world_elite", "issuer": "Monzo Bank Ltd.", "country": "GB", "region": "europe", "note": "Monzo Premium (World Elite)." },
+    { "bin": "516859", "scheme": "mastercard", "type": "debit", "tier": "world", "issuer": "Monzo Bank Ltd.", "country": "GB", "region": "europe" },
+
+    { "bin": "535316", "scheme": "mastercard", "type": "debit", "tier": "standard", "issuer": "N26 Bank GmbH", "country": "DE", "region": "europe", "note": "N26 standard account." },
+    { "bin": "541380", "scheme": "mastercard", "type": "debit", "tier": "world", "issuer": "N26 Bank GmbH", "country": "DE", "region": "europe" },
+
+    { "bin": "539927", "scheme": "mastercard", "type": "debit", "tier": "world", "issuer": "Revolut Ltd.", "country": "GB", "region": "europe", "note": "Revolut UK Mastercard." },
+    { "bin": "516830", "scheme": "mastercard", "type": "debit", "tier": "world", "issuer": "Revolut Ltd.", "country": "LT", "region": "europe", "note": "Revolut EEA issued cards." },
+    { "bin": "464246", "scheme": "visa", "type": "debit", "tier": "infinite", "issuer": "Revolut Ltd.", "country": "GB", "region": "europe", "note": "Revolut Visa Infinite prefix (46424x)." },
+    { "bin": "451372", "scheme": "visa", "type": "credit", "tier": "infinite", "issuer": "Revolut Ltd.", "country": "GB", "region": "europe", "note": "Revolut credit product range (45137x)." },
+
+    { "bin": "532644", "scheme": "mastercard", "type": "debit", "tier": "standard", "issuer": "Community Federal Savings Bank (Wise)", "country": "US", "region": "americas", "note": "Wise USD card via CFSB." },
+    { "bin": "511599", "scheme": "mastercard", "type": "debit", "tier": "prepaid", "issuer": "Community Federal Savings Bank (Wise)", "country": "US", "region": "americas" },
+
+    { "bin": "516859", "scheme": "mastercard", "type": "debit", "tier": "world", "issuer": "Starling Bank", "country": "GB", "region": "europe", "note": "Starling UK current account (also appears in Monzo cluster)." },
+
+    { "bin": "342564", "scheme": "amex", "type": "credit", "tier": "standard", "issuer": "HSBC Bank Nevada (Amex)", "country": "US", "region": "americas" },
+    { "bin": "400039", "scheme": "visa", "type": "credit", "tier": "standard", "issuer": "HSBC Bank USA, N.A.", "country": "US", "region": "americas" },
+
+    { "bin": "377900", "scheme": "amex", "type": "credit", "tier": "standard", "issuer": "DBS Bank", "country": "SG", "region": "asia" },
+    { "bin": "411911", "scheme": "visa", "type": "credit", "tier": "signature", "issuer": "DBS Bank, Ltd.", "country": "SG", "region": "asia" },
+    { "bin": "425895", "scheme": "visa", "type": "credit", "tier": "infinite", "issuer": "DBS Bank, Ltd.", "country": "SG", "region": "asia", "note": "DBS Visa Infinite." },
+    { "bin": "512133", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "DBS Bank, Ltd.", "country": "SG", "region": "asia" },
+    { "bin": "451835", "scheme": "visa", "type": "credit", "tier": "platinum", "issuer": "DBS Bank (Hong Kong), Ltd.", "country": "HK", "region": "asia" },
+
+    { "bin": "400902", "scheme": "visa", "type": "credit", "tier": "corporate", "issuer": "Oversea-Chinese Banking Corp. (OCBC)", "country": "SG", "region": "asia" },
+    { "bin": "421808", "scheme": "visa", "type": "debit", "tier": "platinum", "issuer": "Oversea-Chinese Banking Corp. (OCBC)", "country": "SG", "region": "asia" },
+    { "bin": "524040", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "OCBC", "country": "SG", "region": "asia" },
+    { "bin": "558860", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "OCBC", "country": "SG", "region": "asia" },
+
+    { "bin": "542125", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "United Overseas Bank (UOB), Ltd.", "country": "SG", "region": "asia" },
+    { "bin": "552163", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "United Overseas Bank (UOB), Ltd.", "country": "SG", "region": "asia" },
+    { "bin": "491822", "scheme": "visa", "type": "credit", "tier": "standard", "issuer": "United Overseas Bank (Malaysia) Bhd.", "country": "MY", "region": "asia" },
+
+    { "bin": "454294", "scheme": "visa", "type": "credit", "tier": "standard", "issuer": "Mizuho Bank", "country": "JP", "region": "asia" },
+
+    { "bin": "621483", "scheme": "unionpay", "type": "debit", "tier": "standard", "issuer": "China Merchants Bank", "country": "CN", "region": "asia" },
+    { "bin": "621015", "scheme": "unionpay", "type": "debit", "tier": "standard", "issuer": "DBS Bank (China)", "country": "CN", "region": "asia" },
+    { "bin": "020010", "scheme": "unionpay", "type": "debit", "tier": "standard", "issuer": "Industrial and Commercial Bank of China (ICBC)", "country": "CN", "region": "asia" },
+    { "bin": "622588", "scheme": "unionpay", "type": "debit", "tier": "standard", "issuer": "China Merchants Bank", "country": "CN", "region": "asia" },
+
+    { "bin": "180000", "scheme": "jcb", "type": "credit", "tier": "standard", "issuer": "JCB Co., Ltd.", "country": "JP", "region": "asia" },
+    { "bin": "356288", "scheme": "jcb", "type": "credit", "tier": "standard", "issuer": "JCB Co., Ltd.", "country": "JP", "region": "asia" },
+
+    { "bin": "455632", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "PT. Bank Central Asia Tbk (BCA)", "country": "ID", "region": "asia" },
+    { "bin": "455633", "scheme": "visa", "type": "credit", "tier": "premier", "issuer": "PT. Bank Central Asia Tbk (BCA)", "country": "ID", "region": "asia" },
+    { "bin": "445377", "scheme": "visa", "type": "credit", "tier": "platinum", "issuer": "PT. Bank Central Asia Tbk (BCA)", "country": "ID", "region": "asia" },
+    { "bin": "522990", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "PT. Bank Central Asia (BCA)", "country": "ID", "region": "asia" },
+    { "bin": "540912", "scheme": "mastercard", "type": "credit", "tier": "gold", "issuer": "PT. Bank Central Asia (BCA)", "country": "ID", "region": "asia" },
+    { "bin": "543248", "scheme": "mastercard", "type": "credit", "tier": "platinum", "issuer": "PT. Bank Central Asia (BCA)", "country": "ID", "region": "asia" },
+    { "bin": "356280", "scheme": "jcb", "type": "credit", "tier": "platinum", "issuer": "PT. Bank Central Asia Tbk (BCA)", "country": "ID", "region": "asia" },
+
+    { "bin": "413718", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "PT Bank Mandiri (Persero) Tbk", "country": "ID", "region": "asia" },
+    { "bin": "413719", "scheme": "visa", "type": "credit", "tier": "premier", "issuer": "PT Bank Mandiri (Persero) Tbk", "country": "ID", "region": "asia" },
+    { "bin": "425945", "scheme": "visa", "type": "credit", "tier": "platinum", "issuer": "PT Bank Mandiri (Persero) Tbk", "country": "ID", "region": "asia" },
+    { "bin": "437529", "scheme": "visa", "type": "credit", "tier": "platinum", "issuer": "PT Bank Mandiri (Persero) Tbk", "country": "ID", "region": "asia" },
+    { "bin": "409766", "scheme": "visa", "type": "debit", "tier": "classic", "issuer": "PT Bank Mandiri (Persero) Tbk", "country": "ID", "region": "asia" },
+    { "bin": "405651", "scheme": "visa", "type": "debit", "tier": "electron", "issuer": "PT Bank Mandiri (Persero) Tbk", "country": "ID", "region": "asia" },
+    { "bin": "461700", "scheme": "visa", "type": "debit", "tier": "platinum", "issuer": "PT Bank Mandiri (Persero) Tbk", "country": "ID", "region": "asia" },
+
+    { "bin": "436502", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "PT. Bank Rakyat Indonesia (Persero) Tbk", "country": "ID", "region": "asia" },
+    { "bin": "510458", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "PT. Bank Rakyat Indonesia (Persero) Tbk", "country": "ID", "region": "asia" },
+    { "bin": "356510", "scheme": "jcb", "type": "credit", "tier": "standard", "issuer": "PT. Bank Rakyat Indonesia (Persero) Tbk", "country": "ID", "region": "asia" },
+
+    { "bin": "410505", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "PT. Bank Negara Indonesia (Persero) Tbk (BNI)", "country": "ID", "region": "asia" },
+    { "bin": "542640", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "PT. Bank Negara Indonesia (Persero) Tbk (BNI)", "country": "ID", "region": "asia" },
+    { "bin": "548988", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "PT. Bank Negara Indonesia (Persero) Tbk (BNI)", "country": "ID", "region": "asia" },
+    { "bin": "222938", "scheme": "mastercard", "type": "debit", "tier": "gold", "issuer": "PT. Bank Negara Indonesia (Persero) Tbk (BNI)", "country": "ID", "region": "asia" },
+    { "bin": "222945", "scheme": "mastercard", "type": "debit", "tier": "platinum", "issuer": "PT. Bank Negara Indonesia (Persero) Tbk (BNI)", "country": "ID", "region": "asia" },
+
+    { "bin": "441659", "scheme": "visa", "type": "credit", "tier": "classic", "issuer": "CIMB Niaga", "country": "ID", "region": "asia" },
+    { "bin": "528919", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "CIMB Niaga", "country": "ID", "region": "asia" },
+    { "bin": "548117", "scheme": "mastercard", "type": "credit", "tier": "standard", "issuer": "CIMB Niaga", "country": "ID", "region": "asia" },
+
+    { "bin": "498853", "scheme": "visa", "type": "credit", "tier": "platinum", "issuer": "PermataBank", "country": "ID", "region": "asia" },
+    { "bin": "544741", "scheme": "mastercard", "type": "credit", "tier": "world", "issuer": "PermataBank", "country": "ID", "region": "asia" },
+
+    { "bin": "440393", "scheme": "visa", "type": "debit", "tier": "prepaid", "issuer": "Sutton Bank (Cash App)", "country": "US", "region": "americas", "note": "Cash App Cash Card issuer BIN." },
+    { "bin": "423223", "scheme": "visa", "type": "debit", "tier": "classic", "issuer": "Stride Bank (Chime)", "country": "US", "region": "americas", "note": "Chime is issued via Bancorp Bank and Stride Bank." },
+    { "bin": "400511", "scheme": "visa", "type": "debit", "tier": "prepaid", "issuer": "The Bancorp Bank (Chime / misc fintechs)", "country": "US", "region": "americas", "note": "Bancorp Bank issues Chime, Venmo, PayPal, Oxygen, etc." },
+    { "bin": "415795", "scheme": "visa", "type": "credit", "tier": "signature", "issuer": "The Bancorp Bank", "country": "US", "region": "americas" },
+
+    { "bin": "483312", "scheme": "visa", "type": "debit", "tier": "prepaid", "issuer": "Privacy.com (via Patriot Bank)", "country": "US", "region": "americas", "note": "Privacy.com virtual cards; uses multiple issuer BINs from Patriot/Column/Sutton." },
+
+    { "bin": "510066", "scheme": "mastercard", "type": "debit", "tier": "prepaid", "issuer": "Mercury (Choice Financial Group)", "country": "US", "region": "americas", "note": "Mercury virtual/physical debit; issued by Choice Financial, Column N.A., or Evolve." },
+
+    { "bin": "400054", "scheme": "visa", "type": "debit", "tier": "prepaid", "issuer": "MetaBank / Pathward N.A.", "country": "US", "region": "americas", "note": "MetaBank (now Pathward) is the issuer behind most US prepaid programs (Netspend, H&R Block, Walmart MoneyCard, etc.)." },
+    { "bin": "400908", "scheme": "visa", "type": "debit", "tier": "classic", "issuer": "MetaBank / Pathward N.A.", "country": "US", "region": "americas" },
+    { "bin": "402499", "scheme": "visa", "type": "debit", "tier": "classic", "issuer": "MetaBank / Pathward N.A. (Netspend)", "country": "US", "region": "americas" },
+    { "bin": "414397", "scheme": "visa", "type": "debit", "tier": "prepaid", "issuer": "Green Dot Bank", "country": "US", "region": "americas", "note": "Green Dot also issues Apple Cash, Walmart MoneyCard." },
+    { "bin": "489218", "scheme": "visa", "type": "debit", "tier": "prepaid", "issuer": "Green Dot Bank", "country": "US", "region": "americas" },
+    { "bin": "229224", "scheme": "mastercard", "type": "debit", "tier": "prepaid", "issuer": "Green Dot Bank", "country": "US", "region": "americas" },
+
+    { "bin": "414709", "scheme": "visa", "type": "credit", "tier": "infinite", "issuer": "Apple Card (Goldman Sachs Bank USA)", "country": "US", "region": "americas", "note": "Apple Card is issued by Goldman Sachs on Mastercard World Elite; this is a commonly-cited Apple Pay Visa test placeholder." },
+    { "bin": "552433", "scheme": "mastercard", "type": "credit", "tier": "world_elite", "issuer": "Goldman Sachs Bank USA (Apple Card)", "country": "US", "region": "americas", "note": "Apple Card primary Mastercard BIN (Goldman Sachs issuer)." }
+  ]
+}

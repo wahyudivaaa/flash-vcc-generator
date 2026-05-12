@@ -1086,6 +1086,355 @@
             color: var(--primary-color);
         }
 
+        /* ======================= BIN Library Modal ======================= */
+
+        .bin-library-modal {
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background: var(--surface-color);
+            color: var(--dark-color);
+        }
+
+        .dark-mode .bin-library-modal {
+            background: #171717;
+            border-color: #343126;
+            color: var(--light-color);
+        }
+
+        .bin-library-modal .modal-header,
+        .bin-library-modal .modal-footer {
+            border-color: var(--border-color);
+        }
+
+        .dark-mode .bin-library-modal .modal-header,
+        .dark-mode .bin-library-modal .modal-footer {
+            border-color: #343126;
+        }
+
+        .bin-library-modal .btn-close {
+            filter: none;
+        }
+
+        .dark-mode .bin-library-modal .btn-close {
+            filter: invert(1) grayscale(1) brightness(1.4);
+        }
+
+        .bin-library-count {
+            display: inline-block;
+            padding: 0.15rem 0.55rem;
+            margin-left: 0.5rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: var(--primary-color);
+            color: var(--dark-color);
+        }
+
+        .bin-library-body {
+            padding: 0.75rem 1rem 1rem;
+        }
+
+        .bin-library-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            padding-bottom: 0.6rem;
+            background: var(--surface-color);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .dark-mode .bin-library-toolbar {
+            background: #171717;
+            border-bottom-color: #343126;
+        }
+
+        .bin-library-search {
+            position: relative;
+            margin-bottom: 0.6rem;
+        }
+
+        .bin-library-search .fa-search {
+            position: absolute;
+            left: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            pointer-events: none;
+        }
+
+        .bin-library-search input.form-control {
+            padding-left: 2.25rem;
+            padding-right: 2.25rem;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .bin-library-clear {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--secondary-color);
+            padding: 0.25rem 0.45rem;
+            border-radius: 999px;
+            cursor: pointer;
+        }
+
+        .bin-library-clear:hover {
+            background: rgba(21, 21, 21, 0.06);
+            color: var(--dark-color);
+        }
+
+        .dark-mode .bin-library-clear:hover {
+            background: rgba(248, 243, 223, 0.1);
+            color: var(--light-color);
+        }
+
+        .bin-library-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .bin-filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.65rem;
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            background: transparent;
+            color: var(--secondary-color);
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition-fast);
+        }
+
+        .dark-mode .bin-filter-chip {
+            border-color: #343126;
+            color: var(--secondary-color);
+        }
+
+        .bin-filter-chip:hover {
+            border-color: var(--primary-color);
+            color: var(--dark-color);
+        }
+
+        .bin-filter-chip.active {
+            background: var(--primary-color);
+            color: var(--dark-color);
+            border-color: var(--primary-color);
+        }
+
+        .bin-filter-chip .bin-filter-count {
+            font-size: 0.65rem;
+            opacity: 0.7;
+        }
+
+        .bin-library-hint {
+            font-size: 0.76rem;
+            color: var(--secondary-color);
+            margin: 0.25rem 0 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--border-radius-sm);
+            background: rgba(245, 183, 0, 0.08);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .dark-mode .bin-library-hint {
+            background: rgba(245, 183, 0, 0.12);
+        }
+
+        .bin-library-hint code {
+            background: rgba(21, 21, 21, 0.08);
+            padding: 0 0.25rem;
+            border-radius: 3px;
+            font-size: 0.72rem;
+        }
+
+        .dark-mode .bin-library-hint code {
+            background: rgba(248, 243, 223, 0.1);
+        }
+
+        .bin-library-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .bin-library-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 2rem 1rem;
+            color: var(--secondary-color);
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .bin-library-loading i {
+            color: var(--primary-color);
+        }
+
+        .bin-library-empty {
+            padding: 2rem 1rem;
+            text-align: center;
+            color: var(--secondary-color);
+            font-size: 0.85rem;
+        }
+
+        .bin-library-group {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .bin-library-group-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--secondary-color);
+            margin-bottom: 0.45rem;
+            padding-bottom: 0.35rem;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .dark-mode .bin-library-group-title {
+            border-bottom-color: #343126;
+        }
+
+        .bin-library-group-title .bin-library-group-count {
+            margin-left: auto;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            opacity: 0.8;
+        }
+
+        .bin-library-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .bin-library-card {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.65rem 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            background: var(--surface-color);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-align: left;
+            position: relative;
+        }
+
+        .dark-mode .bin-library-card {
+            background: #1a1a1a;
+            border-color: #343126;
+        }
+
+        .bin-library-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .bin-library-card:focus-visible {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .bin-library-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bin-library-card-bin {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            letter-spacing: 0.02em;
+        }
+
+        .bin-library-card-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+            padding: 0.1rem 0.4rem;
+            border-radius: 999px;
+            font-size: 0.62rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .bin-library-card-type.type-credit { background: rgba(15, 159, 110, 0.15); color: var(--success-color); }
+        .bin-library-card-type.type-debit { background: rgba(0, 194, 255, 0.15); color: var(--accent-color); }
+        .bin-library-card-type.type-prepaid { background: rgba(249, 115, 22, 0.15); color: var(--warning-color); }
+        .bin-library-card-type.type-charge { background: rgba(245, 183, 0, 0.18); color: var(--primary-hover); }
+
+        .bin-library-card-issuer {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bin-library-card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem 0.6rem;
+            font-size: 0.68rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .bin-library-card-meta .bin-meta-flag {
+            margin-right: 0.2rem;
+        }
+
+        .bin-library-card-note {
+            font-size: 0.68rem;
+            color: var(--secondary-color);
+            font-style: italic;
+            line-height: 1.3;
+            margin-top: 0.15rem;
+        }
+
+        .bin-library-card.scheme-visa       { border-left: 3px solid #1a1f71; }
+        .bin-library-card.scheme-mastercard { border-left: 3px solid #eb001b; }
+        .bin-library-card.scheme-amex       { border-left: 3px solid #2671b8; }
+        .bin-library-card.scheme-discover   { border-left: 3px solid #f58320; }
+        .bin-library-card.scheme-jcb        { border-left: 3px solid #0e4c96; }
+        .bin-library-card.scheme-unionpay   { border-left: 3px solid #d2232a; }
+        .bin-library-card.scheme-diners     { border-left: 3px solid #0079be; }
+
+        .bin-library-footer {
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 575.98px) {
+            .bin-library-items {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .accordion {
             border-radius: var(--border-radius);
             overflow: hidden;
@@ -1419,8 +1768,11 @@
                             <button class="btn btn-outline-warning" type="button" onclick="runBinLookup()" id="bin-lookup-btn" title="Live BIN lookup (bank, country, brand)">
                                 <i class="fas fa-search-dollar"></i>
                             </button>
+                            <button class="btn btn-outline-info" type="button" onclick="openBinLibrary()" id="bin-library-btn" title="Browse curated BIN library (ready-to-use BINs)" data-bs-toggle="modal" data-bs-target="#binLibraryModal">
+                                <i class="fas fa-book"></i>
+                            </button>
                         </div>
-                        <div class="form-text">Use 'x' for random digits. Example: 411111xxxxxx1111</div>
+                        <div class="form-text">Use 'x' for random digits. Example: 411111xxxxxx1111. Click <i class="fas fa-book"></i> to pick from a curated library.</div>
                     </div>
                     
                     <div class="mb-3">
@@ -1854,6 +2206,55 @@
             </div>
         </div>
         
+    </div>
+
+    <!-- ================================ BIN Library Modal ================================ -->
+    <div class="modal fade" id="binLibraryModal" tabindex="-1" aria-labelledby="binLibraryModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content bin-library-modal">
+          <div class="modal-header">
+            <h5 class="modal-title" id="binLibraryModalLabel">
+              <i class="fas fa-book me-2"></i>BIN Library
+              <span class="bin-library-count" id="bin-library-count"></span>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body bin-library-body">
+            <div class="bin-library-toolbar">
+              <div class="bin-library-search">
+                <i class="fas fa-search"></i>
+                <input type="text" class="form-control" id="bin-library-search" placeholder="Search BIN, bank, country, tier…" autocomplete="off">
+                <button type="button" class="bin-library-clear" id="bin-library-clear" title="Clear search" style="display:none;">
+                    <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="bin-library-filters" id="bin-library-filters">
+                <!-- scheme/country chips injected -->
+              </div>
+            </div>
+
+            <div class="bin-library-hint">
+              <i class="fas fa-lightbulb me-1"></i>
+              Click any BIN to fill the BIN Pattern field. Digits remain as-is, remaining positions are filled with <code>x</code> placeholders.
+            </div>
+
+            <div id="bin-library-list" class="bin-library-list">
+              <div class="bin-library-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                Loading curated BIN list…
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer bin-library-footer">
+            <small class="text-muted" id="bin-library-meta">
+              <!-- source attribution -->
+            </small>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -3223,6 +3624,335 @@
                 renderBinError(bin, msg, []);
             } finally {
                 if (btn) btn.disabled = false;
+            }
+        }
+
+        /* ============================================================
+         * BIN Library (curated list from data/bin-library.json)
+         * ============================================================ */
+
+        const BIN_LIBRARY_URL = 'data/bin-library.json';
+        const SCHEME_LABELS = {
+            visa: 'Visa',
+            mastercard: 'MasterCard',
+            amex: 'American Express',
+            discover: 'Discover',
+            jcb: 'JCB',
+            unionpay: 'UnionPay',
+            diners: 'Diners Club',
+        };
+        const SCHEME_ICONS = {
+            visa: 'fab fa-cc-visa',
+            mastercard: 'fab fa-cc-mastercard',
+            amex: 'fab fa-cc-amex',
+            discover: 'fab fa-cc-discover',
+            jcb: 'fab fa-cc-jcb',
+            unionpay: 'far fa-credit-card',
+            diners: 'fab fa-cc-diners-club',
+        };
+
+        const binLibraryState = {
+            loaded: false,
+            loading: false,
+            data: null,
+            activeScheme: 'all',
+            query: '',
+        };
+
+        function countryFlagFromAlpha2(alpha2) {
+            if (!alpha2 || alpha2.length !== 2) return '';
+            const base = 0x1F1E6;
+            const up = alpha2.toUpperCase();
+            return String.fromCodePoint(base + up.charCodeAt(0) - 65, base + up.charCodeAt(1) - 65);
+        }
+
+        async function ensureBinLibraryLoaded() {
+            if (binLibraryState.loaded) return binLibraryState.data;
+            if (binLibraryState.loading) {
+                return new Promise(resolve => {
+                    const iv = setInterval(() => {
+                        if (binLibraryState.loaded) { clearInterval(iv); resolve(binLibraryState.data); }
+                    }, 50);
+                });
+            }
+            binLibraryState.loading = true;
+            try {
+                const response = await fetch(BIN_LIBRARY_URL, { headers: { Accept: 'application/json' } });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                binLibraryState.data = data;
+                binLibraryState.loaded = true;
+                return data;
+            } finally {
+                binLibraryState.loading = false;
+            }
+        }
+
+        function escapeBasicHtml(value) {
+            return String(value == null ? '' : value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function renderBinLibraryFilters() {
+            const container = document.getElementById('bin-library-filters');
+            if (!container || !binLibraryState.data) return;
+
+            const counts = { all: binLibraryState.data.bins.length };
+            binLibraryState.data.bins.forEach(entry => {
+                counts[entry.scheme] = (counts[entry.scheme] || 0) + 1;
+            });
+
+            const schemes = ['all', ...Object.keys(SCHEME_LABELS).filter(s => counts[s])];
+            container.replaceChildren();
+            schemes.forEach(scheme => {
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'bin-filter-chip' + (binLibraryState.activeScheme === scheme ? ' active' : '');
+                chip.dataset.scheme = scheme;
+                const label = scheme === 'all' ? 'All' : SCHEME_LABELS[scheme] || scheme;
+                chip.innerHTML = `<span>${escapeBasicHtml(label)}</span><span class="chip-count">${counts[scheme]}</span>`;
+                chip.addEventListener('click', () => {
+                    binLibraryState.activeScheme = scheme;
+                    renderBinLibraryFilters();
+                    renderBinLibraryList();
+                });
+                container.appendChild(chip);
+            });
+        }
+
+        function filterBinEntries(entries, query, scheme) {
+            const q = (query || '').trim().toLowerCase();
+            return entries.filter(entry => {
+                if (scheme !== 'all' && entry.scheme !== scheme) return false;
+                if (!q) return true;
+                return (
+                    entry.bin.toLowerCase().includes(q) ||
+                    (entry.issuer || '').toLowerCase().includes(q) ||
+                    (entry.country || '').toLowerCase().includes(q) ||
+                    (entry.tier || '').toLowerCase().includes(q) ||
+                    (entry.region || '').toLowerCase().includes(q) ||
+                    (entry.type || '').toLowerCase().includes(q) ||
+                    (entry.note || '').toLowerCase().includes(q)
+                );
+            });
+        }
+
+        function groupBinEntries(entries) {
+            const groups = new Map();
+            entries.forEach(entry => {
+                const key = entry.scheme || 'other';
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key).push(entry);
+            });
+            return Object.keys(SCHEME_LABELS).filter(k => groups.has(k)).map(k => [k, groups.get(k)]);
+        }
+
+        function makeBinCard(entry) {
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = `bin-card-item scheme-${entry.scheme || 'other'}`;
+            card.dataset.bin = entry.bin;
+            card.title = `Click to use ${entry.bin} · ${entry.issuer}`;
+
+            const top = document.createElement('div');
+            top.className = 'bin-card-top';
+
+            const binEl = document.createElement('span');
+            binEl.className = 'bin-card-bin';
+            binEl.textContent = entry.bin;
+            top.appendChild(binEl);
+
+            const flag = document.createElement('span');
+            flag.className = 'bin-card-flag';
+            flag.textContent = countryFlagFromAlpha2(entry.country) || '';
+            top.appendChild(flag);
+
+            card.appendChild(top);
+
+            const bank = document.createElement('div');
+            bank.className = 'bin-card-bank';
+            bank.textContent = entry.issuer || '(Unknown issuer)';
+            card.appendChild(bank);
+
+            const meta = document.createElement('div');
+            meta.className = 'bin-card-meta';
+            const typeBadge = document.createElement('span');
+            typeBadge.className = `bin-badge type-${entry.type || 'unknown'}`;
+            typeBadge.textContent = entry.type || 'unknown';
+            meta.appendChild(typeBadge);
+
+            if (entry.tier) {
+                const tier = document.createElement('span');
+                tier.className = 'bin-badge';
+                tier.textContent = entry.tier;
+                meta.appendChild(tier);
+            }
+
+            if (entry.country) {
+                const country = document.createElement('span');
+                country.className = 'bin-badge';
+                country.textContent = entry.country;
+                meta.appendChild(country);
+            }
+
+            card.appendChild(meta);
+
+            if (entry.note) {
+                const note = document.createElement('div');
+                note.className = 'bin-card-note';
+                note.textContent = entry.note;
+                card.appendChild(note);
+            }
+
+            card.addEventListener('click', () => applyBinFromLibrary(entry));
+
+            return card;
+        }
+
+        function renderBinLibraryList() {
+            const listEl = document.getElementById('bin-library-list');
+            const countEl = document.getElementById('bin-library-count');
+            if (!listEl || !binLibraryState.data) return;
+
+            const all = binLibraryState.data.bins || [];
+            const filtered = filterBinEntries(all, binLibraryState.query, binLibraryState.activeScheme);
+            if (countEl) countEl.textContent = `${filtered.length}/${all.length}`;
+
+            listEl.replaceChildren();
+
+            if (filtered.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'bin-library-empty';
+                empty.innerHTML = '<i class="fas fa-search"></i><div>No BINs match your filter. Try clearing the search or picking a different scheme.</div>';
+                listEl.appendChild(empty);
+                return;
+            }
+
+            const groups = groupBinEntries(filtered);
+            groups.forEach(([scheme, entries]) => {
+                const wrap = document.createElement('div');
+                wrap.className = 'bin-library-group';
+
+                const header = document.createElement('div');
+                header.className = 'bin-library-group-header';
+
+                const title = document.createElement('span');
+                title.className = 'bin-library-group-title';
+                const schemeLabel = SCHEME_LABELS[scheme] || scheme;
+                title.innerHTML = `<i class="${SCHEME_ICONS[scheme] || 'far fa-credit-card'}" aria-hidden="true" style="margin-right: 0.35rem;"></i>${escapeBasicHtml(schemeLabel)}`;
+
+                const count = document.createElement('span');
+                count.className = 'bin-library-group-count';
+                count.textContent = `${entries.length} BIN${entries.length === 1 ? '' : 's'}`;
+
+                header.append(title, count);
+                wrap.appendChild(header);
+
+                const grid = document.createElement('div');
+                grid.className = 'bin-library-grid';
+                entries.forEach(entry => grid.appendChild(makeBinCard(entry)));
+                wrap.appendChild(grid);
+
+                listEl.appendChild(wrap);
+            });
+        }
+
+        function applyBinFromLibrary(entry) {
+            // Pad BIN with `x` placeholders up to the expected PAN length for
+            // the scheme; Amex is 15, Diners 14, default 16.
+            const binInput = document.getElementById('bin');
+            if (!binInput) return;
+
+            let targetLen = 16;
+            if (entry.scheme === 'amex') targetLen = 15;
+            else if (entry.scheme === 'diners') targetLen = 14;
+
+            const fillCount = Math.max(0, targetLen - entry.bin.length);
+            const pattern = entry.bin + 'x'.repeat(fillCount);
+            binInput.value = pattern;
+
+            // Trigger existing preview update.
+            if (typeof updatePreview === 'function') updatePreview();
+
+            const modalEl = document.getElementById('binLibraryModal');
+            if (modalEl && window.bootstrap && window.bootstrap.Modal) {
+                const inst = window.bootstrap.Modal.getInstance(modalEl) || new window.bootstrap.Modal(modalEl);
+                inst.hide();
+            }
+
+            if (typeof showLiveToast === 'function') {
+                showLiveToast(`BIN ${entry.bin} loaded · ${entry.issuer}`);
+            }
+        }
+
+        function renderBinLibraryMeta() {
+            const metaEl = document.getElementById('bin-library-meta');
+            if (!metaEl || !binLibraryState.data) return;
+            const meta = binLibraryState.data.metadata || {};
+            const sourceCount = Array.isArray(meta.sources) ? meta.sources.length : 0;
+            const generated = meta.generated || '';
+            metaEl.textContent = `Compiled from ${sourceCount} open-source BIN dataset${sourceCount === 1 ? '' : 's'}${generated ? ` · updated ${generated}` : ''}. For test/dev use only.`;
+        }
+
+        async function openBinLibrary() {
+            const searchInput = document.getElementById('bin-library-search');
+            const clearBtn = document.getElementById('bin-library-clear');
+            const listEl = document.getElementById('bin-library-list');
+
+            if (searchInput && !searchInput.dataset.wired) {
+                searchInput.dataset.wired = 'true';
+                searchInput.addEventListener('input', (e) => {
+                    binLibraryState.query = e.target.value || '';
+                    if (clearBtn) clearBtn.style.display = binLibraryState.query ? 'inline-flex' : 'none';
+                    renderBinLibraryList();
+                });
+                searchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        searchInput.value = '';
+                        binLibraryState.query = '';
+                        if (clearBtn) clearBtn.style.display = 'none';
+                        renderBinLibraryList();
+                    }
+                });
+            }
+
+            if (clearBtn && !clearBtn.dataset.wired) {
+                clearBtn.dataset.wired = 'true';
+                clearBtn.addEventListener('click', () => {
+                    if (searchInput) searchInput.value = '';
+                    binLibraryState.query = '';
+                    clearBtn.style.display = 'none';
+                    renderBinLibraryList();
+                    if (searchInput) searchInput.focus();
+                });
+            }
+
+            const modalEl = document.getElementById('binLibraryModal');
+            if (modalEl && !modalEl.dataset.wired) {
+                modalEl.dataset.wired = 'true';
+                modalEl.addEventListener('shown.bs.modal', () => {
+                    const si = document.getElementById('bin-library-search');
+                    if (si) si.focus();
+                });
+            }
+
+            try {
+                await ensureBinLibraryLoaded();
+                renderBinLibraryFilters();
+                renderBinLibraryList();
+                renderBinLibraryMeta();
+            } catch (error) {
+                if (listEl) {
+                    listEl.replaceChildren();
+                    const err = document.createElement('div');
+                    err.className = 'bin-library-empty';
+                    err.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger-color);"></i><div>Could not load BIN library.<br><small>${escapeBasicHtml(error.message || error)}</small></div>`;
+                    listEl.appendChild(err);
+                }
             }
         }
 
