@@ -164,8 +164,31 @@ function emptyDetail() {
     type: null,          // debit / credit / prepaid
     category: null,      // classic / gold / platinum / corporate / business
     brand: null,         // e.g. "VISA/DANKORT"
-    bank: { name: null, url: null, phone: null, city: null },
-    country: { alpha2: null, name: null, emoji: null, currency: null },
+    bank: {
+      name: null,
+      url: null,
+      phone: null,
+      city: null,
+      latitude: null,     // issuer coords from iannuttall/binlist-data when available
+      longitude: null,
+    },
+    country: {
+      alpha2: null,
+      alpha3: null,
+      name: null,
+      official_name: null,
+      emoji: null,
+      currency: null,     // kept for back-compat: code only
+      currency_name: null,
+      currency_symbol: null,
+      region: null,       // e.g. Asia / Europe / Americas
+      subregion: null,    // e.g. South-Eastern Asia
+      capital: null,      // capital city name
+      latitude: null,     // country centroid
+      longitude: null,
+      dialing_code: null,
+      tld: null,
+    },
     luhn: null,
     length: null,
     prepaid: null,
@@ -213,6 +236,64 @@ function loadMasterDb() {
   }
 }
 
+/* ------------------------------------------------------------------------- *
+ * Country metadata cache.
+ *
+ * Loads data/countries.json (emitted by scripts/build-countries.js from the
+ * mledoze/countries dataset) once per process. Keyed by alpha-2 code so any
+ * provider's response can be enriched with region, subregion, capital,
+ * centroid coordinates, currency details, dialing code, and TLD.
+ * ------------------------------------------------------------------------- */
+
+let countriesDb = null;
+let countriesLoadError = null;
+
+function loadCountriesDb() {
+  if (countriesDb) return countriesDb;
+  if (countriesLoadError) return null;
+  try {
+    const file = path.join(__dirname, '..', 'data', 'countries.json');
+    const raw = fs.readFileSync(file, 'utf8');
+    countriesDb = JSON.parse(raw);
+    return countriesDb;
+  } catch (err) {
+    countriesLoadError = err;
+    return null;
+  }
+}
+
+/**
+ * Fill in any missing country metadata on a detail object using the bundled
+ * countries database. We never overwrite values the provider already set;
+ * we only plug holes.
+ */
+function enrichCountry(detail) {
+  if (!detail || !detail.country || !detail.country.alpha2) return detail;
+  const db = loadCountriesDb();
+  if (!db) return detail;
+  const c = db[detail.country.alpha2.toUpperCase()];
+  if (!c) return detail;
+
+  const country = detail.country;
+  country.alpha3 = country.alpha3 || c.alpha3 || null;
+  country.name = country.name || c.name || null;
+  country.official_name = country.official_name || c.official_name || null;
+  country.emoji = country.emoji || c.flag || null;
+  country.region = country.region || c.region || null;
+  country.subregion = country.subregion || c.subregion || null;
+  country.capital = country.capital || c.capital || null;
+  country.dialing_code = country.dialing_code || c.dialing_code || null;
+  country.tld = country.tld || c.tld || null;
+  if (country.latitude == null && c.latlng && typeof c.latlng[0] === 'number') country.latitude = c.latlng[0];
+  if (country.longitude == null && c.latlng && typeof c.latlng[1] === 'number') country.longitude = c.latlng[1];
+  if (c.currency) {
+    country.currency = country.currency || c.currency.code || null;
+    country.currency_name = country.currency_name || c.currency.name || null;
+    country.currency_symbol = country.currency_symbol || c.currency.symbol || null;
+  }
+  return detail;
+}
+
 /**
  * Look up a BIN in the sorted master list. Tries the longest prefix first
  * (8 digits → 7 → 6) so specific ranges win over generic ones when both
@@ -250,7 +331,9 @@ async function providerLocalMaster(bin) {
     throw err;
   }
 
-  const [matchedBin, schemeIdx, type, category, issuerIdx, alpha2, country, phone, url] = row;
+  // v2 row layout (see scripts/build-bin-master.js):
+  // [bin, scheme_idx, type, category, issuer_idx, alpha2, country, phone, url, latitude, longitude]
+  const [matchedBin, schemeIdx, type, category, issuerIdx, alpha2, country, phone, url, latitude, longitude] = row;
 
   const detail = emptyDetail();
   detail.bin = matchedBin;
@@ -261,6 +344,8 @@ async function providerLocalMaster(bin) {
   detail.bank.name = db.issuers[issuerIdx] || null;
   detail.bank.phone = phone || null;
   detail.bank.url = url || null;
+  detail.bank.latitude = typeof latitude === 'number' ? latitude : null;
+  detail.bank.longitude = typeof longitude === 'number' ? longitude : null;
   detail.country.alpha2 = alpha2 || null;
   detail.country.name = country || null;
   detail.country.emoji = countryFlagEmoji(alpha2);
@@ -445,6 +530,7 @@ async function lookupChain(bin) {
       // Local providers don't need the upstream throttle slot.
       if (!provider.local) await reserveSlot();
       const detail = await provider.run(bin);
+      enrichCountry(detail);
       attempts.push({
         provider: provider.id,
         label: provider.label,

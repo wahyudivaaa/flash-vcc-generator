@@ -60,7 +60,7 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 
 ## Master BIN Database
 
-The file `data/bin-master.json` (~13 MB, ~159k BINs) is generated from the upstream [iannuttall/binlist-data](https://github.com/iannuttall/binlist-data) CSV by `scripts/build-bin-master.js`. The raw CSV (`data/.binlist-source.csv`) is gitignored; run these steps to regenerate locally:
+The file `data/bin-master.json` (~15 MB, ~159k BINs, v2 schema with latitude/longitude) is generated from the upstream [iannuttall/binlist-data](https://github.com/iannuttall/binlist-data) CSV by `scripts/build-bin-master.js`. The raw CSV (`data/.binlist-source.csv`) is gitignored; run these steps to regenerate locally:
 
 ```bash
 # Download the upstream CSV (~27 MB)
@@ -68,6 +68,15 @@ curl -L https://raw.githubusercontent.com/iannuttall/binlist-data/master/binlist
 
 # Build the optimized JSON
 node scripts/build-bin-master.js
+```
+
+## Country Metadata
+
+The file `data/countries.json` (~73 KB, 250 countries) is compiled from [mledoze/countries](https://github.com/mledoze/countries). It powers enrichment of BIN lookup responses with region, subregion, capital city, country centroid coordinates, currency details (code / name / symbol), dialing code, and TLD. The raw source is gitignored; regenerate with:
+
+```bash
+curl -L https://raw.githubusercontent.com/mledoze/countries/master/countries.json -o data/.countries-source.json
+node scripts/build-countries.js
 ```
 
 ## BIN Library

@@ -127,6 +127,8 @@ for (let idx = 1; idx < lines.length; idx++) {
     n: titleCase(cols[7]) || null, // country name
     p: (cols[10] || '').trim() || null,
     u: (cols[11] || '').trim() || null,
+    la: cols[8] && !isNaN(parseFloat(cols[8])) ? parseFloat(parseFloat(cols[8]).toFixed(4)) : null,
+    lo: cols[9] && !isNaN(parseFloat(cols[9])) ? parseFloat(parseFloat(cols[9]).toFixed(4)) : null,
   });
   accepted++;
 }
@@ -158,17 +160,19 @@ const compact = rows.map(row => [
   row.n,
   row.p,
   row.u,
+  row.la,
+  row.lo,
 ]);
 
 const payload = {
-  version: 1,
+  version: 2,
   source: {
     repo: 'iannuttall/binlist-data',
     branch: 'master',
     built_at: new Date().toISOString(),
     license: 'CC-BY-4.0',
   },
-  fields: ['bin', 'scheme_idx', 'type', 'category', 'issuer_idx', 'alpha2', 'country', 'phone', 'url'],
+  fields: ['bin', 'scheme_idx', 'type', 'category', 'issuer_idx', 'alpha2', 'country', 'phone', 'url', 'latitude', 'longitude'],
   schemes,
   issuers,
   bins: compact,

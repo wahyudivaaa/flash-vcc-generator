@@ -1192,6 +1192,65 @@
             gap: 0.5rem 1rem;
         }
 
+        .bin-geo-block {
+            margin-top: 0.9rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+
+        .dark-mode .bin-geo-block {
+            border-top-color: #343126;
+        }
+
+        .bin-geo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--dark-color);
+        }
+
+        .bin-geo-source {
+            color: var(--secondary-color);
+            margin-left: 0.25rem;
+            font-size: 0.72rem;
+            font-weight: 500;
+        }
+
+        .bin-geo-coords code {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.78rem;
+            background: rgba(0, 194, 255, 0.12);
+            color: var(--accent-color);
+            padding: 0.18rem 0.5rem;
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        .bin-geo-map {
+            width: 100%;
+            min-height: 240px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            background: #f0f0ea;
+        }
+
+        .dark-mode .bin-geo-map {
+            border-color: #343126;
+            background: #111;
+        }
+
+        .bin-geo-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
         .bin-detail-footer b {
             color: var(--dark-color);
             margin-right: 0.2rem;
@@ -4198,7 +4257,20 @@
             grid.appendChild(addCell('Bank', detail.bank && detail.bank.name ? titleize(detail.bank.name) : null));
             const countryDisplay = detail.country ? [detail.country.name && titleize(detail.country.name), detail.country.alpha2 && `(${detail.country.alpha2})`].filter(Boolean).join(' ') : '';
             grid.appendChild(addCell('Country', countryDisplay));
-            grid.appendChild(addCell('Currency', detail.country && detail.country.currency));
+
+            // Expanded geo + currency fields from the country enrichment.
+            const c = detail.country || {};
+            if (c.region) grid.appendChild(addCell('Region', `${c.region}${c.subregion ? ` / ${c.subregion}` : ''}`));
+            if (c.capital) grid.appendChild(addCell('Capital', c.capital));
+            const currencyDisplay = c.currency
+                ? (c.currency_name ? `${c.currency_name} (${c.currency})${c.currency_symbol ? ` ${c.currency_symbol}` : ''}` : c.currency)
+                : null;
+            grid.appendChild(addCell('Currency', currencyDisplay));
+            if (c.dialing_code) grid.appendChild(addCell('Dialing code', c.dialing_code));
+            if (c.tld) grid.appendChild(addCell('TLD', c.tld));
+            if (typeof c.latitude === 'number' && typeof c.longitude === 'number') {
+                grid.appendChild(addCell('Country centroid', `${c.latitude.toFixed(2)}, ${c.longitude.toFixed(2)}`));
+            }
 
             if (detail.bank && detail.bank.city) grid.appendChild(addCell('Bank city', titleize(detail.bank.city)));
             if (detail.bank && detail.bank.phone) grid.appendChild(addCell('Bank phone', detail.bank.phone, { linkHref: `tel:${detail.bank.phone.replace(/[^+\d]/g, '')}` }));
@@ -4217,6 +4289,64 @@
             }
 
             card.appendChild(grid);
+
+            // Geo block: embed an OpenStreetMap iframe centered on the bank's
+            // coords when we have them, otherwise fall back to the country
+            // centroid. Keeps the user oriented to where the BIN's issuer
+            // actually lives without pulling in a heavy mapping library.
+            const bankLat = detail.bank && typeof detail.bank.latitude === 'number' ? detail.bank.latitude : null;
+            const bankLng = detail.bank && typeof detail.bank.longitude === 'number' ? detail.bank.longitude : null;
+            const countryLat = typeof c.latitude === 'number' ? c.latitude : null;
+            const countryLng = typeof c.longitude === 'number' ? c.longitude : null;
+            const mapLat = bankLat != null ? bankLat : countryLat;
+            const mapLng = bankLng != null ? bankLng : countryLng;
+            const mapSource = bankLat != null ? 'bank headquarters' : (countryLat != null ? 'country centroid' : null);
+
+            if (mapLat != null && mapLng != null) {
+                const geoWrap = document.createElement('div');
+                geoWrap.className = 'bin-geo-block';
+
+                const geoHeader = document.createElement('div');
+                geoHeader.className = 'bin-geo-header';
+                geoHeader.innerHTML = `
+                    <div>
+                        <i class="fas fa-map-location-dot me-1" style="color: var(--accent-color);"></i>
+                        <strong>Location</strong>
+                        <span class="bin-geo-source">(${escapeHtmlSafe(mapSource)})</span>
+                    </div>
+                    <div class="bin-geo-coords">
+                        <code>${mapLat.toFixed(4)}, ${mapLng.toFixed(4)}</code>
+                    </div>
+                `;
+                geoWrap.appendChild(geoHeader);
+
+                // OSM embed. Box size derives from a small delta around the
+                // point for a zoomed city-level view; falls back to a wider
+                // country view when only the centroid is available.
+                const delta = bankLat != null ? 0.06 : 10;
+                const bbox = [mapLng - delta, mapLat - delta, mapLng + delta, mapLat + delta].join(',');
+                const iframe = document.createElement('iframe');
+                iframe.className = 'bin-geo-map';
+                iframe.loading = 'lazy';
+                iframe.referrerPolicy = 'no-referrer-when-downgrade';
+                iframe.src = `https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${mapLat.toFixed(4)}%2C${mapLng.toFixed(4)}`;
+                iframe.title = `Map of ${mapSource}`;
+                geoWrap.appendChild(iframe);
+
+                // Quick actions: open in OSM / Google Maps / copy coords.
+                const actions = document.createElement('div');
+                actions.className = 'bin-geo-actions';
+                const osmLink = `https://www.openstreetmap.org/?mlat=${mapLat}&mlon=${mapLng}#map=${bankLat != null ? 12 : 4}/${mapLat}/${mapLng}`;
+                const gmapLink = `https://www.google.com/maps?q=${mapLat},${mapLng}`;
+                actions.innerHTML = `
+                    <a href="${osmLink}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary"><i class="fas fa-up-right-from-square me-1"></i>OpenStreetMap</a>
+                    <a href="${gmapLink}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary"><i class="fas fa-map me-1"></i>Google Maps</a>
+                    <button type="button" class="btn btn-sm btn-outline-success" onclick="copyBinGeo(${mapLat}, ${mapLng})"><i class="fas fa-copy me-1"></i>Copy coords</button>
+                `;
+                geoWrap.appendChild(actions);
+
+                card.appendChild(geoWrap);
+            }
 
             // Provider trail footer
             if (Array.isArray(attempts) && attempts.length) {
@@ -4237,6 +4367,17 @@
             }
 
             content.replaceChildren(card);
+        }
+
+        function copyBinGeo(lat, lng) {
+            const text = `${lat}, ${lng}`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    if (typeof showLiveToast === 'function') showLiveToast(`Copied coordinates: ${text}`);
+                }).catch(() => alert(`Coordinates: ${text}`));
+            } else {
+                alert(`Coordinates: ${text}`);
+            }
         }
 
         async function runBinLookup() {

@@ -1,5 +1,5 @@
 .playwright-mcp/
 .sisyphus/
 live-*.png
-
 data/.binlist-source.csv
+data/.countries-source.json
