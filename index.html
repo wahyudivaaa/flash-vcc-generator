@@ -167,6 +167,225 @@
             border-color: #343126;
         }
 
+        /* ======================= Login Gate ======================= */
+
+        .login-gate {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .login-gate-backdrop {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at top left, rgba(245, 183, 0, 0.18), transparent 40%),
+                radial-gradient(ellipse at bottom right, rgba(0, 194, 255, 0.15), transparent 45%),
+                rgba(21, 21, 21, 0.88);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .login-gate-card {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            padding: 1.75rem 1.75rem 1.5rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow-lg);
+            animation: fadeIn 0.35s ease-out;
+        }
+
+        .dark-mode .login-gate-card {
+            background: #171717;
+            border-color: #343126;
+            color: #f8f3df;
+        }
+
+        .login-gate-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .dark-mode .login-gate-brand {
+            border-bottom-color: #343126;
+        }
+
+        .login-gate-brand .brand-mark {
+            width: 40px;
+            height: 40px;
+            font-size: 1.1rem;
+        }
+
+        .login-gate-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--dark-color);
+        }
+
+        .dark-mode .login-gate-title {
+            color: #f8f3df;
+        }
+
+        .login-gate-subtitle {
+            font-size: 0.78rem;
+            color: var(--secondary-color);
+        }
+
+        .login-gate-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+        }
+
+        .login-gate-field label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--secondary-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .login-gate-password-wrap {
+            position: relative;
+        }
+
+        .login-gate-password-wrap input {
+            padding-right: 2.5rem;
+        }
+
+        .login-gate-toggle {
+            position: absolute;
+            top: 50%;
+            right: 0.5rem;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: var(--secondary-color);
+            cursor: pointer;
+            padding: 0.3rem 0.5rem;
+            border-radius: var(--border-radius-sm);
+        }
+
+        .login-gate-toggle:hover {
+            background: rgba(21, 21, 21, 0.06);
+            color: var(--dark-color);
+        }
+
+        .dark-mode .login-gate-toggle:hover {
+            background: rgba(248, 243, 223, 0.08);
+            color: var(--light-color);
+        }
+
+        .login-gate-remember {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.78rem;
+            color: var(--secondary-color);
+            user-select: none;
+            cursor: pointer;
+        }
+
+        .login-gate-remember input {
+            width: 1rem;
+            height: 1rem;
+            accent-color: var(--primary-color);
+        }
+
+        .login-gate-submit {
+            font-weight: 700;
+            padding: 0.55rem 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .login-gate-error {
+            font-size: 0.78rem;
+            color: var(--danger-color);
+            padding: 0.5rem 0.65rem;
+            background: rgba(220, 38, 38, 0.08);
+            border-left: 3px solid var(--danger-color);
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+        }
+
+        .login-gate-hint {
+            margin-top: 1rem;
+            padding: 0.55rem 0.75rem;
+            background: rgba(0, 194, 255, 0.08);
+            border-left: 3px solid var(--accent-color);
+            border-radius: var(--border-radius-sm);
+            font-size: 0.72rem;
+            color: var(--secondary-color);
+        }
+
+        .dark-mode .login-gate-hint {
+            background: rgba(0, 194, 255, 0.12);
+        }
+
+        /* App is hidden until login passes. */
+        body.login-locked > .container,
+        body.login-locked > .theme-toggle,
+        body.login-locked > .logout-toggle {
+            display: none !important;
+        }
+
+        /* Shake animation on login failure. */
+        @keyframes loginShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+        }
+
+        .login-gate-card.shake {
+            animation: loginShake 0.4s ease-in-out;
+        }
+
+        /* Logout button mirrors the theme toggle chrome. */
+        .logout-toggle {
+            position: fixed;
+            top: 20px;
+            right: 72px;
+            cursor: pointer;
+            font-size: 1rem;
+            z-index: 1000;
+            background: var(--surface-color);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--box-shadow-lg);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            color: var(--danger-color);
+        }
+
+        .logout-toggle:hover {
+            transform: rotate(-8deg) scale(1.05);
+            border-color: var(--danger-color);
+        }
+
+        .dark-mode .logout-toggle {
+            background: #171717;
+            border-color: #343126;
+        }
+
         .container {
             max-width: 1280px;
             margin-top: 2rem;
@@ -1047,6 +1266,16 @@
         .live-details span b {
             color: var(--dark-color);
             font-weight: 600;
+        }
+
+        .live-details .live-detail-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .live-details .live-detail-link:hover {
+            text-decoration: underline;
         }
 
         .live-message {
@@ -2217,8 +2446,55 @@
     </style>
 </head>
 <body class="light-mode">
+    <!-- ================================ Login Gate ================================ -->
+    <div id="login-gate" class="login-gate" style="display:none;" aria-hidden="true">
+        <div class="login-gate-backdrop"></div>
+        <div class="login-gate-card" role="dialog" aria-modal="true" aria-labelledby="login-gate-title">
+            <div class="login-gate-brand">
+                <span class="brand-mark"><i class="fas fa-bolt"></i></span>
+                <div>
+                    <div class="login-gate-title" id="login-gate-title">Flash VCC Generator</div>
+                    <div class="login-gate-subtitle">Sign in to continue</div>
+                </div>
+            </div>
+
+            <form id="login-form" class="login-gate-form" autocomplete="off" onsubmit="return handleLoginSubmit(event)">
+                <div class="login-gate-field">
+                    <label for="login-username"><i class="fas fa-user me-1"></i>Username</label>
+                    <input type="text" id="login-username" class="form-control" autocomplete="username" required>
+                </div>
+                <div class="login-gate-field">
+                    <label for="login-password"><i class="fas fa-lock me-1"></i>Password</label>
+                    <div class="login-gate-password-wrap">
+                        <input type="password" id="login-password" class="form-control" autocomplete="current-password" required>
+                        <button type="button" class="login-gate-toggle" onclick="toggleLoginPasswordVisibility()" aria-label="Toggle password visibility">
+                            <i id="login-password-eye" class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <label class="login-gate-remember">
+                    <input type="checkbox" id="login-remember" checked>
+                    <span>Remember me on this device</span>
+                </label>
+                <div id="login-error" class="login-gate-error" style="display:none;"></div>
+                <button type="submit" class="btn btn-primary login-gate-submit">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign in
+                </button>
+            </form>
+
+            <div class="login-gate-hint">
+                <i class="fas fa-circle-info me-1"></i>
+                Credentials are verified locally and stored in your browser only. No server-side account is created.
+            </div>
+        </div>
+    </div>
+
     <div class="theme-toggle" onclick="toggleTheme()">
         <i id="theme-icon" class="fas fa-moon"></i>
+    </div>
+
+    <div class="logout-toggle" id="logout-toggle" onclick="handleLogout()" title="Sign out" style="display:none;">
+        <i class="fas fa-sign-out-alt"></i>
     </div>
 
     <div class="container">
@@ -2844,6 +3120,166 @@
     </script>
 
     <script>
+        /* ============================================================
+         * Login Gate
+         * ============================================================
+         * Client-side credential check with localStorage persistence.
+         * The credential is deliberately fixed in code - this is a
+         * gate for a test tool, not a real auth system. Treat it as
+         * a friction barrier, not a security boundary.
+         * ============================================================ */
+
+        const LOGIN_CREDENTIALS = { username: 'wahyu', password: 'wahyuflashvcc' };
+        const LOGIN_STORAGE_KEY = 'flash-vcc-auth-v1';
+
+        function hashLoginToken(username, password) {
+            // A small rotating hash. Same input always produces the
+            // same token; the stored value is not recoverable back to
+            // the password. Good enough for a local gate.
+            const payload = `${username}::${password}::flash-vcc`;
+            let hash = 0x811c9dc5;
+            for (let i = 0; i < payload.length; i++) {
+                hash ^= payload.charCodeAt(i);
+                hash = Math.imul(hash, 0x01000193);
+            }
+            return (hash >>> 0).toString(16);
+        }
+
+        function readStoredAuth() {
+            try {
+                const raw = localStorage.getItem(LOGIN_STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch {
+                return null;
+            }
+        }
+
+        function writeStoredAuth(token, username, persist) {
+            const payload = { token, username, at: Date.now() };
+            try {
+                if (persist) localStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify(payload));
+                else {
+                    localStorage.removeItem(LOGIN_STORAGE_KEY);
+                    sessionStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify(payload));
+                }
+            } catch { /* storage disabled; fall through */ }
+        }
+
+        function clearStoredAuth() {
+            try {
+                localStorage.removeItem(LOGIN_STORAGE_KEY);
+                sessionStorage.removeItem(LOGIN_STORAGE_KEY);
+            } catch { /* ignore */ }
+        }
+
+        function isAuthenticated() {
+            const expected = hashLoginToken(LOGIN_CREDENTIALS.username, LOGIN_CREDENTIALS.password);
+            const stored = readStoredAuth();
+            if (stored && stored.token === expected) return true;
+            try {
+                const ss = sessionStorage.getItem(LOGIN_STORAGE_KEY);
+                if (ss) {
+                    const parsed = JSON.parse(ss);
+                    if (parsed && parsed.token === expected) return true;
+                }
+            } catch { /* ignore */ }
+            return false;
+        }
+
+        function lockApp() {
+            document.body.classList.add('login-locked');
+            const gate = document.getElementById('login-gate');
+            if (gate) {
+                gate.style.display = 'flex';
+                gate.setAttribute('aria-hidden', 'false');
+                setTimeout(() => { const u = document.getElementById('login-username'); if (u) u.focus(); }, 0);
+            }
+            const logout = document.getElementById('logout-toggle');
+            if (logout) logout.style.display = 'none';
+        }
+
+        function unlockApp() {
+            document.body.classList.remove('login-locked');
+            const gate = document.getElementById('login-gate');
+            if (gate) {
+                gate.style.display = 'none';
+                gate.setAttribute('aria-hidden', 'true');
+            }
+            const logout = document.getElementById('logout-toggle');
+            if (logout) logout.style.display = 'flex';
+        }
+
+        function showLoginError(message) {
+            const el = document.getElementById('login-error');
+            if (!el) return;
+            el.textContent = message;
+            el.style.display = 'block';
+            const card = document.querySelector('.login-gate-card');
+            if (card) {
+                card.classList.remove('shake');
+                void card.offsetWidth; // force reflow so the animation restarts
+                card.classList.add('shake');
+            }
+        }
+
+        function hideLoginError() {
+            const el = document.getElementById('login-error');
+            if (el) { el.textContent = ''; el.style.display = 'none'; }
+        }
+
+        function toggleLoginPasswordVisibility() {
+            const input = document.getElementById('login-password');
+            const eye = document.getElementById('login-password-eye');
+            if (!input || !eye) return;
+            const next = input.type === 'password' ? 'text' : 'password';
+            input.type = next;
+            eye.className = next === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+        }
+
+        function handleLoginSubmit(e) {
+            if (e) e.preventDefault();
+            const username = (document.getElementById('login-username').value || '').trim();
+            const password = document.getElementById('login-password').value || '';
+            const remember = !!document.getElementById('login-remember').checked;
+
+            if (!username || !password) {
+                showLoginError('Please enter both username and password.');
+                return false;
+            }
+
+            const submittedToken = hashLoginToken(username, password);
+            const expectedToken = hashLoginToken(LOGIN_CREDENTIALS.username, LOGIN_CREDENTIALS.password);
+            if (submittedToken !== expectedToken) {
+                showLoginError('Invalid username or password. Try again.');
+                return false;
+            }
+
+            writeStoredAuth(expectedToken, username, remember);
+            hideLoginError();
+            document.getElementById('login-password').value = '';
+            unlockApp();
+            return false;
+        }
+
+        function handleLogout() {
+            if (!confirm('Sign out of Flash VCC Generator?')) return;
+            clearStoredAuth();
+            lockApp();
+        }
+
+        // Hide the app as early as possible so the login form is the
+        // first thing the user sees on first load.
+        (function primeLoginGate() {
+            if (!isAuthenticated()) {
+                // Mark locked ASAP; the DOMContentLoaded handler will
+                // flip the gate visible once the DOM is parsed.
+                document.documentElement.classList.add('login-locked-early');
+            }
+        })();
+    </script>
+
+    <script>
         // Theme toggle functionality
         function toggleTheme() {
             const body = document.body;
@@ -2865,6 +3301,14 @@
 
         // Load theme preference on page load
         window.addEventListener('DOMContentLoaded', function() {
+            // Before anything else: gate the app behind the login
+            // form if the user is not authenticated yet.
+            if (typeof isAuthenticated === 'function' && !isAuthenticated()) {
+                lockApp();
+            } else {
+                unlockApp();
+            }
+
             const theme = localStorage.getItem('theme') || 'light';
             document.body.classList.remove('dark-mode', 'light-mode');
             document.body.classList.add(theme + '-mode');
@@ -3601,6 +4045,7 @@
 
             const card = state.upstream && state.upstream.card;
             const country = card && card.country;
+            const enr = state.enrichment || null;
 
             const details = document.createElement('div');
             details.className = 'live-details';
@@ -3612,18 +4057,62 @@
                 span.append(`${label}: `, b);
                 details.appendChild(span);
             };
+            const addLink = (label, value, href) => {
+                if (!value) return;
+                const span = document.createElement('span');
+                const a = document.createElement('a');
+                a.href = href;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.textContent = value;
+                a.className = 'live-detail-link';
+                span.append(`${label}: `, a);
+                details.appendChild(span);
+            };
 
-            if (card) {
-                addDetail('Bank', card.bank);
-                addDetail('Type', card.type);
-                addDetail('Category', card.category);
-                addDetail('Brand', card.brand);
-                if (country) {
-                    const countryText = [country.emoji, country.name, country.code ? `(${country.code})` : '']
-                        .filter(Boolean).join(' ').trim();
-                    addDetail('Country', countryText);
-                    addDetail('Currency', country.currency);
+            // Prefer enrichment data (bundled master DB) over the upstream
+            // chkr.cc fields - it's more complete and canonical. Upstream
+            // fields back-fill anything the master DB couldn't provide.
+            const issuer = (enr && enr.issuer) || (card && card.bank) || null;
+            const bankType = (enr && enr.type) || (card && card.type) || null;
+            const bankCategory = (enr && enr.category) || (card && card.category) || null;
+            const bankBrand = (enr && enr.scheme) || (card && card.brand) || null;
+            const ctry = (enr && enr.country) || country || null;
+            const countryName = ctry && (ctry.name || ctry.code || ctry.alpha2);
+            const countryEmoji = ctry && (ctry.emoji || '');
+            const alpha2 = ctry && (ctry.alpha2 || ctry.code);
+            const countryText = [countryEmoji, countryName, alpha2 ? `(${alpha2})` : '']
+                .filter(Boolean).join(' ').trim();
+
+            addDetail('Bank', issuer);
+            addDetail('Type', bankType);
+            addDetail('Category', bankCategory);
+            addDetail('Brand', bankBrand);
+            if (countryText) addDetail('Country', countryText);
+            if (ctry && ctry.region) {
+                addDetail('Region', ctry.subregion ? `${ctry.region} / ${ctry.subregion}` : ctry.region);
+            }
+            if (ctry && ctry.capital) addDetail('Capital', ctry.capital);
+            if (ctry) {
+                const curr = ctry.currency || ctry.currency_code;
+                if (curr) {
+                    const label = ctry.currency_symbol
+                        ? `${ctry.currency_name || curr} (${curr} ${ctry.currency_symbol})`
+                        : (ctry.currency_name ? `${ctry.currency_name} (${curr})` : curr);
+                    addDetail('Currency', label);
                 }
+                if (ctry.dialing_code) addDetail('Dialing', ctry.dialing_code);
+                if (ctry.tld) addDetail('TLD', ctry.tld);
+            }
+            if (enr && typeof enr.bank_latitude === 'number' && typeof enr.bank_longitude === 'number') {
+                const coords = `${enr.bank_latitude.toFixed(4)}, ${enr.bank_longitude.toFixed(4)}`;
+                addLink('Bank coords', coords, `https://www.openstreetmap.org/?mlat=${enr.bank_latitude}&mlon=${enr.bank_longitude}#map=12/${enr.bank_latitude}/${enr.bank_longitude}`);
+            }
+            if (enr && enr.bank_url) {
+                const url = /^https?:/i.test(enr.bank_url) ? enr.bank_url : `https://${enr.bank_url}`;
+                addLink('Bank URL', enr.bank_url, url);
+            } else if (enr && enr.bank_phone) {
+                addDetail('Bank phone', enr.bank_phone);
             }
             if (typeof state.upstream?.code === 'number') {
                 addDetail('Upstream', `code ${state.upstream.code} · ${state.upstream.status || ''}`.trim());
@@ -3720,6 +4209,7 @@
                 message: (payload.upstream && payload.upstream.message) || '',
                 upstream: payload.upstream || null,
                 attempts: payload.attempts,
+                enrichment: payload.enrichment || null,
             };
         }
 

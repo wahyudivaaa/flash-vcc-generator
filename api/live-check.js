@@ -34,6 +34,98 @@ const MAX_RETRIES = 3;
 const BASE_BACKOFF_MS = 800;
 const MAX_BACKOFF_MS = 6000;
 
+const path = require('path');
+const fs = require('fs');
+
+/* ============================================================================
+ * Shared master BIN + country metadata for live-check enrichment.
+ *
+ * Each live-check response gets joined against data/bin-master.json so the
+ * frontend can show region, capital, currency symbol, dialing code, TLD,
+ * and bank URL right on every result card - not just in the BIN Info tab.
+ * Lazy-loaded once per cold start.
+ * ========================================================================== */
+
+let masterDb = null;
+let countriesDb = null;
+
+function loadMasterDb() {
+  if (masterDb) return masterDb;
+  try {
+    const file = path.join(__dirname, '..', 'data', 'bin-master.json');
+    const raw = fs.readFileSync(file, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed.bins)) masterDb = parsed;
+  } catch { /* optional; enrichment becomes a no-op */ }
+  return masterDb;
+}
+
+function loadCountriesDb() {
+  if (countriesDb) return countriesDb;
+  try {
+    const file = path.join(__dirname, '..', 'data', 'countries.json');
+    const raw = fs.readFileSync(file, 'utf8');
+    countriesDb = JSON.parse(raw);
+  } catch { /* optional */ }
+  return countriesDb;
+}
+
+function findMasterRow(db, bin) {
+  if (!db || !bin) return null;
+  for (let len = Math.min(8, bin.length); len >= 6; len--) {
+    const needle = bin.slice(0, len);
+    let lo = 0, hi = db.bins.length - 1;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      const midBin = db.bins[mid][0];
+      if (midBin === needle) return db.bins[mid];
+      if (midBin < needle) lo = mid + 1;
+      else hi = mid - 1;
+    }
+  }
+  return null;
+}
+
+function enrichLive(pan) {
+  const bin = String(pan || '').replace(/\D/g, '').slice(0, 8);
+  if (bin.length < 6) return null;
+  const db = loadMasterDb();
+  if (!db) return null;
+  const row = findMasterRow(db, bin);
+  if (!row) return null;
+  const [matchedBin, schemeIdx, type, category, issuerIdx, alpha2, country, phone, url, latitude, longitude] = row;
+  const countries = loadCountriesDb();
+  const meta = countries && alpha2 ? countries[alpha2] : null;
+
+  return {
+    bin: matchedBin,
+    scheme: db.schemes[schemeIdx] || null,
+    type: type || null,
+    category: category || null,
+    issuer: db.issuers[issuerIdx] || null,
+    bank_url: url || null,
+    bank_phone: phone || null,
+    bank_latitude: typeof latitude === 'number' ? latitude : null,
+    bank_longitude: typeof longitude === 'number' ? longitude : null,
+    country: {
+      alpha2: alpha2 || null,
+      alpha3: meta && meta.alpha3 || null,
+      name: (meta && meta.name) || country || null,
+      emoji: (meta && meta.flag) || null,
+      region: meta && meta.region || null,
+      subregion: meta && meta.subregion || null,
+      capital: meta && meta.capital || null,
+      latitude: meta && meta.latlng ? meta.latlng[0] : null,
+      longitude: meta && meta.latlng ? meta.latlng[1] : null,
+      dialing_code: meta && meta.dialing_code || null,
+      tld: meta && meta.tld || null,
+      currency: meta && meta.currency ? meta.currency.code : null,
+      currency_name: meta && meta.currency ? meta.currency.name : null,
+      currency_symbol: meta && meta.currency ? meta.currency.symbol : null,
+    },
+  };
+}
+
 function onlyDigits(value) {
   return String(value || '').replace(/\D/g, '');
 }
@@ -285,6 +377,7 @@ module.exports = async function handler(req, res) {
       status: classifyStatus(upstream),
       attempts,
       upstream,
+      enrichment: enrichLive(data.split('|')[0] || ''),
     });
   } catch (error) {
     const aborted = error && error.name === 'AbortError';
