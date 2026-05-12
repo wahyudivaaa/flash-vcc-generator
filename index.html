@@ -595,8 +595,133 @@
             color: white;
         }
 
+        .badge-review {
+            background: var(--warning-color);
+            color: #151515;
+        }
+
         .card-type-icon {
             margin-right: 0.375rem;
+        }
+
+        .checker-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .checker-notice {
+            padding: 0.85rem 1rem;
+            border: 1px solid rgba(0, 194, 255, 0.35);
+            border-radius: var(--border-radius-sm);
+            background: rgba(0, 194, 255, 0.08);
+            color: var(--secondary-color);
+            font-size: 0.78rem;
+            line-height: 1.6;
+        }
+
+        .dark-mode .checker-notice {
+            background: rgba(0, 194, 255, 0.1);
+            color: #d8cfad;
+        }
+
+        .checker-summary {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .checker-stat {
+            padding: 0.85rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            background: var(--light-color);
+        }
+
+        .dark-mode .checker-stat {
+            background: #11110f;
+            border-color: #343126;
+        }
+
+        .checker-stat span {
+            display: block;
+            color: var(--secondary-color);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+        }
+
+        .checker-stat strong {
+            display: block;
+            margin-top: 0.15rem;
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .checker-results {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            max-height: 430px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .checker-empty {
+            padding: 1.25rem;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--secondary-color);
+            text-align: center;
+            font-size: 0.82rem;
+        }
+
+        .checker-row {
+            padding: 0.85rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            background: var(--surface-color);
+        }
+
+        .dark-mode .checker-row {
+            background: #11110f;
+            border-color: #343126;
+        }
+
+        .checker-row-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .checker-card {
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .checker-meta {
+            color: var(--secondary-color);
+            font-size: 0.75rem;
+        }
+
+        .checker-issues {
+            margin: 0.5rem 0 0;
+            padding-left: 1rem;
+            color: var(--secondary-color);
+            font-size: 0.75rem;
+        }
+
+        .checker-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 82px;
+            padding: 0.25rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
         .accordion {
@@ -838,6 +963,10 @@
                 flex-direction: column;
                 gap: 0.5rem;
             }
+
+            .checker-summary {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
             
             .theme-toggle {
                 top: 10px;
@@ -871,6 +1000,10 @@
             
             .preset-bins {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            .checker-summary {
+                grid-template-columns: 1fr;
             }
             
             .form-label {
@@ -1025,6 +1158,13 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="checker-tab" data-bs-toggle="tab" data-bs-target="#checker-pane" type="button" role="tab">
+                            <i class="fas fa-shield-alt me-1"></i>
+                            <span class="desktop-tab-label">Checker</span>
+                            <span class="mobile-tab-label">Check</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab">
                             <i class="fas fa-history me-1"></i>
                             <span class="desktop-tab-label">History</span>
@@ -1041,12 +1181,33 @@
                         </div>
                         
                         <div class="action-buttons">
+                            <button type="button" class="btn btn-primary" onclick="checkGeneratedOutput()">
+                                <i class="fas fa-shield-alt me-2"></i>Run Test Check
+                            </button>
                             <button type="button" class="btn btn-success" onclick="downloadAsFile()">
                                 <i class="fas fa-download me-2"></i>Download
                             </button>
                             <button type="button" class="btn btn-outline-secondary" onclick="clearOutput()">
                                 <i class="fas fa-trash me-2"></i>Clear
                             </button>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="checker-pane" role="tabpanel">
+                        <div class="checker-panel mt-3">
+                            <div class="checker-notice">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Internal test validation only. This checks generated data format, Luhn, network, expiry, CVV, and duplicates. It does not perform live card checks or contact third-party checker services.
+                            </div>
+                            <div class="checker-summary" id="checker-summary">
+                                <div class="checker-stat"><span>Total</span><strong>0</strong></div>
+                                <div class="checker-stat"><span>Test Valid</span><strong>0</strong></div>
+                                <div class="checker-stat"><span>Review</span><strong>0</strong></div>
+                                <div class="checker-stat"><span>Invalid</span><strong>0</strong></div>
+                            </div>
+                            <div id="checker-results" class="checker-results">
+                                <div class="checker-empty">Generate VCC data, then run a test check to review the output.</div>
+                            </div>
                         </div>
                     </div>
                     
@@ -1068,6 +1229,7 @@
                     <ul class="list-unstyled small">
                         <li><i class="fas fa-check-circle text-success me-2"></i>All generated VCC numbers pass Luhn validation</li>
                         <li><i class="fas fa-shield-alt text-primary me-2"></i>For testing and development purposes only</li>
+                        <li><i class="fas fa-server text-primary me-2"></i>Checker validates test data only, without live card checks</li>
                         <li><i class="fas fa-exclamation-triangle text-warning me-2"></i>Do not use for fraudulent activities</li>
                     </ul>
                 </div>
@@ -1080,7 +1242,7 @@
                 <div class="col-md-4">
                     <i class="fas fa-shield-alt fa-2x text-primary mb-2"></i>
                     <h5>100% Secure</h5>
-                    <p class="small">No data stored &bull; Client-side processing only</p>
+                    <p class="small">No data stored &bull; no external live checks</p>
                 </div>
                 <div class="col-md-4">
                     <i class="fas fa-bolt fa-2x text-primary mb-2"></i>
@@ -1221,7 +1383,7 @@
                         <p>The tool supports Visa, MasterCard, American Express, Discover, and Diners Club cards with appropriate BIN ranges and card lengths.</p>
                         
                         <h6>Is my data stored when using this tool?</h6>
-                        <p>The tool only stores your generation history locally in your browser for convenience. No data is sent to any server.</p>
+                        <p>The tool only stores your generation history locally in your browser for convenience. The checker can send generated test output to this app's Vercel Function for internal validation, but it is not stored or sent to external live-checking services.</p>
                     </div>
                 </div>
             </div>
@@ -1629,6 +1791,304 @@
             return sum % 10 === 0;
         }
 
+        function checkDigits(value) {
+            return String(value || '').replace(/\D/g, '');
+        }
+
+        function normalizeCheckYear(value) {
+            const raw = checkDigits(value);
+            if (!raw) return '';
+            return raw.length === 2 ? `20${raw}` : raw.slice(0, 4);
+        }
+
+        function getNetworkRules(network) {
+            const rules = {
+                Visa: { validLengths: [13, 16, 19], cvvLength: 3 },
+                MasterCard: { validLengths: [16], cvvLength: 3 },
+                Amex: { validLengths: [15], cvvLength: 4 },
+                Discover: { validLengths: [16, 19], cvvLength: 3 },
+                'Diners Club': { validLengths: [14], cvvLength: 3 },
+                Unknown: { validLengths: [13, 14, 15, 16, 17, 18, 19], cvvLength: 3 }
+            };
+
+            return rules[network] || rules.Unknown;
+        }
+
+        function parseJsonCheckEntries(raw) {
+            try {
+                const parsed = JSON.parse(raw);
+                const rows = Array.isArray(parsed) ? parsed : [parsed];
+
+                return rows.map((item, index) => ({
+                    source: `json:${index + 1}`,
+                    original: JSON.stringify(item),
+                    card: item.card || item.number || item.vcc || '',
+                    month: item.month || item.mm || item.exp_month || '',
+                    year: item.year || item.yy || item.exp_year || '',
+                    cvv: item.cvv || item.ccv || item.cvc || ''
+                }));
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function parseCheckLine(line, index) {
+            const trimmed = line.trim();
+
+            if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+                const jsonRows = parseJsonCheckEntries(trimmed);
+                if (jsonRows && jsonRows[0]) {
+                    return { ...jsonRows[0], source: `line:${index + 1}` };
+                }
+            }
+
+            const delimiter = trimmed.includes('|') ? '|' : trimmed.includes(',') ? ',' : null;
+            const parts = delimiter ? trimmed.split(delimiter).map(part => part.trim()) : [trimmed];
+
+            return {
+                source: `line:${index + 1}`,
+                original: trimmed,
+                card: parts[0] || '',
+                month: parts[1] || '',
+                year: parts[2] || '',
+                cvv: parts[3] || ''
+            };
+        }
+
+        function parseCheckEntries(raw) {
+            const text = String(raw || '').trim();
+            if (!text) return [];
+
+            const jsonRows = parseJsonCheckEntries(text);
+            if (jsonRows) return jsonRows.slice(0, 1000);
+
+            return text
+                .split(/\r?\n/)
+                .map(line => line.trim())
+                .filter(Boolean)
+                .slice(0, 1000)
+                .map(parseCheckLine);
+        }
+
+        function validateCheckExpiry(month, year) {
+            const normalizedMonth = checkDigits(month).slice(0, 2);
+            const normalizedYear = normalizeCheckYear(year);
+            const issues = [];
+            const warnings = [];
+
+            if (!normalizedMonth || !normalizedYear) {
+                warnings.push('Expiry missing');
+                return { month: normalizedMonth, year: normalizedYear, issues, warnings };
+            }
+
+            const monthNumber = Number(normalizedMonth);
+            const yearNumber = Number(normalizedYear);
+
+            if (monthNumber < 1 || monthNumber > 12) {
+                issues.push('Invalid expiry month');
+            }
+
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+
+            if (yearNumber < currentYear || (yearNumber === currentYear && monthNumber < currentMonth)) {
+                issues.push('Expiry is in the past');
+            }
+
+            return { month: normalizedMonth, year: normalizedYear, issues, warnings };
+        }
+
+        function checkLocalRecord(entry, index, seenCards) {
+            const card = checkDigits(entry.card);
+            const network = detectCardType(card);
+            const rules = getNetworkRules(network);
+            const expiry = validateCheckExpiry(entry.month, entry.year);
+            const cvv = checkDigits(entry.cvv);
+            const issues = [];
+            const warnings = [];
+
+            if (!card) {
+                issues.push('Card number missing');
+            } else {
+                if (!rules.validLengths.includes(card.length)) {
+                    issues.push(`${network} length expected ${rules.validLengths.join('/')} digits`);
+                }
+                if (!validateLuhn(card)) {
+                    issues.push('Luhn validation failed');
+                }
+            }
+
+            issues.push(...expiry.issues);
+            warnings.push(...expiry.warnings);
+
+            if (!cvv) {
+                warnings.push('CVV missing');
+            } else if (cvv.length !== rules.cvvLength) {
+                issues.push(`${network} CVV expected ${rules.cvvLength} digits`);
+            }
+
+            if (card && seenCards.has(card)) {
+                warnings.push('Duplicate generated number');
+            }
+            if (card) seenCards.add(card);
+
+            const status = issues.length ? 'invalid' : warnings.length ? 'review' : 'test-valid';
+
+            return {
+                index: index + 1,
+                source: entry.source,
+                displayCard: card ? `${card.slice(0, 6)}******${card.slice(-4)}` : '',
+                network,
+                month: expiry.month,
+                year: expiry.year,
+                cvvLength: cvv.length,
+                status,
+                issues,
+                warnings
+            };
+        }
+
+        function checkRawLocally(raw) {
+            const entries = parseCheckEntries(raw);
+            const seenCards = new Set();
+            const results = entries.map((entry, index) => checkLocalRecord(entry, index, seenCards));
+            const summary = results.reduce((acc, item) => {
+                acc.total += 1;
+                acc[item.status] += 1;
+                return acc;
+            }, { total: 0, 'test-valid': 0, review: 0, invalid: 0 });
+
+            return {
+                ok: true,
+                mode: 'browser-test-validation',
+                notice: 'Local test validation only. No live card checks are performed.',
+                summary,
+                results
+            };
+        }
+
+        function renderCheckerLoading() {
+            const results = document.getElementById('checker-results');
+            results.innerHTML = '<div class="checker-empty">Checking generated test data...</div>';
+        }
+
+        function createCheckerStat(label, value) {
+            const item = document.createElement('div');
+            item.className = 'checker-stat';
+
+            const labelEl = document.createElement('span');
+            labelEl.textContent = label;
+
+            const valueEl = document.createElement('strong');
+            valueEl.textContent = value;
+
+            item.append(labelEl, valueEl);
+            return item;
+        }
+
+        function renderCheckerResults(payload) {
+            const summary = payload.summary || { total: 0, 'test-valid': 0, review: 0, invalid: 0 };
+            const summaryEl = document.getElementById('checker-summary');
+            const resultsEl = document.getElementById('checker-results');
+
+            summaryEl.replaceChildren(
+                createCheckerStat('Total', summary.total || 0),
+                createCheckerStat('Test Valid', summary['test-valid'] || 0),
+                createCheckerStat('Review', summary.review || 0),
+                createCheckerStat('Invalid', summary.invalid || 0)
+            );
+
+            resultsEl.replaceChildren();
+
+            if (!payload.results || payload.results.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'checker-empty';
+                empty.textContent = 'No generated data found to check.';
+                resultsEl.appendChild(empty);
+                return;
+            }
+
+            payload.results.forEach(item => {
+                const row = document.createElement('div');
+                row.className = 'checker-row';
+
+                const top = document.createElement('div');
+                top.className = 'checker-row-top';
+
+                const title = document.createElement('div');
+                title.className = 'checker-card';
+                title.textContent = `#${item.index} ${item.displayCard || 'No card number'}`;
+
+                const badge = document.createElement('span');
+                const badgeClass = item.status === 'test-valid'
+                    ? 'badge-valid'
+                    : item.status === 'review'
+                        ? 'badge-review'
+                        : 'badge-invalid';
+                badge.className = `checker-badge ${badgeClass}`;
+                badge.textContent = item.status.replace('-', ' ');
+
+                top.append(title, badge);
+
+                const meta = document.createElement('div');
+                meta.className = 'checker-meta';
+                meta.textContent = `${item.network || 'Unknown'} | ${item.month || '--'}/${item.year || '----'} | CVV ${item.cvvLength || 0} digit(s)`;
+
+                row.append(top, meta);
+
+                const notes = [...(item.issues || []), ...(item.warnings || [])];
+                if (notes.length) {
+                    const list = document.createElement('ul');
+                    list.className = 'checker-issues';
+                    notes.forEach(note => {
+                        const li = document.createElement('li');
+                        li.textContent = note;
+                        list.appendChild(li);
+                    });
+                    row.appendChild(list);
+                }
+
+                resultsEl.appendChild(row);
+            });
+        }
+
+        async function checkGeneratedOutput() {
+            const output = document.getElementById('output').value.trim();
+            if (!output) {
+                alert('Generate VCC data first before running the test checker.');
+                return;
+            }
+
+            document.getElementById('checker-tab').click();
+            renderCheckerLoading();
+
+            try {
+                let payload;
+                const localHostnames = ['localhost', '127.0.0.1', ''];
+                const shouldUseServerChecker = window.location.protocol !== 'file:' && !localHostnames.includes(window.location.hostname);
+
+                if (!shouldUseServerChecker) {
+                    payload = checkRawLocally(output);
+                } else {
+                    const response = await fetch('/api/check', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ raw: output })
+                    });
+
+                    payload = await response.json();
+                    if (!response.ok || !payload.ok) {
+                        throw new Error(payload.error || 'Unable to run test check.');
+                    }
+                }
+
+                renderCheckerResults(payload);
+            } catch (error) {
+                renderCheckerResults(checkRawLocally(output));
+            }
+        }
+
         /** Available months for random generation */
         const MONTHS = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
         
@@ -1801,8 +2261,9 @@
             const cardNumbers = generateCards(bin, cardLength, count);
             
             // Format output efficiently
-            const results = new Array(count);
-            for (let i = 0; i < count; i++) {
+            const actualCount = cardNumbers.length;
+            const results = new Array(actualCount);
+            for (let i = 0; i < actualCount; i++) {
                 const month = isRandomMonth ? generateMonth() : monthOption;
                 const year = isRandomYear ? generateYear() : yearOption;
                 const ccv = isRandomCCV ? generateCCV(bin) : ccvInput;
@@ -1815,7 +2276,7 @@
                 : results.join('\n');
 
             // Save to history and switch to output tab
-            saveToHistory(bin, count);
+            saveToHistory(bin, actualCount);
             document.getElementById('output-tab').click();
         }
 
