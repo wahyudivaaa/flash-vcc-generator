@@ -724,6 +724,165 @@
             text-transform: uppercase;
         }
 
+        /* ======================= Live Check ======================= */
+
+        .live-notice {
+            border-left: 3px solid var(--warning-color);
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.12), rgba(249, 115, 22, 0.03));
+        }
+
+        .dark-mode .live-notice {
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.2), rgba(249, 115, 22, 0.05));
+        }
+
+        .live-notice code {
+            background: rgba(21, 21, 21, 0.08);
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            font-size: 0.78rem;
+        }
+
+        .dark-mode .live-notice code {
+            background: rgba(248, 243, 223, 0.12);
+        }
+
+        .live-progress-wrap {
+            margin: 0.75rem 0 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        .dark-mode .live-progress-wrap {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        .live-progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .live-progress-bar {
+            height: 10px;
+            background: rgba(21, 21, 21, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .dark-mode .live-progress-bar {
+            background: rgba(248, 243, 223, 0.08);
+        }
+
+        .live-progress-bar .progress-bar {
+            background: linear-gradient(90deg, var(--primary-color), var(--warning-color));
+            transition: width 0.25s ease-out;
+        }
+
+        .live-summary .checker-stat {
+            position: relative;
+        }
+
+        .live-stat-live strong { color: var(--success-color); }
+        .live-stat-die strong { color: var(--danger-color); }
+        .live-stat-unknown strong { color: var(--secondary-color); }
+        .live-stat-error strong { color: var(--warning-color); }
+
+        .live-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 0.25rem 0 0.75rem;
+        }
+
+        .live-row {
+            border-left: 3px solid transparent;
+            transition: var(--transition-fast);
+        }
+
+        .live-row.status-live {
+            border-left-color: var(--success-color);
+            background: linear-gradient(90deg, rgba(15, 159, 110, 0.06), transparent);
+        }
+
+        .live-row.status-die {
+            border-left-color: var(--danger-color);
+            background: linear-gradient(90deg, rgba(220, 38, 38, 0.05), transparent);
+        }
+
+        .live-row.status-unknown {
+            border-left-color: var(--secondary-color);
+        }
+
+        .live-row.status-error {
+            border-left-color: var(--warning-color);
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.05), transparent);
+        }
+
+        .live-badge {
+            background: rgba(21, 21, 21, 0.08);
+            color: var(--dark-color);
+        }
+
+        .live-badge.status-live {
+            background: var(--success-color);
+            color: #ffffff;
+        }
+
+        .live-badge.status-die {
+            background: var(--danger-color);
+            color: #ffffff;
+        }
+
+        .live-badge.status-unknown {
+            background: var(--secondary-color);
+            color: #ffffff;
+        }
+
+        .live-badge.status-error {
+            background: var(--warning-color);
+            color: #ffffff;
+        }
+
+        .live-badge.status-pending {
+            background: rgba(245, 183, 0, 0.2);
+            color: var(--primary-hover);
+            animation: pulse 1.2s ease-in-out infinite;
+        }
+
+        .live-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.35rem 0.75rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--secondary-color);
+        }
+
+        .live-details span b {
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+
+        .dark-mode .live-details span b {
+            color: var(--light-color);
+        }
+
+        .live-message {
+            margin-top: 0.4rem;
+            font-size: 0.78rem;
+            color: var(--dark-color);
+            opacity: 0.85;
+        }
+
         .accordion {
             border-radius: var(--border-radius);
             overflow: hidden;
@@ -1165,6 +1324,13 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="live-check-tab" data-bs-toggle="tab" data-bs-target="#live-check-pane" type="button" role="tab">
+                            <i class="fas fa-satellite-dish me-1"></i>
+                            <span class="desktop-tab-label">Live Check</span>
+                            <span class="mobile-tab-label">Live</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab">
                             <i class="fas fa-history me-1"></i>
                             <span class="desktop-tab-label">History</span>
@@ -1183,6 +1349,9 @@
                         <div class="action-buttons">
                             <button type="button" class="btn btn-primary" onclick="checkGeneratedOutput()">
                                 <i class="fas fa-shield-alt me-2"></i>Run Test Check
+                            </button>
+                            <button type="button" class="btn btn-warning" onclick="runLiveCheck()" id="live-check-btn">
+                                <i class="fas fa-satellite-dish me-2"></i>Run Live Check
                             </button>
                             <button type="button" class="btn btn-success" onclick="downloadAsFile()">
                                 <i class="fas fa-download me-2"></i>Download
@@ -1207,6 +1376,49 @@
                             </div>
                             <div id="checker-results" class="checker-results">
                                 <div class="checker-empty">Generate VCC data, then run a test check to review the output.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="live-check-pane" role="tabpanel">
+                        <div class="checker-panel mt-3">
+                            <div class="checker-notice live-notice">
+                                <i class="fas fa-satellite-dish me-1"></i>
+                                <strong>Live upstream check.</strong>
+                                Forwards each generated entry to <code>api.chkr.cc</code> via our serverless proxy and reports the live status (Live / Die / Unknown). The upstream service may rate-limit or return partial data.
+                            </div>
+
+                            <div class="live-progress-wrap" id="live-progress-wrap" style="display:none;">
+                                <div class="live-progress-label">
+                                    <span id="live-progress-text">Preparing...</span>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" id="live-cancel-btn" onclick="cancelLiveCheck()">
+                                        <i class="fas fa-stop me-1"></i>Cancel
+                                    </button>
+                                </div>
+                                <div class="progress live-progress-bar" role="progressbar">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="live-progress-fill" style="width:0%"></div>
+                                </div>
+                            </div>
+
+                            <div class="checker-summary live-summary" id="live-summary">
+                                <div class="checker-stat"><span>Total</span><strong>0</strong></div>
+                                <div class="checker-stat live-stat-live"><span>Live</span><strong>0</strong></div>
+                                <div class="checker-stat live-stat-die"><span>Die</span><strong>0</strong></div>
+                                <div class="checker-stat live-stat-unknown"><span>Unknown</span><strong>0</strong></div>
+                                <div class="checker-stat live-stat-error"><span>Error</span><strong>0</strong></div>
+                            </div>
+
+                            <div class="live-toolbar" id="live-toolbar" style="display:none;">
+                                <button type="button" class="btn btn-sm btn-outline-success" onclick="copyLiveResults('live')">
+                                    <i class="fas fa-copy me-1"></i>Copy Live
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="downloadLiveResults()">
+                                    <i class="fas fa-file-export me-1"></i>Export JSON
+                                </button>
+                            </div>
+
+                            <div id="live-results" class="checker-results">
+                                <div class="checker-empty">Generate VCC data, then run a live check to query the upstream service.</div>
                             </div>
                         </div>
                     </div>
@@ -2087,6 +2299,404 @@
             } catch (error) {
                 renderCheckerResults(checkRawLocally(output));
             }
+        }
+
+        /* ============================================================
+         * Live Check (upstream: api.chkr.cc via /api/live-check proxy)
+         * ============================================================ */
+
+        const LIVE_CHECK_CONCURRENCY = 3;
+        const LIVE_CHECK_REQUEST_TIMEOUT_MS = 22000;
+        const LIVE_CHECK_RATE_LIMIT_COOLDOWN_MS = 4000;
+
+        const liveCheckState = {
+            running: false,
+            cancelled: false,
+            results: [],
+        };
+
+        function liveCheckSupportsProxy() {
+            // The proxy cannot be reached when running from a file:// URL, and
+            // a raw localhost open (no dev server) doesn't host the endpoint
+            // either. In both cases we surface an actionable message instead
+            // of silently failing on every card.
+            if (window.location.protocol === 'file:') return false;
+            if (!window.location.hostname) return false;
+            return true;
+        }
+
+        function toLiveEntries(rawOutput) {
+            // Reuse the same parser the internal checker uses so the two tabs
+            // stay in agreement about what counts as one card.
+            return parseCheckEntries(rawOutput).map((entry, index) => {
+                const card = checkDigits(entry.card);
+                const month = checkDigits(entry.month).slice(0, 2).padStart(2, '0');
+                const year = normalizeCheckYear(entry.year);
+                const cvv = checkDigits(entry.cvv);
+                return {
+                    index: index + 1,
+                    source: entry.source,
+                    card,
+                    month,
+                    year,
+                    cvv,
+                    valid: Boolean(card && month && year && cvv),
+                    dataString: card && month && year && cvv ? `${card}|${month}|${year}|${cvv}` : '',
+                };
+            });
+        }
+
+        function maskPan(pan) {
+            if (!pan) return '';
+            if (pan.length <= 10) return pan;
+            return `${pan.slice(0, 6)}${'*'.repeat(pan.length - 10)}${pan.slice(-4)}`;
+        }
+
+        function renderLiveRow(entry, state) {
+            const row = document.createElement('div');
+            row.className = `checker-row live-row status-${state.status}`;
+            row.dataset.index = String(entry.index);
+
+            const top = document.createElement('div');
+            top.className = 'checker-row-top';
+
+            const title = document.createElement('div');
+            title.className = 'checker-card';
+            title.textContent = `#${entry.index} ${maskPan(entry.card) || 'No card number'}`;
+
+            const badge = document.createElement('span');
+            badge.className = `checker-badge live-badge status-${state.status}`;
+            badge.textContent = state.status.toUpperCase();
+
+            top.append(title, badge);
+            row.appendChild(top);
+
+            const meta = document.createElement('div');
+            meta.className = 'checker-meta';
+            const metaParts = [];
+            if (entry.month && entry.year) metaParts.push(`exp ${entry.month}/${entry.year}`);
+            if (entry.cvv) metaParts.push(`cvv(${entry.cvv.length})`);
+            if (state.message) metaParts.push(state.message);
+            meta.textContent = metaParts.join(' · ');
+            row.appendChild(meta);
+
+            const details = document.createElement('div');
+            details.className = 'live-details';
+            const card = state.upstream && state.upstream.card;
+            if (card) {
+                if (card.bank) details.insertAdjacentHTML('beforeend', `<span>Bank: <b>${escapeHtml(card.bank)}</b></span>`);
+                if (card.type) details.insertAdjacentHTML('beforeend', `<span>Type: <b>${escapeHtml(card.type)}</b></span>`);
+                if (card.category) details.insertAdjacentHTML('beforeend', `<span>Category: <b>${escapeHtml(card.category)}</b></span>`);
+                if (card.country && (card.country.name || card.country.emoji)) {
+                    details.insertAdjacentHTML('beforeend', `<span>Country: <b>${escapeHtml(`${card.country.emoji || ''} ${card.country.name || ''}`.trim())}</b></span>`);
+                }
+            }
+            if (details.childElementCount > 0) row.appendChild(details);
+
+            if (state.upstream && state.upstream.message && state.status !== 'error') {
+                const msg = document.createElement('div');
+                msg.className = 'live-message';
+                msg.textContent = state.upstream.message;
+                row.appendChild(msg);
+            }
+
+            return row;
+        }
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function updateLiveSummary(counts) {
+            const stats = document.querySelectorAll('#live-summary .checker-stat strong');
+            if (stats.length < 5) return;
+            stats[0].textContent = counts.total;
+            stats[1].textContent = counts.live;
+            stats[2].textContent = counts.die;
+            stats[3].textContent = counts.unknown;
+            stats[4].textContent = counts.error;
+        }
+
+        function resetLiveSummary(total) {
+            updateLiveSummary({ total, live: 0, die: 0, unknown: 0, error: 0 });
+        }
+
+        function updateLiveProgress(done, total, note) {
+            const wrap = document.getElementById('live-progress-wrap');
+            const text = document.getElementById('live-progress-text');
+            const fill = document.getElementById('live-progress-fill');
+            if (!wrap || !text || !fill) return;
+            wrap.style.display = 'block';
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            fill.style.width = `${pct}%`;
+            text.textContent = note || `Processed ${done} of ${total} (${pct}%)`;
+        }
+
+        function hideLiveProgress() {
+            const wrap = document.getElementById('live-progress-wrap');
+            if (wrap) wrap.style.display = 'none';
+        }
+
+        function fetchWithTimeout(url, options, timeoutMs) {
+            const controller = new AbortController();
+            const externalSignal = options && options.signal;
+            if (externalSignal) {
+                if (externalSignal.aborted) controller.abort();
+                else externalSignal.addEventListener('abort', () => controller.abort(), { once: true });
+            }
+            const timer = setTimeout(() => controller.abort(), timeoutMs);
+            return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timer));
+        }
+
+        async function queryLiveChecker(entry, signal) {
+            const response = await fetchWithTimeout('/api/live-check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: entry.dataString }),
+                signal,
+            }, LIVE_CHECK_REQUEST_TIMEOUT_MS);
+
+            const payload = await response.json().catch(() => ({ ok: false, error: 'Invalid JSON response.' }));
+
+            if (response.status === 429) {
+                return { status: 'error', message: 'Rate limited by upstream. Slowing down...', upstream: payload, rateLimited: true };
+            }
+
+            if (!response.ok || !payload.ok) {
+                return {
+                    status: 'error',
+                    message: (payload && payload.error) || `HTTP ${response.status}`,
+                    upstream: payload && payload.upstream,
+                };
+            }
+
+            return {
+                status: payload.status || 'unknown',
+                message: (payload.upstream && payload.upstream.message) || '',
+                upstream: payload.upstream || null,
+            };
+        }
+
+        async function processEntry(entry, controller, counts, resultsEl) {
+            let placeholder = resultsEl.querySelector(`[data-index="${entry.index}"]`);
+            if (!placeholder) {
+                placeholder = renderLiveRow(entry, { status: 'pending' });
+                resultsEl.appendChild(placeholder);
+            }
+
+            if (!entry.valid) {
+                const state = { status: 'error', message: 'Missing card/month/year/cvv', upstream: null };
+                placeholder.replaceWith(renderLiveRow(entry, state));
+                counts.error += 1;
+                liveCheckState.results.push({ entry, state });
+                return;
+            }
+
+            try {
+                const state = await queryLiveChecker(entry, controller.signal);
+                if (controller.signal.aborted) return;
+
+                if (state.rateLimited) {
+                    // Back off and retry once. The upstream is shared so we
+                    // want to be polite rather than hammer it.
+                    await new Promise(resolve => setTimeout(resolve, LIVE_CHECK_RATE_LIMIT_COOLDOWN_MS));
+                    if (controller.signal.aborted) return;
+                    const retry = await queryLiveChecker(entry, controller.signal);
+                    placeholder.replaceWith(renderLiveRow(entry, retry));
+                    counts[retry.status] = (counts[retry.status] || 0) + 1;
+                    liveCheckState.results.push({ entry, state: retry });
+                } else {
+                    placeholder.replaceWith(renderLiveRow(entry, state));
+                    counts[state.status] = (counts[state.status] || 0) + 1;
+                    liveCheckState.results.push({ entry, state });
+                }
+            } catch (error) {
+                if (controller.signal.aborted) return;
+                const state = {
+                    status: 'error',
+                    message: error.name === 'AbortError' ? 'Request aborted' : (error.message || 'Network error'),
+                    upstream: null,
+                };
+                placeholder.replaceWith(renderLiveRow(entry, state));
+                counts.error += 1;
+                liveCheckState.results.push({ entry, state });
+            }
+        }
+
+        async function runWithConcurrency(entries, limit, worker) {
+            const queue = entries.slice();
+            const runners = Array.from({ length: Math.min(limit, queue.length) }, async () => {
+                while (queue.length > 0) {
+                    const next = queue.shift();
+                    if (!next) return;
+                    await worker(next);
+                }
+            });
+            await Promise.all(runners);
+        }
+
+        let liveCheckController = null;
+
+        function cancelLiveCheck() {
+            if (!liveCheckState.running) return;
+            liveCheckState.cancelled = true;
+            if (liveCheckController) liveCheckController.abort();
+        }
+
+        async function runLiveCheck() {
+            if (liveCheckState.running) return;
+            const output = document.getElementById('output').value.trim();
+            if (!output) {
+                alert('Generate VCC data first before running the live check.');
+                return;
+            }
+
+            if (!liveCheckSupportsProxy()) {
+                alert('Live check requires the serverless proxy. Open this page via the Vercel deployment or "vercel dev" instead of file://.');
+                return;
+            }
+
+            const entries = toLiveEntries(output);
+            if (entries.length === 0) {
+                alert('No parseable entries found in the generated output.');
+                return;
+            }
+
+            document.getElementById('live-check-tab').click();
+
+            const resultsEl = document.getElementById('live-results');
+            resultsEl.replaceChildren();
+            entries.forEach(entry => {
+                const placeholder = renderLiveRow(entry, { status: 'pending', message: 'Queued' });
+                resultsEl.appendChild(placeholder);
+            });
+
+            document.getElementById('live-toolbar').style.display = 'none';
+            resetLiveSummary(entries.length);
+            updateLiveProgress(0, entries.length, `Queued ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}...`);
+
+            const btn = document.getElementById('live-check-btn');
+            if (btn) btn.disabled = true;
+
+            const counts = { total: entries.length, live: 0, die: 0, unknown: 0, error: 0 };
+            liveCheckController = new AbortController();
+            liveCheckState.running = true;
+            liveCheckState.cancelled = false;
+            liveCheckState.results = [];
+
+            let processed = 0;
+            const onProgress = () => {
+                processed += 1;
+                updateLiveSummary(counts);
+                updateLiveProgress(processed, entries.length);
+            };
+
+            try {
+                await runWithConcurrency(entries, LIVE_CHECK_CONCURRENCY, async (entry) => {
+                    if (liveCheckController.signal.aborted) return;
+                    await processEntry(entry, liveCheckController, counts, resultsEl);
+                    onProgress();
+                });
+            } finally {
+                liveCheckState.running = false;
+                if (btn) btn.disabled = false;
+                const finalNote = liveCheckState.cancelled
+                    ? `Cancelled at ${processed}/${entries.length}.`
+                    : `Done. ${counts.live} live · ${counts.die} die · ${counts.unknown} unknown · ${counts.error} error.`;
+                updateLiveProgress(processed, entries.length, finalNote);
+                updateLiveSummary(counts);
+                if (liveCheckState.results.length > 0) {
+                    document.getElementById('live-toolbar').style.display = 'flex';
+                }
+                setTimeout(hideLiveProgress, 3500);
+            }
+        }
+
+        function copyLiveResults(filter) {
+            const lines = liveCheckState.results
+                .filter(item => (filter ? item.state.status === filter : true))
+                .map(item => item.entry.dataString)
+                .filter(Boolean);
+            if (lines.length === 0) {
+                alert(`No ${filter || ''} results to copy.`);
+                return;
+            }
+            navigator.clipboard.writeText(lines.join('\n')).then(() => {
+                showLiveToast(`Copied ${lines.length} ${filter || ''} entr${lines.length === 1 ? 'y' : 'ies'}.`);
+            }).catch(() => {
+                alert('Clipboard copy failed. Use Export JSON instead.');
+            });
+        }
+
+        function showLiveToast(message) {
+            // Lightweight, self-contained toast so we don't depend on any
+            // existing notification plumbing.
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = [
+                'position:fixed',
+                'bottom:24px',
+                'left:50%',
+                'transform:translateX(-50%) translateY(20px)',
+                'background:var(--dark-color)',
+                'color:var(--light-color)',
+                'padding:0.6rem 1.1rem',
+                'border-radius:999px',
+                'font-size:0.82rem',
+                'font-weight:600',
+                'box-shadow:var(--box-shadow-lg)',
+                'opacity:0',
+                'transition:opacity 0.25s ease-out, transform 0.25s ease-out',
+                'z-index:9999',
+                'pointer-events:none',
+            ].join(';');
+            document.body.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+            });
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(20px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 2200);
+        }
+
+        function downloadLiveResults() {
+            if (liveCheckState.results.length === 0) {
+                alert('No results to export yet.');
+                return;
+            }
+            const payload = {
+                generated_at: new Date().toISOString(),
+                source: 'chkr.cc via /api/live-check',
+                total: liveCheckState.results.length,
+                results: liveCheckState.results.map(item => ({
+                    index: item.entry.index,
+                    card: maskPan(item.entry.card),
+                    card_raw: item.entry.card,
+                    month: item.entry.month,
+                    year: item.entry.year,
+                    cvv_length: item.entry.cvv.length,
+                    status: item.state.status,
+                    message: item.state.message || '',
+                    details: item.state.upstream && item.state.upstream.card ? item.state.upstream.card : null,
+                })),
+            };
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `live-check-${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
         }
 
         /** Available months for random generation */

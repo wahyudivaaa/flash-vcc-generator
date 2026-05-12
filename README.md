@@ -10,16 +10,33 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 - Export in pipe, CSV-style, JSON, raw number, or formatted VCC layouts
 - Validate output with the Luhn algorithm
 - Run batch test checks for format, network, expiry, CVV, and duplicates
-- Avoid storage and external live-card checking services
+- Run live upstream checks against `api.chkr.cc` via a server-side proxy (Live / Die / Unknown)
+- Avoid local storage of generated numbers
 
 ## Usage
 
-1. Open `index.html` in a browser.
+1. Open `index.html` in a browser, or deploy to Vercel.
 2. Enter a BIN pattern. Use `x` for random digits, for example `411111xxxxxx1111`.
 3. Choose expiration, CVV, quantity, and output format.
 4. Click **Generate VCC Data**.
-5. Click **Run Test Check** to review generated test data.
+5. Click **Run Test Check** for internal Luhn/format validation, or **Run Live Check** to query `chkr.cc` for live upstream status.
 6. Copy or download the generated test data.
+
+## Live Check
+
+- Requires the serverless proxy at `/api/live-check` (works on the Vercel deployment or when running `node dev-server.js` locally).
+- Forwards one entry at a time to `https://api.chkr.cc/` from the server to avoid CORS and to centralize rate limiting.
+- Frontend processes entries with concurrency 3 and shows a real-time progress bar.
+- Results show card bank, type, category, and country when available. Live lines can be copied or exported as JSON.
+
+## Local Development
+
+```bash
+node dev-server.js
+# serves http://localhost:3000 with API routes under /api/*
+```
+
+Set `PORT=4173` (or any free port) if 3000 is in use.
 
 ## Technology Stack
 
@@ -27,8 +44,8 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 - CSS3
 - Bootstrap
 - JavaScript
-- Vercel Functions for internal test validation
+- Vercel Functions for internal test validation and the live-check proxy
 
 ## Disclaimer
 
-Flash VCC Generator is for educational, development, and authorized testing use only. Generated numbers are fictional test data and cannot be used for real financial transactions. The checker validates generated test data only; it does not perform live card checks.
+Flash VCC Generator is for educational, development, and authorized testing use only. Generated numbers are fictional test data and cannot be used for real financial transactions. The live checker forwards requests to a third-party public service (`chkr.cc`); use it only with test data you are authorized to submit.
