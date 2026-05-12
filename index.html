@@ -1435,6 +1435,27 @@
             }
         }
 
+        .bin-library-section-label {
+            display: flex;
+            align-items: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--secondary-color);
+            margin: 0.6rem 0 0.35rem;
+            padding-bottom: 0.35rem;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .bin-library-section-label:first-of-type {
+            margin-top: 0.1rem;
+        }
+
+        .dark-mode .bin-library-section-label {
+            border-bottom-color: #343126;
+        }
+
         .accordion {
             border-radius: var(--border-radius);
             overflow: hidden;
@@ -3657,6 +3678,12 @@
             data: null,
             activeScheme: 'all',
             query: '',
+            // Master DB search state (live search against 158k BIN DB)
+            masterResults: null,
+            masterTotal: 0,
+            masterLoading: false,
+            masterDebounce: null,
+            masterAbort: null,
         };
 
         function countryFlagFromAlpha2(alpha2) {
@@ -3719,6 +3746,7 @@
                     binLibraryState.activeScheme = scheme;
                     renderBinLibraryFilters();
                     renderBinLibraryList();
+                    scheduleMasterSearch();
                 });
                 container.appendChild(chip);
             });
@@ -3813,18 +3841,133 @@
             return card;
         }
 
+        /**
+         * Map a master-DB record (from /api/bin-search) into the shape our
+         * curated cards use. Scheme names from the master DB are normalized
+         * ("Visa", "MasterCard", ...) so we lowercase them to match the slug
+         * our UI classes are keyed on.
+         */
+        function masterRecordToEntry(record) {
+            const scheme = (record.scheme || '').toLowerCase()
+                .replace(/american express/, 'amex')
+                .replace(/master.*card/, 'mastercard')
+                .replace(/diners.*club/, 'diners')
+                .replace(/unionpay|china unionpay/, 'unionpay');
+            return {
+                bin: record.bin || '',
+                scheme,
+                type: (record.type || '').toLowerCase(),
+                tier: record.category ? String(record.category).toLowerCase() : '',
+                issuer: record.issuer || 'Unknown issuer',
+                country: record.alpha2 || '',
+                region: '',
+                note: record.country && record.alpha2 && record.country.toLowerCase() !== record.alpha2.toLowerCase()
+                    ? record.country
+                    : '',
+                __master: true,
+            };
+        }
+
+        function renderMasterLoading() {
+            const listEl = document.getElementById('bin-library-list');
+            if (!listEl) return;
+            listEl.replaceChildren();
+            const el = document.createElement('div');
+            el.className = 'bin-library-loading';
+            el.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Searching 159k BIN master database...';
+            listEl.appendChild(el);
+            const countEl = document.getElementById('bin-library-count');
+            if (countEl) countEl.textContent = '...';
+        }
+
+        /**
+         * Query the master DB through /api/bin-search with debounce + request
+         * cancellation. Falls back to the in-memory curated list on error.
+         */
+        async function searchMasterDb(query) {
+            if (binLibraryState.masterAbort) {
+                try { binLibraryState.masterAbort.abort(); } catch {}
+            }
+            const controller = new AbortController();
+            binLibraryState.masterAbort = controller;
+
+            const params = new URLSearchParams({ q: query, limit: '120' });
+            if (binLibraryState.activeScheme && binLibraryState.activeScheme !== 'all') {
+                params.set('scheme', SCHEME_LABELS[binLibraryState.activeScheme] || binLibraryState.activeScheme);
+            }
+
+            try {
+                const response = await fetch(`/api/bin-search?${params.toString()}`, {
+                    signal: controller.signal,
+                    headers: { Accept: 'application/json' },
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const payload = await response.json();
+                if (!payload.ok) throw new Error(payload.error || 'Search failed');
+                binLibraryState.masterTotal = payload.total || 0;
+                binLibraryState.masterResults = (payload.results || []).map(masterRecordToEntry);
+                return payload;
+            } finally {
+                if (binLibraryState.masterAbort === controller) binLibraryState.masterAbort = null;
+            }
+        }
+
+        function scheduleMasterSearch() {
+            if (binLibraryState.masterDebounce) clearTimeout(binLibraryState.masterDebounce);
+            const query = binLibraryState.query;
+            // Don't hit the endpoint for trivially short queries - keep the
+            // curated list visible for empty/1-char inputs.
+            if (!query || query.trim().length < 2) {
+                binLibraryState.masterResults = null;
+                binLibraryState.masterLoading = false;
+                renderBinLibraryList();
+                return;
+            }
+            binLibraryState.masterLoading = true;
+            renderMasterLoading();
+            binLibraryState.masterDebounce = setTimeout(async () => {
+                try {
+                    await searchMasterDb(query.trim());
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        // On error, fall back to curated-only render.
+                        binLibraryState.masterResults = null;
+                    }
+                } finally {
+                    binLibraryState.masterLoading = false;
+                    renderBinLibraryList();
+                }
+            }, 220);
+        }
+
         function renderBinLibraryList() {
             const listEl = document.getElementById('bin-library-list');
             const countEl = document.getElementById('bin-library-count');
             if (!listEl || !binLibraryState.data) return;
 
-            const all = binLibraryState.data.bins || [];
-            const filtered = filterBinEntries(all, binLibraryState.query, binLibraryState.activeScheme);
-            if (countEl) countEl.textContent = `${filtered.length}/${all.length}`;
+            const curated = binLibraryState.data.bins || [];
+            const curatedFiltered = filterBinEntries(curated, binLibraryState.query, binLibraryState.activeScheme);
+            const masterEntries = binLibraryState.masterResults || [];
+
+            // Deduplicate: if a BIN shows up in both curated and master, prefer
+            // the curated entry (it has richer notes).
+            const curatedBins = new Set(curatedFiltered.map(e => e.bin));
+            const masterUnique = masterEntries.filter(e => !curatedBins.has(e.bin));
+
+            const totalShown = curatedFiltered.length + masterUnique.length;
+            const curatedTotal = curated.length;
+            const masterTotal = binLibraryState.masterTotal;
+            if (countEl) {
+                if (masterEntries.length > 0 || binLibraryState.masterLoading) {
+                    countEl.textContent = `${totalShown} shown · ${masterTotal.toLocaleString()} in master`;
+                } else {
+                    countEl.textContent = `${curatedFiltered.length}/${curatedTotal}`;
+                }
+            }
 
             listEl.replaceChildren();
 
-            if (filtered.length === 0) {
+            if (totalShown === 0 && !binLibraryState.masterLoading) {
                 const empty = document.createElement('div');
                 empty.className = 'bin-library-empty';
                 empty.innerHTML = '<i class="fas fa-search"></i><div>No BINs match your filter. Try clearing the search or picking a different scheme.</div>';
@@ -3832,8 +3975,8 @@
                 return;
             }
 
-            const groups = groupBinEntries(filtered);
-            groups.forEach(([scheme, entries]) => {
+            const renderSection = (heading, entries, iconClass) => {
+                if (entries.length === 0) return;
                 const wrap = document.createElement('div');
                 wrap.className = 'bin-library-group';
 
@@ -3842,8 +3985,7 @@
 
                 const title = document.createElement('span');
                 title.className = 'bin-library-group-title';
-                const schemeLabel = SCHEME_LABELS[scheme] || scheme;
-                title.innerHTML = `<i class="${SCHEME_ICONS[scheme] || 'far fa-credit-card'}" aria-hidden="true" style="margin-right: 0.35rem;"></i>${escapeBasicHtml(schemeLabel)}`;
+                title.innerHTML = `<i class="${iconClass}" aria-hidden="true" style="margin-right: 0.35rem;"></i>${escapeBasicHtml(heading)}`;
 
                 const count = document.createElement('span');
                 count.className = 'bin-library-group-count';
@@ -3858,7 +4000,39 @@
                 wrap.appendChild(grid);
 
                 listEl.appendChild(wrap);
-            });
+            };
+
+            // Curated section - grouped by scheme for readability.
+            if (curatedFiltered.length > 0) {
+                const curatedHeader = document.createElement('div');
+                curatedHeader.className = 'bin-library-section-label';
+                curatedHeader.innerHTML = '<i class="fas fa-star me-2" style="color: var(--primary-color);"></i>Curated picks';
+                listEl.appendChild(curatedHeader);
+
+                const curatedGroups = groupBinEntries(curatedFiltered);
+                curatedGroups.forEach(([scheme, entries]) => {
+                    renderSection(SCHEME_LABELS[scheme] || scheme, entries, SCHEME_ICONS[scheme] || 'far fa-credit-card');
+                });
+            }
+
+            // Master DB section - flat list, already ordered by provider.
+            if (masterUnique.length > 0) {
+                const masterHeader = document.createElement('div');
+                masterHeader.className = 'bin-library-section-label';
+                const more = Math.max(0, masterTotal - masterEntries.length);
+                masterHeader.innerHTML = `<i class="fas fa-database me-2" style="color: var(--accent-color);"></i>From master DB${more > 0 ? ` <span class="text-muted" style="font-weight: 500; font-size: 0.75rem;">(${masterUnique.length} shown${masterTotal > masterEntries.length ? `, ${more.toLocaleString()} more — narrow your search` : ''})</span>` : ''}`;
+                listEl.appendChild(masterHeader);
+
+                renderSection('Master database hits', masterUnique, 'fas fa-database');
+            }
+
+            if (binLibraryState.masterLoading) {
+                const spin = document.createElement('div');
+                spin.className = 'bin-library-loading';
+                spin.style.padding = '0.75rem';
+                spin.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Searching master DB...';
+                listEl.appendChild(spin);
+            }
         }
 
         function applyBinFromLibrary(entry) {
@@ -3909,11 +4083,13 @@
                     binLibraryState.query = e.target.value || '';
                     if (clearBtn) clearBtn.style.display = binLibraryState.query ? 'inline-flex' : 'none';
                     renderBinLibraryList();
+                    scheduleMasterSearch();
                 });
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         searchInput.value = '';
                         binLibraryState.query = '';
+                        binLibraryState.masterResults = null;
                         if (clearBtn) clearBtn.style.display = 'none';
                         renderBinLibraryList();
                     }
@@ -3925,6 +4101,7 @@
                 clearBtn.addEventListener('click', () => {
                     if (searchInput) searchInput.value = '';
                     binLibraryState.query = '';
+                    binLibraryState.masterResults = null;
                     clearBtn.style.display = 'none';
                     renderBinLibraryList();
                     if (searchInput) searchInput.focus();

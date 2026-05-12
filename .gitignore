@@ -1,3 +1,5 @@
 .playwright-mcp/
 .sisyphus/
 live-*.png
+
+data/.binlist-source.csv

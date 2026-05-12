@@ -176,6 +176,97 @@ function emptyDetail() {
  * Provider adapters - each returns a normalized detail object or throws.
  * ============================================================================ */
 
+/* ------------------------------------------------------------------------- *
+ * Local master BIN database.
+ *
+ * Loaded once at cold start from data/bin-master.json (~13 MB compact,
+ * ~159k BINs). Lookups are O(log n) via binary search on a sorted BIN
+ * array. Response time is <5ms — dramatically faster and more reliable
+ * than upstream APIs, and it works with zero network dependency.
+ *
+ * The JSON is emitted by scripts/build-bin-master.js from the upstream
+ * iannuttall/binlist-data CSV. Schemes and issuers are interned into
+ * lookup tables so the payload stays compact.
+ * ------------------------------------------------------------------------- */
+
+const path = require('path');
+const fs = require('fs');
+
+let masterDb = null;
+let masterLoadError = null;
+
+function loadMasterDb() {
+  if (masterDb) return masterDb;
+  if (masterLoadError) throw masterLoadError;
+  try {
+    const file = path.join(__dirname, '..', 'data', 'bin-master.json');
+    const raw = fs.readFileSync(file, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed.bins) || !Array.isArray(parsed.schemes) || !Array.isArray(parsed.issuers)) {
+      throw new Error('master DB: unexpected shape');
+    }
+    masterDb = parsed;
+    return masterDb;
+  } catch (err) {
+    masterLoadError = err;
+    throw err;
+  }
+}
+
+/**
+ * Look up a BIN in the sorted master list. Tries the longest prefix first
+ * (8 digits → 7 → 6) so specific ranges win over generic ones when both
+ * exist (e.g. an 8-digit BCA range inside a broader 6-digit Visa range).
+ */
+function findInMaster(bin, bins) {
+  for (let len = Math.min(8, bin.length); len >= 6; len--) {
+    const needle = bin.slice(0, len);
+    const row = binarySearchExact(bins, needle);
+    if (row) return row;
+  }
+  return null;
+}
+
+function binarySearchExact(rows, needle) {
+  let lo = 0;
+  let hi = rows.length - 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    const midBin = rows[mid][0];
+    if (midBin === needle) return rows[mid];
+    if (midBin < needle) lo = mid + 1;
+    else hi = mid - 1;
+  }
+  return null;
+}
+
+async function providerLocalMaster(bin) {
+  const db = loadMasterDb();
+  const row = findInMaster(bin, db.bins);
+  if (!row) {
+    const err = new Error('local-master: BIN not in database');
+    err.status = 404;
+    err.retryable = false;
+    throw err;
+  }
+
+  const [matchedBin, schemeIdx, type, category, issuerIdx, alpha2, country, phone, url] = row;
+
+  const detail = emptyDetail();
+  detail.bin = matchedBin;
+  detail.scheme = upper(db.schemes[schemeIdx]);
+  detail.brand = db.schemes[schemeIdx];
+  detail.type = upper(type);
+  detail.category = upper(category);
+  detail.bank.name = db.issuers[issuerIdx] || null;
+  detail.bank.phone = phone || null;
+  detail.bank.url = url || null;
+  detail.country.alpha2 = alpha2 || null;
+  detail.country.name = country || null;
+  detail.country.emoji = countryFlagEmoji(alpha2);
+  return detail;
+}
+
 async function providerAntipublic(bin) {
   const response = await fetchWithTimeout(
     `https://bins.antipublic.cc/bins/${bin}`,
@@ -318,9 +409,10 @@ async function providerBinlist(bin) {
 }
 
 const PROVIDERS = [
-  { id: 'antipublic', label: 'bins.antipublic.cc', run: providerAntipublic },
-  { id: 'rustbin',    label: 'rustbin.site',       run: providerRustbin },
-  { id: 'binlist',    label: 'lookup.binlist.net', run: providerBinlist },
+  { id: 'local-master', label: 'local master DB',   run: providerLocalMaster, local: true },
+  { id: 'antipublic',   label: 'bins.antipublic.cc', run: providerAntipublic },
+  { id: 'rustbin',      label: 'rustbin.site',       run: providerRustbin },
+  { id: 'binlist',      label: 'lookup.binlist.net', run: providerBinlist },
 ];
 
 /**
@@ -333,7 +425,8 @@ async function lookupChain(bin) {
   for (const provider of PROVIDERS) {
     const startedAt = Date.now();
     try {
-      await reserveSlot();
+      // Local providers don't need the upstream throttle slot.
+      if (!provider.local) await reserveSlot();
       const detail = await provider.run(bin);
       attempts.push({
         provider: provider.id,

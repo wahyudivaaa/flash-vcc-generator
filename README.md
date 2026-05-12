@@ -33,17 +33,33 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 ## BIN Lookup
 
 - Click the search icon next to the BIN Pattern field, or open the **BIN Info** tab.
-- Server-side proxy at `/api/bin-lookup` queries, in order: `bins.antipublic.cc`, `rustbin.site`, `lookup.binlist.net`.
-- First provider with a successful response wins; the provider chain is displayed so you can see which source answered and how long each call took.
+- Server-side proxy at `/api/bin-lookup` queries a 4-stage provider chain:
+  1. **Local master DB** (bundled 159k BINs from iannuttall/binlist-data, sub-millisecond in-process lookup — no network required).
+  2. `bins.antipublic.cc` — Cloudflare-cached public API.
+  3. `rustbin.site` — 25/min keyless fallback.
+  4. `lookup.binlist.net` — legacy fallback, hard-capped.
+- First provider with a usable answer wins; the provider chain is displayed so you can see which source answered and how long each call took.
 - Returns normalized issuer profile: scheme, type (credit/debit/prepaid), category, brand, bank (name / url / phone / city), country (with flag), and currency.
 
 ## BIN Library
 
-- Click the <i class="fas fa-book"></i> icon next to the BIN Pattern field to open a curated BIN picker modal.
-- 134 publicly-documented BINs organized by scheme (Visa, MasterCard, Amex, Discover, JCB, UnionPay) with live search across BIN, issuer, country, tier, and note.
-- Coverage: US majors (Chase, BoA, Citi, Wells, Cap One, Amex), UK/EU banks (HSBC, Barclays, BNP, Revolut, Monzo, N26, Wise), Asian banks (DBS, OCBC, UOB, Mizuho, ICBC, HSBC HK), 27 Indonesian bank BINs (BCA, Mandiri, BRI, BNI, CIMB, Permata), plus popular Stripe/Adyen test BINs.
-- Click any entry to auto-fill the BIN Pattern field with padding to the scheme's PAN length.
-- Data compiled from open-source BIN datasets (iannuttall/binlist-data, binlist/data, venelinkochev/bin-list-data) + public payment-network documentation. For test/dev use only.
+- Click the <i class="fas fa-book"></i> icon next to the BIN Pattern field to open a searchable library modal.
+- Two-tier search: 134 hand-picked popular BINs rendered instantly, plus live search against the full 159k master BIN database (`/api/bin-search`) as you type.
+- Filters: scheme chips (Visa / MasterCard / Amex / Discover / JCB / UnionPay) with live counts; plain-text search across BIN / issuer / country / tier / note.
+- Covers US majors (Chase, BoA, Citi, Wells Fargo, Cap One, Amex), UK/EU banks (HSBC, Barclays, Monzo, Revolut, Wise), Asia banks (DBS, OCBC, UOB, Mizuho, ICBC), 27 Indonesian issuers (BCA, Mandiri, BRI, BNI, CIMB Niaga, Permata), plus popular Stripe/Adyen test BINs.
+- Click any entry to auto-fill the BIN Pattern field, padded to the correct PAN length for the scheme.
+
+## Master BIN Database
+
+The file `data/bin-master.json` (~13 MB, ~159k BINs) is generated from the upstream [iannuttall/binlist-data](https://github.com/iannuttall/binlist-data) CSV by `scripts/build-bin-master.js`. The raw CSV (`data/.binlist-source.csv`) is gitignored; run these steps to regenerate locally:
+
+```bash
+# Download the upstream CSV (~27 MB)
+curl -L https://raw.githubusercontent.com/iannuttall/binlist-data/master/binlist-data.csv -o data/.binlist-source.csv
+
+# Build the optimized JSON
+node scripts/build-bin-master.js
+```
 
 ## BIN Library
 
