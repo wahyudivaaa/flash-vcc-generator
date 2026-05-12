@@ -803,6 +803,165 @@
             margin: 0.25rem 0 0.75rem;
         }
 
+        .live-filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            padding: 0.55rem 0.6rem;
+            margin: 0.25rem 0 0.75rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .dark-mode .live-filter-bar {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        .live-filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--secondary-color);
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            user-select: none;
+        }
+
+        .dark-mode .live-filter-chip {
+            border-color: #343126;
+            color: var(--secondary-color);
+        }
+
+        .live-filter-chip i {
+            font-size: 0.85rem;
+        }
+
+        .live-filter-chip:hover {
+            border-color: var(--primary-color);
+            color: var(--dark-color);
+        }
+
+        .dark-mode .live-filter-chip:hover {
+            color: var(--light-color);
+        }
+
+        .live-filter-chip.filter-live i   { color: var(--success-color); }
+        .live-filter-chip.filter-die i    { color: var(--danger-color); }
+        .live-filter-chip.filter-unknown i{ color: var(--secondary-color); }
+        .live-filter-chip.filter-error i  { color: var(--warning-color); }
+
+        .live-filter-chip.active {
+            background: var(--primary-color);
+            color: var(--dark-color);
+            border-color: var(--primary-color);
+        }
+
+        .live-filter-chip.active i { color: inherit; }
+
+        .live-filter-chip.filter-live.active   { background: var(--success-color); color: #fff; border-color: var(--success-color); }
+        .live-filter-chip.filter-die.active    { background: var(--danger-color);  color: #fff; border-color: var(--danger-color); }
+        .live-filter-chip.filter-unknown.active{ background: var(--secondary-color); color: #fff; border-color: var(--secondary-color); }
+        .live-filter-chip.filter-error.active  { background: var(--warning-color); color: #fff; border-color: var(--warning-color); }
+
+        .live-filter-chip.is-empty {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .live-filter-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.25rem;
+            padding: 0 0.35rem;
+            border-radius: 999px;
+            background: rgba(21, 21, 21, 0.12);
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: inherit;
+        }
+
+        .dark-mode .live-filter-count {
+            background: rgba(248, 243, 223, 0.18);
+        }
+
+        .live-filter-chip.active .live-filter-count {
+            background: rgba(255, 255, 255, 0.25);
+            color: inherit;
+        }
+
+        .live-results-section {
+            margin-bottom: 1rem;
+        }
+
+        .live-results-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.1rem 0.35rem;
+            border-bottom: 1px dashed var(--border-color);
+            margin-bottom: 0.5rem;
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--secondary-color);
+        }
+
+        .dark-mode .live-results-section-header {
+            border-bottom-color: #343126;
+        }
+
+        .live-results-section-header .section-icon {
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #fff;
+        }
+
+        .live-results-section.status-live .section-icon    { background: var(--success-color); }
+        .live-results-section.status-die .section-icon     { background: var(--danger-color); }
+        .live-results-section.status-unknown .section-icon { background: var(--secondary-color); }
+        .live-results-section.status-error .section-icon   { background: var(--warning-color); }
+
+        .live-results-section .section-title {
+            flex: 1 1 auto;
+        }
+
+        .live-results-section .section-count {
+            font-size: 0.68rem;
+            padding: 0.1rem 0.45rem;
+            border-radius: 999px;
+            background: rgba(21, 21, 21, 0.08);
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        .dark-mode .live-results-section .section-count {
+            background: rgba(248, 243, 223, 0.1);
+        }
+
+        .live-results-section-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
         .live-row {
             border-left: 3px solid transparent;
             transition: var(--transition-fast);
@@ -2249,6 +2408,24 @@
                                 </button>
                             </div>
 
+                            <div class="live-filter-bar" id="live-filter-bar" role="tablist">
+                                <button type="button" class="live-filter-chip active" data-filter="all" onclick="setLiveFilter('all')">
+                                    <i class="fas fa-layer-group"></i>All <span class="live-filter-count" id="live-filter-count-all">0</span>
+                                </button>
+                                <button type="button" class="live-filter-chip filter-live" data-filter="live" onclick="setLiveFilter('live')">
+                                    <i class="fas fa-circle-check"></i>Live <span class="live-filter-count" id="live-filter-count-live">0</span>
+                                </button>
+                                <button type="button" class="live-filter-chip filter-die" data-filter="die" onclick="setLiveFilter('die')">
+                                    <i class="fas fa-circle-xmark"></i>Die <span class="live-filter-count" id="live-filter-count-die">0</span>
+                                </button>
+                                <button type="button" class="live-filter-chip filter-unknown" data-filter="unknown" onclick="setLiveFilter('unknown')">
+                                    <i class="fas fa-circle-question"></i>Unknown <span class="live-filter-count" id="live-filter-count-unknown">0</span>
+                                </button>
+                                <button type="button" class="live-filter-chip filter-error" data-filter="error" onclick="setLiveFilter('error')">
+                                    <i class="fas fa-triangle-exclamation"></i>Error <span class="live-filter-count" id="live-filter-count-error">0</span>
+                                </button>
+                            </div>
+
                             <div id="live-results" class="checker-results">
                                 <div class="checker-empty">Generate VCC data, then run a live check to query the upstream service.</div>
                             </div>
@@ -3281,6 +3458,7 @@
             running: false,
             cancelled: false,
             results: [],
+            filter: 'all',
         };
 
         function liveCheckSupportsProxy() {
@@ -3486,16 +3664,152 @@
             };
         }
 
+        /**
+         * Make sure the results container has the four status sections laid
+         * out, plus a pending/queue section at the top. Rows slot into the
+         * matching section once their status is known, so Live stays apart
+         * from Die at all times.
+         */
+        function ensureLiveSections(resultsEl, total) {
+            if (resultsEl.dataset.sectionsReady === 'true') return;
+            resultsEl.replaceChildren();
+            resultsEl.dataset.sectionsReady = 'true';
+
+            const sections = [
+                { key: 'pending', title: 'Checking…', icon: 'fa-spinner fa-spin' },
+                { key: 'live',    title: 'Live',      icon: 'fa-circle-check' },
+                { key: 'die',     title: 'Die',       icon: 'fa-circle-xmark' },
+                { key: 'unknown', title: 'Unknown',   icon: 'fa-circle-question' },
+                { key: 'error',   title: 'Error',     icon: 'fa-triangle-exclamation' },
+            ];
+
+            sections.forEach(({ key, title, icon }) => {
+                const section = document.createElement('div');
+                section.className = `live-results-section status-${key}`;
+                section.dataset.section = key;
+                section.style.display = 'none';
+
+                const header = document.createElement('div');
+                header.className = 'live-results-section-header';
+                header.innerHTML = `
+                    <span class="section-icon"><i class="fas ${icon}"></i></span>
+                    <span class="section-title">${title}</span>
+                    <span class="section-count" data-section-count="${key}">0</span>
+                `;
+
+                const body = document.createElement('div');
+                body.className = 'live-results-section-body';
+                body.dataset.sectionBody = key;
+
+                section.append(header, body);
+                resultsEl.appendChild(section);
+            });
+
+            // Seed all rows into the pending section so the user sees progress
+            // right after pressing Run.
+            const pendingBody = resultsEl.querySelector('[data-section-body="pending"]');
+            if (pendingBody) pendingBody.dataset.seeded = 'false';
+            const pendingSection = resultsEl.querySelector('[data-section="pending"]');
+            if (pendingSection && total > 0) pendingSection.style.display = '';
+            updateLiveSectionCount(resultsEl, 'pending', total);
+        }
+
+        function updateLiveSectionCount(resultsEl, key, count) {
+            const label = resultsEl.querySelector(`[data-section-count="${key}"]`);
+            if (label) label.textContent = count;
+            const section = resultsEl.querySelector(`[data-section="${key}"]`);
+            if (section) section.style.display = count > 0 ? '' : 'none';
+        }
+
+        /**
+         * Place a row under its status section. Used both for the initial
+         * pending placeholder and the resolved result.
+         */
+        function placeLiveRow(resultsEl, row, status) {
+            const body = resultsEl.querySelector(`[data-section-body="${status}"]`);
+            if (!body) return;
+            body.appendChild(row);
+        }
+
+        function countLiveSection(resultsEl, key) {
+            const body = resultsEl.querySelector(`[data-section-body="${key}"]`);
+            return body ? body.childElementCount : 0;
+        }
+
+        function syncLiveSectionCounts(resultsEl) {
+            ['pending', 'live', 'die', 'unknown', 'error'].forEach(key => {
+                updateLiveSectionCount(resultsEl, key, countLiveSection(resultsEl, key));
+            });
+        }
+
+        /**
+         * Apply the filter chip selection - hides sections (and rows) that
+         * don't match. "all" shows everything; "pending" stays visible as
+         * long as there are rows still running regardless of filter.
+         */
+        function applyLiveFilter() {
+            const resultsEl = document.getElementById('live-results');
+            if (!resultsEl || resultsEl.dataset.sectionsReady !== 'true') return;
+            const filter = liveCheckState.filter || 'all';
+            ['pending', 'live', 'die', 'unknown', 'error'].forEach(key => {
+                const section = resultsEl.querySelector(`[data-section="${key}"]`);
+                if (!section) return;
+                const count = countLiveSection(resultsEl, key);
+                if (count === 0) { section.style.display = 'none'; return; }
+                if (filter === 'all') { section.style.display = ''; return; }
+                // Always keep "pending" visible while a run is in progress,
+                // otherwise the user sees nothing when filtering on an empty
+                // bucket before results arrive.
+                if (key === 'pending' && liveCheckState.running) { section.style.display = ''; return; }
+                section.style.display = key === filter ? '' : 'none';
+            });
+        }
+
+        function setLiveFilter(filter) {
+            liveCheckState.filter = filter;
+            const bar = document.getElementById('live-filter-bar');
+            if (bar) {
+                bar.querySelectorAll('.live-filter-chip').forEach(chip => {
+                    chip.classList.toggle('active', chip.dataset.filter === filter);
+                });
+            }
+            applyLiveFilter();
+        }
+
+        function updateLiveFilterCounts(counts) {
+            const map = { all: counts.total, live: counts.live, die: counts.die, unknown: counts.unknown, error: counts.error };
+            Object.keys(map).forEach(key => {
+                const el = document.getElementById(`live-filter-count-${key}`);
+                if (el) el.textContent = map[key] || 0;
+                const chip = document.querySelector(`.live-filter-chip[data-filter="${key}"]`);
+                if (chip) chip.classList.toggle('is-empty', key !== 'all' && !map[key]);
+            });
+        }
+
         async function processEntry(entry, controller, counts, resultsEl) {
+            // Start the row in the pending section so the user sees it
+            // queue up immediately, then move it to live/die/unknown/error
+            // once the upstream result comes back.
             let placeholder = resultsEl.querySelector(`[data-index="${entry.index}"]`);
             if (!placeholder) {
                 placeholder = renderLiveRow(entry, { status: 'pending' });
-                resultsEl.appendChild(placeholder);
+                placeLiveRow(resultsEl, placeholder, 'pending');
             }
+
+            const moveToStatus = (state) => {
+                const newRow = renderLiveRow(entry, state);
+                const pendingBody = resultsEl.querySelector('[data-section-body="pending"]');
+                if (pendingBody && placeholder.parentNode === pendingBody) {
+                    pendingBody.removeChild(placeholder);
+                }
+                placeLiveRow(resultsEl, newRow, state.status);
+                syncLiveSectionCounts(resultsEl);
+                applyLiveFilter();
+            };
 
             if (!entry.valid) {
                 const state = { status: 'error', message: 'Missing card/month/year/cvv', upstream: null };
-                placeholder.replaceWith(renderLiveRow(entry, state));
+                moveToStatus(state);
                 counts.error += 1;
                 liveCheckState.results.push({ entry, state });
                 return;
@@ -3504,7 +3818,7 @@
             try {
                 const state = await queryLiveChecker(entry, controller.signal);
                 if (controller.signal.aborted) return;
-                placeholder.replaceWith(renderLiveRow(entry, state));
+                moveToStatus(state);
                 counts[state.status] = (counts[state.status] || 0) + 1;
                 liveCheckState.results.push({ entry, state });
             } catch (error) {
@@ -3514,7 +3828,7 @@
                     message: error.name === 'AbortError' ? 'Request aborted' : (error.message || 'Network error'),
                     upstream: null,
                 };
-                placeholder.replaceWith(renderLiveRow(entry, state));
+                moveToStatus(state);
                 counts.error += 1;
                 liveCheckState.results.push({ entry, state });
             }
@@ -3562,14 +3876,19 @@
             document.getElementById('live-check-tab').click();
 
             const resultsEl = document.getElementById('live-results');
+            resultsEl.dataset.sectionsReady = 'false';
             resultsEl.replaceChildren();
+            ensureLiveSections(resultsEl, entries.length);
             entries.forEach(entry => {
                 const placeholder = renderLiveRow(entry, { status: 'pending', message: 'Queued' });
-                resultsEl.appendChild(placeholder);
+                placeLiveRow(resultsEl, placeholder, 'pending');
             });
+            syncLiveSectionCounts(resultsEl);
 
             document.getElementById('live-toolbar').style.display = 'none';
             resetLiveSummary(entries.length);
+            updateLiveFilterCounts({ total: entries.length, live: 0, die: 0, unknown: 0, error: 0 });
+            setLiveFilter('all');
             updateLiveProgress(0, entries.length, `Queued ${entries.length} entr${entries.length === 1 ? 'y' : 'ies'}...`);
 
             const btn = document.getElementById('live-check-btn');
@@ -3585,6 +3904,7 @@
             const onProgress = () => {
                 processed += 1;
                 updateLiveSummary(counts);
+                updateLiveFilterCounts(counts);
                 updateLiveProgress(processed, entries.length);
             };
 
