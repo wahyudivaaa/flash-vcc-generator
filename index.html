@@ -1456,6 +1456,245 @@
             border-bottom-color: #343126;
         }
 
+        /* ======================= Master Search ======================= */
+
+        .master-notice {
+            border-left: 3px solid var(--success-color);
+            background: linear-gradient(90deg, rgba(15, 159, 110, 0.1), rgba(15, 159, 110, 0.02));
+        }
+
+        .dark-mode .master-notice {
+            background: linear-gradient(90deg, rgba(15, 159, 110, 0.18), rgba(15, 159, 110, 0.04));
+        }
+
+        .master-search-form {
+            padding: 0.75rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            margin-bottom: 0.75rem;
+        }
+
+        .dark-mode .master-search-form {
+            background: #171717;
+            border-color: #343126;
+        }
+
+        .master-search-row {
+            display: grid;
+            grid-template-columns: minmax(180px, 2fr) minmax(120px, 1fr) minmax(100px, 1fr) minmax(120px, 1fr);
+            gap: 0.6rem;
+        }
+
+        .master-search-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .master-search-field label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--secondary-color);
+        }
+
+        .master-search-field input,
+        .master-search-field select {
+            font-size: 0.82rem;
+        }
+
+        .master-search-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .master-search-stats {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+        }
+
+        .master-stat-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.22rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(15, 159, 110, 0.14);
+            color: var(--success-color);
+            font-weight: 700;
+        }
+
+        .master-stat-chip i {
+            opacity: 0.8;
+        }
+
+        .master-search-status {
+            font-size: 0.78rem;
+            color: var(--secondary-color);
+            margin-bottom: 0.55rem;
+            min-height: 1.2rem;
+        }
+
+        .master-search-status.loading {
+            color: var(--primary-hover);
+            font-weight: 600;
+        }
+
+        .master-search-results {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .master-result-card {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 0.6rem 0.8rem;
+            align-items: center;
+            padding: 0.55rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-left: 3px solid transparent;
+            border-radius: var(--border-radius-sm);
+            background: var(--surface-color);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-align: left;
+            font: inherit;
+            color: inherit;
+            width: 100%;
+        }
+
+        .dark-mode .master-result-card {
+            background: #1a1a17;
+            border-color: #343126;
+            color: #f8f3df;
+        }
+
+        .master-result-card:hover,
+        .master-result-card:focus-visible {
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+            box-shadow: var(--box-shadow);
+            outline: none;
+        }
+
+        .master-result-card.scheme-visa       { border-left-color: #1a1f71; }
+        .master-result-card.scheme-mastercard { border-left-color: #eb001b; }
+        .master-result-card.scheme-amex       { border-left-color: #2671b8; }
+        .master-result-card.scheme-discover   { border-left-color: #f58320; }
+        .master-result-card.scheme-jcb        { border-left-color: #0e4c96; }
+        .master-result-card.scheme-unionpay   { border-left-color: #d2232a; }
+        .master-result-card.scheme-maestro    { border-left-color: #009639; }
+        .master-result-card.scheme-diners     { border-left-color: #0079be; }
+
+        .master-result-bin {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.92rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            color: var(--dark-color);
+        }
+
+        .dark-mode .master-result-bin {
+            color: #f8f3df;
+        }
+
+        .master-result-main {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            min-width: 0;
+        }
+
+        .master-result-issuer {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .dark-mode .master-result-issuer {
+            color: #f8f3df;
+        }
+
+        .master-result-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem 0.55rem;
+            font-size: 0.7rem;
+            color: var(--secondary-color);
+        }
+
+        .master-result-meta .master-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.1rem 0.4rem;
+            border-radius: 999px;
+            background: rgba(21, 21, 21, 0.06);
+            color: var(--dark-color);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-size: 0.65rem;
+        }
+
+        .dark-mode .master-result-meta .master-pill {
+            background: rgba(248, 243, 223, 0.1);
+            color: #f8f3df;
+        }
+
+        .master-result-meta .master-pill.type-credit  { background: rgba(15, 159, 110, 0.18); color: var(--success-color); }
+        .master-result-meta .master-pill.type-debit   { background: rgba(0, 194, 255, 0.16); color: var(--accent-color); }
+        .master-result-meta .master-pill.type-prepaid { background: rgba(249, 115, 22, 0.18); color: var(--warning-color); }
+
+        .master-result-flag {
+            font-size: 1.1rem;
+        }
+
+        .master-search-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .master-page-label {
+            font-size: 0.78rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        @media (max-width: 575.98px) {
+            .master-search-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .master-search-main {
+                grid-column: span 2;
+            }
+            .master-result-card {
+                grid-template-columns: 1fr auto;
+            }
+            .master-result-bin {
+                grid-column: 1;
+            }
+            .master-result-main {
+                grid-column: 1 / -1;
+            }
+        }
+
         .accordion {
             border-radius: var(--border-radius);
             overflow: hidden;
@@ -1917,6 +2156,13 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="master-search-tab" data-bs-toggle="tab" data-bs-target="#master-search-pane" type="button" role="tab" onclick="ensureMasterSearchInit()">
+                            <i class="fas fa-database me-1"></i>
+                            <span class="desktop-tab-label">Master Search</span>
+                            <span class="mobile-tab-label">Search</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab">
                             <i class="fas fa-history me-1"></i>
                             <span class="desktop-tab-label">History</span>
@@ -2026,6 +2272,73 @@
 
                             <div id="bin-info-content" class="checker-results">
                                 <div class="checker-empty">Enter a BIN pattern above and click the <i class="fas fa-search-dollar"></i> button to look up the issuer details.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="master-search-pane" role="tabpanel">
+                        <div class="checker-panel mt-3">
+                            <div class="checker-notice master-notice">
+                                <i class="fas fa-database me-1"></i>
+                                <strong>Master BIN Search.</strong>
+                                Search the bundled 159k-row BIN database by issuer, country, scheme, and type. Click any result to load the BIN into the pattern field.
+                            </div>
+
+                            <form id="master-search-form" class="master-search-form" onsubmit="return false;">
+                                <div class="master-search-row">
+                                    <div class="master-search-field master-search-main">
+                                        <label for="master-search-q"><i class="fas fa-search me-1"></i>Search</label>
+                                        <input type="text" class="form-control" id="master-search-q" placeholder="BIN, bank, country, city..." autocomplete="off">
+                                    </div>
+                                    <div class="master-search-field">
+                                        <label for="master-search-scheme">Scheme</label>
+                                        <select class="form-select" id="master-search-scheme">
+                                            <option value="">Any</option>
+                                        </select>
+                                    </div>
+                                    <div class="master-search-field">
+                                        <label for="master-search-type">Type</label>
+                                        <select class="form-select" id="master-search-type">
+                                            <option value="">Any</option>
+                                            <option value="credit">Credit</option>
+                                            <option value="debit">Debit</option>
+                                            <option value="prepaid">Prepaid</option>
+                                            <option value="charge">Charge</option>
+                                        </select>
+                                    </div>
+                                    <div class="master-search-field">
+                                        <label for="master-search-country">Country</label>
+                                        <select class="form-select" id="master-search-country">
+                                            <option value="">Any</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="master-search-controls">
+                                    <div class="master-search-stats" id="master-search-stats">
+                                        <span class="master-stat-chip"><i class="fas fa-database"></i><span id="master-total">–</span> BINs</span>
+                                    </div>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" id="master-reset-btn" onclick="resetMasterSearch()">
+                                            <i class="fas fa-rotate-left me-1"></i>Reset
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div id="master-search-status" class="master-search-status"></div>
+
+                            <div id="master-search-results" class="master-search-results">
+                                <div class="checker-empty">Type a search above or pick a filter to browse the master BIN database.</div>
+                            </div>
+
+                            <div id="master-search-pagination" class="master-search-pagination" style="display:none;">
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="master-prev" onclick="pageMasterSearch(-1)">
+                                    <i class="fas fa-chevron-left me-1"></i>Prev
+                                </button>
+                                <span id="master-page-label" class="master-page-label">–</span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" id="master-next" onclick="pageMasterSearch(1)">
+                                    Next<i class="fas fa-chevron-right ms-1"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -4130,6 +4443,314 @@
                     err.innerHTML = `<i class="fas fa-exclamation-triangle" style="color: var(--danger-color);"></i><div>Could not load BIN library.<br><small>${escapeBasicHtml(error.message || error)}</small></div>`;
                     listEl.appendChild(err);
                 }
+            }
+        }
+
+        /* ============================================================
+         * Master Search (paginated query to /api/bin-search)
+         * ============================================================ */
+
+        const MASTER_PAGE_SIZE = 40;
+        const masterSearchState = {
+            initialized: false,
+            q: '',
+            scheme: '',
+            type: '',
+            country: '',
+            offset: 0,
+            total: 0,
+            debounce: null,
+            abort: null,
+            facets: null,
+        };
+
+        function masterFlagEmoji(alpha2) {
+            if (!alpha2 || alpha2.length !== 2) return '';
+            const base = 0x1F1E6;
+            const up = alpha2.toUpperCase();
+            return String.fromCodePoint(base + up.charCodeAt(0) - 65) + String.fromCodePoint(base + up.charCodeAt(1) - 65);
+        }
+
+        function masterSchemeSlug(scheme) {
+            if (!scheme) return '';
+            const s = String(scheme).toLowerCase();
+            if (s.includes('visa')) return 'visa';
+            if (s.includes('master')) return 'mastercard';
+            if (s.includes('amex') || s.includes('american')) return 'amex';
+            if (s.includes('discover')) return 'discover';
+            if (s.includes('jcb')) return 'jcb';
+            if (s.includes('union')) return 'unionpay';
+            if (s.includes('maestro')) return 'maestro';
+            if (s.includes('diners')) return 'diners';
+            return '';
+        }
+
+        async function ensureMasterSearchInit() {
+            if (masterSearchState.initialized) return;
+            masterSearchState.initialized = true;
+
+            const qInput = document.getElementById('master-search-q');
+            const schemeSel = document.getElementById('master-search-scheme');
+            const typeSel = document.getElementById('master-search-type');
+            const countrySel = document.getElementById('master-search-country');
+
+            if (qInput) {
+                qInput.addEventListener('input', () => {
+                    masterSearchState.q = qInput.value || '';
+                    masterSearchState.offset = 0;
+                    scheduleMasterSearchFetch();
+                });
+                qInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        qInput.value = '';
+                        masterSearchState.q = '';
+                        masterSearchState.offset = 0;
+                        scheduleMasterSearchFetch();
+                    }
+                });
+            }
+
+            [schemeSel, typeSel, countrySel].forEach(sel => {
+                if (!sel) return;
+                sel.addEventListener('change', () => {
+                    masterSearchState.scheme  = document.getElementById('master-search-scheme').value;
+                    masterSearchState.type    = document.getElementById('master-search-type').value;
+                    masterSearchState.country = document.getElementById('master-search-country').value;
+                    masterSearchState.offset = 0;
+                    runMasterSearch();
+                });
+            });
+
+            await loadMasterFacets();
+            runMasterSearch();
+        }
+
+        async function loadMasterFacets() {
+            try {
+                const response = await fetch('/api/bin-search?facets=1&limit=1', { headers: { Accept: 'application/json' } });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const payload = await response.json();
+                if (!payload.ok || !payload.facets) return;
+                masterSearchState.facets = payload.facets;
+
+                const totalEl = document.getElementById('master-total');
+                if (totalEl && payload.facets.total) totalEl.textContent = payload.facets.total.toLocaleString();
+
+                // Populate scheme select with live counts.
+                const schemeSel = document.getElementById('master-search-scheme');
+                if (schemeSel && Array.isArray(payload.facets.schemes)) {
+                    schemeSel.innerHTML = '<option value="">Any</option>';
+                    payload.facets.schemes.forEach(({ key, count }) => {
+                        const opt = document.createElement('option');
+                        opt.value = key;
+                        opt.textContent = `${key} (${count.toLocaleString()})`;
+                        schemeSel.appendChild(opt);
+                    });
+                }
+
+                // Populate country select — keep top 60 so it's scannable.
+                const countrySel = document.getElementById('master-search-country');
+                if (countrySel && Array.isArray(payload.facets.countries)) {
+                    countrySel.innerHTML = '<option value="">Any</option>';
+                    payload.facets.countries.slice(0, 60).forEach(({ key, count }) => {
+                        const opt = document.createElement('option');
+                        opt.value = key;
+                        opt.textContent = `${masterFlagEmoji(key)} ${key} (${count.toLocaleString()})`;
+                        countrySel.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                const status = document.getElementById('master-search-status');
+                if (status) status.textContent = `Could not load database facets: ${err.message || err}`;
+            }
+        }
+
+        function scheduleMasterSearchFetch() {
+            if (masterSearchState.debounce) clearTimeout(masterSearchState.debounce);
+            masterSearchState.debounce = setTimeout(runMasterSearch, 220);
+        }
+
+        async function runMasterSearch() {
+            const status = document.getElementById('master-search-status');
+            if (status) {
+                status.textContent = 'Searching...';
+                status.classList.add('loading');
+            }
+
+            if (masterSearchState.abort) {
+                try { masterSearchState.abort.abort(); } catch {}
+            }
+            const controller = new AbortController();
+            masterSearchState.abort = controller;
+
+            const params = new URLSearchParams();
+            if (masterSearchState.q)       params.set('q', masterSearchState.q);
+            if (masterSearchState.scheme)  params.set('scheme', masterSearchState.scheme);
+            if (masterSearchState.type)    params.set('type', masterSearchState.type);
+            if (masterSearchState.country) params.set('country', masterSearchState.country);
+            params.set('limit', String(MASTER_PAGE_SIZE));
+            params.set('offset', String(masterSearchState.offset));
+
+            try {
+                const response = await fetch(`/api/bin-search?${params.toString()}`, {
+                    signal: controller.signal,
+                    headers: { Accept: 'application/json' },
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const payload = await response.json();
+                if (!payload.ok) throw new Error(payload.error || 'Search failed');
+                masterSearchState.total = payload.total || 0;
+                renderMasterSearchResults(payload.results || []);
+                renderMasterSearchPagination();
+
+                if (status) {
+                    status.classList.remove('loading');
+                    if (payload.total === 0) {
+                        status.textContent = 'No BINs match the current filters.';
+                    } else {
+                        const from = payload.offset + 1;
+                        const to = Math.min(payload.offset + payload.results.length, payload.total);
+                        status.textContent = `Showing ${from}–${to} of ${payload.total.toLocaleString()} match${payload.total === 1 ? '' : 'es'}.`;
+                    }
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+                if (status) {
+                    status.classList.remove('loading');
+                    status.textContent = `Search failed: ${err.message || err}`;
+                }
+                renderMasterSearchResults([]);
+                renderMasterSearchPagination();
+            }
+        }
+
+        function renderMasterSearchResults(results) {
+            const listEl = document.getElementById('master-search-results');
+            if (!listEl) return;
+            listEl.replaceChildren();
+
+            if (results.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'checker-empty';
+                empty.textContent = 'No results to show. Try different filters or clear the search.';
+                listEl.appendChild(empty);
+                return;
+            }
+
+            results.forEach(record => {
+                const card = document.createElement('button');
+                card.type = 'button';
+                card.className = `master-result-card scheme-${masterSchemeSlug(record.scheme)}`;
+                card.dataset.bin = record.bin;
+
+                const binEl = document.createElement('span');
+                binEl.className = 'master-result-bin';
+                binEl.textContent = record.bin;
+                card.appendChild(binEl);
+
+                const main = document.createElement('span');
+                main.className = 'master-result-main';
+
+                const issuer = document.createElement('span');
+                issuer.className = 'master-result-issuer';
+                issuer.textContent = record.issuer || '(Unknown issuer)';
+                issuer.title = record.issuer || '';
+                main.appendChild(issuer);
+
+                const meta = document.createElement('span');
+                meta.className = 'master-result-meta';
+                if (record.scheme) {
+                    const pill = document.createElement('span');
+                    pill.className = 'master-pill';
+                    pill.textContent = record.scheme;
+                    meta.appendChild(pill);
+                }
+                if (record.type) {
+                    const pill = document.createElement('span');
+                    pill.className = `master-pill type-${record.type.toLowerCase()}`;
+                    pill.textContent = record.type;
+                    meta.appendChild(pill);
+                }
+                if (record.category) {
+                    const pill = document.createElement('span');
+                    pill.className = 'master-pill';
+                    pill.textContent = record.category;
+                    meta.appendChild(pill);
+                }
+                if (record.alpha2) {
+                    const pill = document.createElement('span');
+                    pill.className = 'master-pill';
+                    pill.textContent = `${masterFlagEmoji(record.alpha2)} ${record.country || record.alpha2}`;
+                    meta.appendChild(pill);
+                }
+                main.appendChild(meta);
+                card.appendChild(main);
+
+                const flag = document.createElement('span');
+                flag.className = 'master-result-flag';
+                flag.textContent = masterFlagEmoji(record.alpha2);
+                card.appendChild(flag);
+
+                card.addEventListener('click', () => applyMasterRecord(record));
+                listEl.appendChild(card);
+            });
+        }
+
+        function renderMasterSearchPagination() {
+            const wrap = document.getElementById('master-search-pagination');
+            if (!wrap) return;
+            const total = masterSearchState.total;
+            if (total === 0) { wrap.style.display = 'none'; return; }
+            const pageSize = MASTER_PAGE_SIZE;
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+            const currentPage = Math.floor(masterSearchState.offset / pageSize) + 1;
+            const needsPagination = total > pageSize;
+            wrap.style.display = needsPagination ? '' : 'none';
+            const label = document.getElementById('master-page-label');
+            if (label) label.textContent = `Page ${currentPage} / ${totalPages}`;
+            const prev = document.getElementById('master-prev');
+            const next = document.getElementById('master-next');
+            if (prev) prev.disabled = masterSearchState.offset === 0;
+            if (next) next.disabled = masterSearchState.offset + pageSize >= total;
+        }
+
+        function pageMasterSearch(direction) {
+            const newOffset = masterSearchState.offset + direction * MASTER_PAGE_SIZE;
+            if (newOffset < 0) return;
+            if (newOffset >= masterSearchState.total) return;
+            masterSearchState.offset = newOffset;
+            runMasterSearch();
+            const resultsEl = document.getElementById('master-search-results');
+            if (resultsEl) resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function resetMasterSearch() {
+            masterSearchState.q = '';
+            masterSearchState.scheme = '';
+            masterSearchState.type = '';
+            masterSearchState.country = '';
+            masterSearchState.offset = 0;
+            ['master-search-q', 'master-search-scheme', 'master-search-type', 'master-search-country']
+                .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+            runMasterSearch();
+        }
+
+        function applyMasterRecord(record) {
+            if (!record || !record.bin) return;
+            const binInput = document.getElementById('bin');
+            if (!binInput) return;
+
+            // Pad with x up to the scheme's expected PAN length.
+            const slug = masterSchemeSlug(record.scheme);
+            let panLength = 16;
+            if (slug === 'amex') panLength = 15;
+            else if (slug === 'diners') panLength = 14;
+            const padding = Math.max(0, panLength - record.bin.length);
+            binInput.value = record.bin + 'x'.repeat(padding);
+            binInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+            if (typeof showLiveToast === 'function') {
+                showLiveToast(`Applied BIN ${record.bin} — ${record.issuer || 'Unknown issuer'}`);
             }
         }
 

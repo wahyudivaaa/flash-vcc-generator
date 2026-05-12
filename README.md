@@ -52,6 +52,12 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 - Covers US majors (Chase, BoA, Citi, Wells Fargo, Cap One, Amex), UK/EU banks (HSBC, Barclays, Monzo, Revolut, Wise), Asia banks (DBS, OCBC, UOB, Mizuho, ICBC), 27 Indonesian issuers (BCA, Mandiri, BRI, BNI, CIMB Niaga, Permata), plus popular Stripe/Adyen test BINs.
 - Click any entry to auto-fill the BIN Pattern field, padded to the correct PAN length for the scheme.
 
+## Master Search
+
+- A dedicated tab (**Master Search**) lets you browse and filter the full 159k-row BIN database with a form-based UI: free-text search, scheme select, type select, and country select (all with live counts).
+- Paginated results (40 per page) with keyboard-friendly navigation. Clicking any row applies the BIN to the pattern field with the correct PAN padding for the scheme.
+- Backed by `/api/bin-search` with facet data from the master JSON — no external API calls, no rate limit.
+
 ## Master BIN Database
 
 The file `data/bin-master.json` (~13 MB, ~159k BINs) is generated from the upstream [iannuttall/binlist-data](https://github.com/iannuttall/binlist-data) CSV by `scripts/build-bin-master.js`. The raw CSV (`data/.binlist-source.csv`) is gitignored; run these steps to regenerate locally:
