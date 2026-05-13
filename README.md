@@ -58,6 +58,15 @@ Flash VCC Generator is a lightweight tool for generating and internally validati
 - Paginated results (40 per page) with keyboard-friendly navigation. Clicking any row applies the BIN to the pattern field with the correct PAN padding for the scheme.
 - Backed by `/api/bin-search` with facet data from the master JSON — no external API calls, no rate limit.
 
+## Scraped Valid BINs
+
+- A tab (**Scraped BINs**) that performs LIVE scraping against public BIN catalog pages and returns fresh data every run.
+- Primary source: [binlist.io/country/{name}](https://binlist.io/) — clean `<table>` of ~50 BINs per country, no bot protection.
+- Fallback source: `bincheck.io/{alpha2}` — used only for countries binlist.io doesn't cover.
+- Each scraped BIN is enriched against the bundled master DB + country metadata, so every row carries issuer, bank URL/phone, region, capital, currency, and flag.
+- Filter by scheme and type, choose any comma-separated list of countries, export to CSV or JSON.
+- Backed by `/api/scrape-valid-bins` with per-country HTML cache (15 min) and per-request result cache (5 min).
+
 ## Master BIN Database
 
 The file `data/bin-master.json` (~15 MB, ~159k BINs, v2 schema with latitude/longitude) is generated from the upstream [iannuttall/binlist-data](https://github.com/iannuttall/binlist-data) CSV by `scripts/build-bin-master.js`. The raw CSV (`data/.binlist-source.csv`) is gitignored; run these steps to regenerate locally:

@@ -2124,6 +2124,50 @@
             font-weight: 600;
         }
 
+        /* ======================= Scraped BINs ======================= */
+
+        .scrape-notice {
+            border-left: 3px solid var(--warning-color);
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.1), rgba(249, 115, 22, 0.02));
+        }
+
+        .dark-mode .scrape-notice {
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.18), rgba(249, 115, 22, 0.04));
+        }
+
+        .scrape-attempts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin: 0.4rem 0 0.6rem;
+            font-size: 0.7rem;
+        }
+
+        .scrape-attempt-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.18rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: var(--surface-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .dark-mode .scrape-attempt-chip {
+            background: #1a1a17;
+            border-color: #343126;
+        }
+
+        .scrape-attempt-chip.status-ok    { background: rgba(15, 159, 110, 0.14); color: var(--success-color); border-color: transparent; }
+        .scrape-attempt-chip.status-err   { background: rgba(220, 38, 38, 0.12); color: var(--danger-color); border-color: transparent; }
+        .scrape-attempt-chip.status-empty { background: rgba(91, 97, 110, 0.15); color: var(--secondary-color); border-color: transparent; }
+        .scrape-attempt-chip .scrape-attempt-source {
+            opacity: 0.7;
+            font-weight: 500;
+        }
+
         @media (max-width: 575.98px) {
             .master-search-row {
                 grid-template-columns: 1fr 1fr;
@@ -2140,6 +2184,66 @@
             .master-result-main {
                 grid-column: 1 / -1;
             }
+        }
+
+        /* ======================= Scrape Valid BINs ======================= */
+
+        .scrape-notice {
+            border-left: 3px solid var(--warning-color);
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.14), rgba(249, 115, 22, 0.03));
+        }
+
+        .dark-mode .scrape-notice {
+            background: linear-gradient(90deg, rgba(249, 115, 22, 0.22), rgba(249, 115, 22, 0.05));
+        }
+
+        .scrape-notice code {
+            background: rgba(21, 21, 21, 0.08);
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            font-size: 0.76rem;
+        }
+
+        .dark-mode .scrape-notice code {
+            background: rgba(248, 243, 223, 0.14);
+        }
+
+        .scrape-attempts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+            margin: 0.5rem 0;
+            font-size: 0.7rem;
+        }
+
+        .scrape-attempt-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+            font-weight: 600;
+            background: rgba(21, 21, 21, 0.06);
+            color: var(--secondary-color);
+        }
+
+        .dark-mode .scrape-attempt-chip {
+            background: rgba(248, 243, 223, 0.1);
+        }
+
+        .scrape-attempt-chip.ok {
+            background: rgba(15, 159, 110, 0.15);
+            color: var(--success-color);
+        }
+
+        .scrape-attempt-chip.fail {
+            background: rgba(220, 38, 38, 0.12);
+            color: var(--danger-color);
+        }
+
+        .scrape-attempt-chip.cached {
+            background: rgba(0, 194, 255, 0.14);
+            color: var(--accent-color);
         }
 
         .accordion {
@@ -2657,6 +2761,13 @@
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="scraped-bins-tab" data-bs-toggle="tab" data-bs-target="#scraped-bins-pane" type="button" role="tab" onclick="ensureScrapedBinsInit()">
+                            <i class="fas fa-satellite-dish me-1"></i>
+                            <span class="desktop-tab-label">Scraped BINs</span>
+                            <span class="mobile-tab-label">Scrape</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-pane" type="button" role="tab">
                             <i class="fas fa-history me-1"></i>
                             <span class="desktop-tab-label">History</span>
@@ -2852,6 +2963,87 @@
                                     Next<i class="fas fa-chevron-right ms-1"></i>
                                 </button>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="scraped-bins-pane" role="tabpanel">
+                        <div class="checker-panel mt-3">
+                            <div class="checker-notice scraped-notice">
+                                <i class="fas fa-satellite-dish me-1"></i>
+                                <strong>Scraped Valid BINs.</strong>
+                                Harvests live BIN catalogs from <code>binlist.io/country/*</code> via our serverless proxy, deduplicates, and enriches each row with bank + location data from the bundled master DB. Falls back to <code>bincheck.io</code> for countries binlist.io does not cover.
+                            </div>
+
+                            <form id="scraped-bins-form" class="master-search-form" onsubmit="return false;">
+                                <div class="master-search-row">
+                                    <div class="master-search-field master-search-main">
+                                        <label for="scraped-bins-countries"><i class="fas fa-globe me-1"></i>Countries</label>
+                                        <select multiple class="form-select" id="scraped-bins-countries" size="5"></select>
+                                    </div>
+                                    <div class="master-search-field">
+                                        <label for="scraped-bins-scheme">Scheme</label>
+                                        <select class="form-select" id="scraped-bins-scheme">
+                                            <option value="">Any</option>
+                                            <option value="visa">Visa</option>
+                                            <option value="mastercard">MasterCard</option>
+                                            <option value="american express">American Express</option>
+                                            <option value="discover">Discover</option>
+                                            <option value="jcb">JCB</option>
+                                            <option value="unionpay">UnionPay</option>
+                                            <option value="maestro">Maestro</option>
+                                            <option value="diners club">Diners Club</option>
+                                        </select>
+                                    </div>
+                                    <div class="master-search-field">
+                                        <label for="scraped-bins-type">Type</label>
+                                        <select class="form-select" id="scraped-bins-type">
+                                            <option value="">Any</option>
+                                            <option value="credit">Credit</option>
+                                            <option value="debit">Debit</option>
+                                            <option value="prepaid">Prepaid</option>
+                                            <option value="charge">Charge</option>
+                                        </select>
+                                    </div>
+                                    <div class="master-search-field">
+                                        <label for="scraped-bins-limit">Limit</label>
+                                        <select class="form-select" id="scraped-bins-limit">
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                            <option value="200" selected>200</option>
+                                            <option value="500">500</option>
+                                            <option value="1000">1000</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="master-search-controls">
+                                    <div class="master-search-stats" id="scraped-bins-stats">
+                                        <span class="master-stat-chip"><i class="fas fa-satellite-dish"></i><span id="scraped-bins-total">0</span> BINs</span>
+                                        <span class="master-stat-chip" id="scraped-bins-duration" style="display:none;"><i class="fas fa-stopwatch"></i><span id="scraped-bins-duration-val">0</span>ms</span>
+                                    </div>
+                                    <div class="scraped-bins-actions">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="runScrapedBinsFetch()" id="scraped-bins-run">
+                                            <i class="fas fa-play me-1"></i>Scrape now
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-warning" onclick="runScrapedBinsFetch(true)" id="scraped-bins-refresh" title="Bypass cache">
+                                            <i class="fas fa-rotate"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="copyScrapedBins()" id="scraped-bins-copy" disabled>
+                                            <i class="fas fa-copy me-1"></i>Copy
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportScrapedBins()" id="scraped-bins-export" disabled>
+                                            <i class="fas fa-file-export me-1"></i>Export JSON
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div id="scraped-bins-status" class="master-search-status"></div>
+
+                            <div id="scraped-bins-results" class="master-search-results">
+                                <div class="checker-empty">Pick one or more countries and click <b>Scrape now</b> to harvest live BINs.</div>
+                            </div>
+
+                            <div id="scraped-bins-attempts" class="scraped-bins-attempts"></div>
                         </div>
                     </div>
                     
@@ -5703,6 +5895,259 @@
             if (typeof showLiveToast === 'function') {
                 showLiveToast(`Applied BIN ${record.bin} — ${record.issuer || 'Unknown issuer'}`);
             }
+        }
+
+        /* ============================================================
+         * Scraped Valid BINs (live harvest from binlist.io)
+         * ============================================================ */
+
+        const scrapeState = {
+            initialized: false,
+            abort: null,
+            running: false,
+            lastResults: [],
+        };
+
+        function ensureScrapedBinsInit() {
+            if (scrapeState.initialized) return;
+            scrapeState.initialized = true;
+            const input = document.getElementById('scrape-bins-countries');
+            if (input) {
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); runScrapedBins(); }
+                });
+            }
+        }
+
+        function parseScrapeCountries() {
+            const raw = (document.getElementById('scrape-bins-countries')?.value || '').trim();
+            if (!raw) return [];
+            return raw.split(/[,\s]+/).map(s => s.trim().toUpperCase()).filter(s => /^[A-Z]{2}$/.test(s));
+        }
+
+        function scrapeFlagEmoji(alpha2) {
+            if (!alpha2 || alpha2.length !== 2) return '';
+            const base = 0x1F1E6;
+            const up = alpha2.toUpperCase();
+            return String.fromCodePoint(base + up.charCodeAt(0) - 65) + String.fromCodePoint(base + up.charCodeAt(1) - 65);
+        }
+
+        function renderScrapeAttempts(attempts) {
+            const wrap = document.getElementById('scrape-bins-attempts');
+            if (!wrap) return;
+            wrap.replaceChildren();
+            attempts.forEach(attempt => {
+                const chip = document.createElement('span');
+                let cls = 'scrape-attempt-chip';
+                if (attempt.cached) cls += ' cached';
+                else if (attempt.ok) cls += ' ok';
+                else cls += ' fail';
+                chip.className = cls;
+                const flag = scrapeFlagEmoji(attempt.country);
+                const src = attempt.source === 'bincheck.io' ? '[bc]' : '[bl]';
+                const duration = attempt.duration_ms ? `${attempt.duration_ms}ms` : '';
+                const rows = attempt.rows || 0;
+                const label = `${flag} ${attempt.country} ${src} ${rows} BIN · ${duration}${attempt.error ? ' · ' + attempt.error : ''}`;
+                chip.textContent = label.trim();
+                chip.title = attempt.source_url || '';
+                wrap.appendChild(chip);
+            });
+        }
+
+        function renderScrapedRow(item) {
+            const card = document.createElement('button');
+            card.type = 'button';
+            card.className = `master-result-card scheme-${(item.scheme || '').toLowerCase().replace(/\s+/g, '-').replace('american-express', 'amex').replace('diners-club', 'diners')}`;
+            card.dataset.bin = item.bin;
+
+            const binEl = document.createElement('span');
+            binEl.className = 'master-result-bin';
+            binEl.textContent = item.bin;
+            card.appendChild(binEl);
+
+            const main = document.createElement('span');
+            main.className = 'master-result-main';
+
+            const issuer = document.createElement('span');
+            issuer.className = 'master-result-issuer';
+            issuer.textContent = item.issuer || '(Unknown issuer)';
+            issuer.title = item.issuer || '';
+            main.appendChild(issuer);
+
+            const meta = document.createElement('span');
+            meta.className = 'master-result-meta';
+            const addBadge = (text, extra) => {
+                if (!text) return;
+                const b = document.createElement('span');
+                b.className = 'master-pill' + (extra ? ` ${extra}` : '');
+                b.textContent = text;
+                meta.appendChild(b);
+            };
+            if (item.scheme) addBadge(item.scheme);
+            if (item.type) addBadge(item.type, `type-${item.type.toLowerCase()}`);
+            if (item.category) addBadge(item.category);
+            if (item.country && item.country.alpha2) {
+                const name = item.country.name || item.country.alpha2;
+                addBadge(`${item.country.emoji || scrapeFlagEmoji(item.country.alpha2)} ${name}`);
+            }
+            if (item.country && item.country.currency) addBadge(item.country.currency);
+            main.appendChild(meta);
+            card.appendChild(main);
+
+            const flag = document.createElement('span');
+            flag.className = 'master-result-flag';
+            flag.textContent = (item.country && item.country.emoji) || scrapeFlagEmoji(item.country && item.country.alpha2);
+            card.appendChild(flag);
+
+            card.addEventListener('click', () => applyScrapedBin(item));
+            return card;
+        }
+
+        function applyScrapedBin(item) {
+            const input = document.getElementById('bin');
+            if (!input) return;
+            const scheme = (item.scheme || '').toLowerCase();
+            const panLength = scheme.includes('amex') ? 15 : scheme.includes('diners') ? 14 : 16;
+            const padding = Math.max(0, panLength - item.bin.length);
+            input.value = item.bin + 'x'.repeat(padding);
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            if (typeof showLiveToast === 'function') {
+                showLiveToast(`Applied scraped BIN ${item.bin}${item.issuer ? ' — ' + item.issuer : ''}`);
+            }
+        }
+
+        async function runScrapedBins(refresh) {
+            if (scrapeState.running) return;
+            const countries = parseScrapeCountries();
+            const scheme = (document.getElementById('scrape-bins-scheme')?.value || '').trim();
+            const type = (document.getElementById('scrape-bins-type')?.value || '').trim();
+            const limit = parseInt(document.getElementById('scrape-bins-limit')?.value || '200', 10) || 200;
+
+            const params = new URLSearchParams();
+            if (countries.length) params.set('country', countries.join(','));
+            if (scheme) params.set('scheme', scheme);
+            if (type) params.set('type', type);
+            params.set('limit', String(limit));
+            if (refresh) params.set('refresh', '1');
+
+            const btn = document.getElementById('scrape-bins-run-btn');
+            const status = document.getElementById('scrape-bins-status');
+            const results = document.getElementById('scrape-bins-results');
+
+            scrapeState.running = true;
+            if (btn) btn.disabled = true;
+            if (status) { status.textContent = 'Harvesting upstream catalogs...'; status.classList.add('loading'); }
+            if (results) {
+                results.replaceChildren();
+                const loading = document.createElement('div');
+                loading.className = 'bin-library-loading';
+                loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Scraping in progress...';
+                results.appendChild(loading);
+            }
+
+            if (scrapeState.abort) { try { scrapeState.abort.abort(); } catch {} }
+            const controller = new AbortController();
+            scrapeState.abort = controller;
+
+            try {
+                const response = await fetch(`/api/scrape-valid-bins?${params.toString()}`, {
+                    signal: controller.signal,
+                    headers: { Accept: 'application/json' },
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const payload = await response.json();
+                if (!payload.ok) throw new Error(payload.error || 'Scrape failed');
+
+                scrapeState.lastResults = payload.results || [];
+
+                // Stat chips.
+                const totalEl = document.getElementById('scrape-bins-total');
+                if (totalEl) totalEl.textContent = payload.total;
+                const timingEl = document.getElementById('scrape-bins-timing');
+                if (timingEl) timingEl.textContent = `${payload.duration_ms}ms${payload.cached ? ' · cached' : ''}`;
+
+                renderScrapeAttempts(payload.attempts || []);
+
+                if (status) {
+                    status.classList.remove('loading');
+                    const s = payload.stats && payload.stats.schemes ? Object.keys(payload.stats.schemes).length : 0;
+                    const c = payload.stats && payload.stats.countries ? Object.keys(payload.stats.countries).length : 0;
+                    status.textContent = `Harvested ${payload.total} BINs from ${c} countries, ${s} schemes (${payload.duration_ms}ms${payload.cached ? ', from cache' : ''}).`;
+                }
+
+                if (results) {
+                    results.replaceChildren();
+                    if (!payload.results || payload.results.length === 0) {
+                        const empty = document.createElement('div');
+                        empty.className = 'checker-empty';
+                        empty.textContent = 'No BINs harvested. Try a different country or refresh.';
+                        results.appendChild(empty);
+                    } else {
+                        payload.results.forEach(item => results.appendChild(renderScrapedRow(item)));
+                    }
+                }
+
+                if (typeof showLiveToast === 'function') {
+                    showLiveToast(`Scraped ${payload.total} BINs in ${payload.duration_ms}ms`);
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') return;
+                if (status) {
+                    status.classList.remove('loading');
+                    status.textContent = `Scrape failed: ${err.message || err}`;
+                }
+                if (results) {
+                    results.replaceChildren();
+                    const fail = document.createElement('div');
+                    fail.className = 'checker-empty';
+                    fail.textContent = `Error: ${err.message || err}`;
+                    results.appendChild(fail);
+                }
+            } finally {
+                scrapeState.running = false;
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        function exportScrapedBins(format) {
+            if (!scrapeState.lastResults || scrapeState.lastResults.length === 0) {
+                alert('No scraped BINs to export yet. Run a harvest first.');
+                return;
+            }
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            let blob, filename;
+            if (format === 'csv') {
+                const headers = ['bin', 'scheme', 'type', 'category', 'issuer', 'country', 'alpha2', 'currency', 'region', 'capital'];
+                const csvRows = [headers.join(',')];
+                scrapeState.lastResults.forEach(it => {
+                    const row = [
+                        it.bin,
+                        it.scheme || '',
+                        it.type || '',
+                        it.category || '',
+                        (it.issuer || '').replace(/,/g, ' '),
+                        (it.country && it.country.name || '').replace(/,/g, ' '),
+                        it.country && it.country.alpha2 || '',
+                        it.country && it.country.currency || '',
+                        it.country && it.country.region || '',
+                        it.country && it.country.capital || '',
+                    ];
+                    csvRows.push(row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+                });
+                blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8' });
+                filename = `scraped-bins-${stamp}.csv`;
+            } else {
+                blob = new Blob([JSON.stringify(scrapeState.lastResults, null, 2)], { type: 'application/json' });
+                filename = `scraped-bins-${stamp}.json`;
+            }
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
         }
 
         /** Available months for random generation */
