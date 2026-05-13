@@ -5899,65 +5899,131 @@
 
         /* ============================================================
          * Scraped Valid BINs (live harvest from binlist.io)
+         *
+         * The HTML pane uses the id="scraped-bins-*" convention and button
+         * handlers named runScrapedBinsFetch / copyScrapedBins /
+         * exportScrapedBins. Keep this block in sync with index.html.
          * ============================================================ */
 
-        const scrapeState = {
+        const scrapedBinsState = {
             initialized: false,
             abort: null,
             running: false,
             lastResults: [],
+            lastPayload: null,
         };
 
-        function ensureScrapedBinsInit() {
-            if (scrapeState.initialized) return;
-            scrapeState.initialized = true;
-            const input = document.getElementById('scrape-bins-countries');
-            if (input) {
-                input.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') { e.preventDefault(); runScrapedBins(); }
-                });
-            }
-        }
+        const SCRAPED_DEFAULT_COUNTRIES = [
+            'US', 'GB', 'CA', 'AU', 'NZ',
+            'DE', 'FR', 'ES', 'IT', 'NL', 'BE',
+            'PL', 'CZ', 'RO', 'DK', 'NO', 'SE',
+            'JP', 'KR', 'CN', 'HK', 'TW',
+            'ID', 'MY', 'SG', 'TH', 'VN', 'PH',
+            'IN', 'AE', 'TR',
+            'BR', 'MX', 'AR', 'ZA',
+        ];
 
-        function parseScrapeCountries() {
-            const raw = (document.getElementById('scrape-bins-countries')?.value || '').trim();
-            if (!raw) return [];
-            return raw.split(/[,\s]+/).map(s => s.trim().toUpperCase()).filter(s => /^[A-Z]{2}$/.test(s));
-        }
-
-        function scrapeFlagEmoji(alpha2) {
+        function scrapedBinsFlagEmoji(alpha2) {
             if (!alpha2 || alpha2.length !== 2) return '';
             const base = 0x1F1E6;
             const up = alpha2.toUpperCase();
             return String.fromCodePoint(base + up.charCodeAt(0) - 65) + String.fromCodePoint(base + up.charCodeAt(1) - 65);
         }
 
-        function renderScrapeAttempts(attempts) {
-            const wrap = document.getElementById('scrape-bins-attempts');
+        function ensureScrapedBinsInit() {
+            if (scrapedBinsState.initialized) return;
+            scrapedBinsState.initialized = true;
+            populateScrapedBinsCountryPicker();
+        }
+
+        /**
+         * Populate the <select multiple id="scraped-bins-countries"> with the
+         * full country list from the bundled countries DB (falls back to the
+         * default set if the fetch fails).
+         */
+        async function populateScrapedBinsCountryPicker() {
+            const select = document.getElementById('scraped-bins-countries');
+            if (!select || select.dataset.populated === 'true') return;
+            select.dataset.populated = 'true';
+
+            let countries = null;
+            try {
+                const response = await fetch('data/countries.json', { cache: 'force-cache' });
+                if (response.ok) countries = await response.json();
+            } catch { /* will fall back below */ }
+
+            const entries = [];
+            if (countries && typeof countries === 'object') {
+                for (const [code, meta] of Object.entries(countries)) {
+                    if (!meta || !meta.name) continue;
+                    entries.push({ code, name: meta.name, flag: meta.flag || scrapedBinsFlagEmoji(code) });
+                }
+                entries.sort((a, b) => a.name.localeCompare(b.name));
+            } else {
+                SCRAPED_DEFAULT_COUNTRIES.forEach(code => entries.push({ code, name: code, flag: scrapedBinsFlagEmoji(code) }));
+            }
+
+            select.replaceChildren();
+            const defaultSet = new Set(SCRAPED_DEFAULT_COUNTRIES);
+            entries.forEach(({ code, name, flag }) => {
+                const opt = document.createElement('option');
+                opt.value = code;
+                opt.textContent = `${flag} ${name}`;
+                select.appendChild(opt);
+                // Set `selected` AFTER appending, otherwise some browsers
+                // drop the pre-selection on a <select multiple>.
+                if (defaultSet.has(code)) opt.selected = true;
+            });
+        }
+
+        function readScrapedBinsCountries() {
+            const select = document.getElementById('scraped-bins-countries');
+            if (!select) return SCRAPED_DEFAULT_COUNTRIES.slice();
+            const selected = Array.from(select.selectedOptions).map(opt => opt.value.toUpperCase()).filter(v => /^[A-Z]{2}$/.test(v));
+            if (selected.length > 0) return selected;
+            // Nothing selected → use the curated default so the harvest still
+            // returns something useful instead of 400-ing.
+            return SCRAPED_DEFAULT_COUNTRIES.slice();
+        }
+
+        function renderScrapedBinsAttempts(attempts) {
+            const wrap = document.getElementById('scraped-bins-attempts');
             if (!wrap) return;
             wrap.replaceChildren();
+            if (!Array.isArray(attempts) || attempts.length === 0) return;
             attempts.forEach(attempt => {
                 const chip = document.createElement('span');
-                let cls = 'scrape-attempt-chip';
-                if (attempt.cached) cls += ' cached';
-                else if (attempt.ok) cls += ' ok';
-                else cls += ' fail';
-                chip.className = cls;
-                const flag = scrapeFlagEmoji(attempt.country);
+                const state = attempt.cached ? 'cached' : (attempt.ok ? 'ok' : 'fail');
+                chip.className = `scrape-attempt-chip ${state}`;
+                const flag = scrapedBinsFlagEmoji(attempt.country);
                 const src = attempt.source === 'bincheck.io' ? '[bc]' : '[bl]';
-                const duration = attempt.duration_ms ? `${attempt.duration_ms}ms` : '';
-                const rows = attempt.rows || 0;
-                const label = `${flag} ${attempt.country} ${src} ${rows} BIN · ${duration}${attempt.error ? ' · ' + attempt.error : ''}`;
-                chip.textContent = label.trim();
-                chip.title = attempt.source_url || '';
+                const parts = [flag, attempt.country, src, `${attempt.rows || 0} BIN`];
+                if (attempt.duration_ms) parts.push(`${attempt.duration_ms}ms`);
+                if (attempt.error) parts.push(attempt.error);
+                chip.textContent = parts.filter(Boolean).join(' ');
+                if (attempt.source_url) chip.title = attempt.source_url;
                 wrap.appendChild(chip);
             });
         }
 
-        function renderScrapedRow(item) {
+        function scrapedBinsSchemeSlug(scheme) {
+            if (!scheme) return '';
+            const s = String(scheme).toLowerCase();
+            if (s.includes('visa')) return 'visa';
+            if (s.includes('master')) return 'mastercard';
+            if (s.includes('amex') || s.includes('american')) return 'amex';
+            if (s.includes('discover')) return 'discover';
+            if (s.includes('jcb')) return 'jcb';
+            if (s.includes('union')) return 'unionpay';
+            if (s.includes('diners')) return 'diners';
+            if (s.includes('maestro')) return 'maestro';
+            return '';
+        }
+
+        function renderScrapedBinsRow(item) {
             const card = document.createElement('button');
             card.type = 'button';
-            card.className = `master-result-card scheme-${(item.scheme || '').toLowerCase().replace(/\s+/g, '-').replace('american-express', 'amex').replace('diners-club', 'diners')}`;
+            card.className = `master-result-card scheme-${scrapedBinsSchemeSlug(item.scheme)}`;
             card.dataset.bin = item.bin;
 
             const binEl = document.createElement('span');
@@ -5976,27 +6042,32 @@
 
             const meta = document.createElement('span');
             meta.className = 'master-result-meta';
-            const addBadge = (text, extra) => {
+            const addBadge = (text, extraClass) => {
                 if (!text) return;
                 const b = document.createElement('span');
-                b.className = 'master-pill' + (extra ? ` ${extra}` : '');
+                b.className = 'master-pill' + (extraClass ? ` ${extraClass}` : '');
                 b.textContent = text;
                 meta.appendChild(b);
             };
             if (item.scheme) addBadge(item.scheme);
-            if (item.type) addBadge(item.type, `type-${item.type.toLowerCase()}`);
+            if (item.type) addBadge(item.type, `type-${String(item.type).toLowerCase()}`);
             if (item.category) addBadge(item.category);
             if (item.country && item.country.alpha2) {
                 const name = item.country.name || item.country.alpha2;
-                addBadge(`${item.country.emoji || scrapeFlagEmoji(item.country.alpha2)} ${name}`);
+                const flag = item.country.emoji || scrapedBinsFlagEmoji(item.country.alpha2);
+                addBadge(`${flag} ${name}`.trim());
             }
-            if (item.country && item.country.currency) addBadge(item.country.currency);
+            if (item.country && item.country.region) addBadge(item.country.region);
+            if (item.country && item.country.currency) {
+                const sym = item.country.currency_symbol ? ` ${item.country.currency_symbol}` : '';
+                addBadge(`${item.country.currency}${sym}`);
+            }
             main.appendChild(meta);
             card.appendChild(main);
 
             const flag = document.createElement('span');
             flag.className = 'master-result-flag';
-            flag.textContent = (item.country && item.country.emoji) || scrapeFlagEmoji(item.country && item.country.alpha2);
+            flag.textContent = (item.country && item.country.emoji) || scrapedBinsFlagEmoji(item.country && item.country.alpha2);
             card.appendChild(flag);
 
             card.addEventListener('click', () => applyScrapedBin(item));
@@ -6006,8 +6077,8 @@
         function applyScrapedBin(item) {
             const input = document.getElementById('bin');
             if (!input) return;
-            const scheme = (item.scheme || '').toLowerCase();
-            const panLength = scheme.includes('amex') ? 15 : scheme.includes('diners') ? 14 : 16;
+            const slug = scrapedBinsSchemeSlug(item.scheme);
+            const panLength = slug === 'amex' ? 15 : slug === 'diners' ? 14 : 16;
             const padding = Math.max(0, panLength - item.bin.length);
             input.value = item.bin + 'x'.repeat(padding);
             input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -6016,12 +6087,29 @@
             }
         }
 
-        async function runScrapedBins(refresh) {
-            if (scrapeState.running) return;
-            const countries = parseScrapeCountries();
-            const scheme = (document.getElementById('scrape-bins-scheme')?.value || '').trim();
-            const type = (document.getElementById('scrape-bins-type')?.value || '').trim();
-            const limit = parseInt(document.getElementById('scrape-bins-limit')?.value || '200', 10) || 200;
+        function setScrapedBinsStatus(message, { loading = false } = {}) {
+            const el = document.getElementById('scraped-bins-status');
+            if (!el) return;
+            el.textContent = message || '';
+            el.classList.toggle('loading', !!loading);
+        }
+
+        function setScrapedBinsButtonsEnabled(enabled) {
+            const ids = ['scraped-bins-copy', 'scraped-bins-export'];
+            ids.forEach(id => {
+                const b = document.getElementById(id);
+                if (b) b.disabled = !enabled;
+            });
+        }
+
+        async function runScrapedBinsFetch(refresh) {
+            if (scrapedBinsState.running) return;
+            ensureScrapedBinsInit();
+
+            const countries = readScrapedBinsCountries();
+            const scheme = (document.getElementById('scraped-bins-scheme')?.value || '').trim();
+            const type = (document.getElementById('scraped-bins-type')?.value || '').trim();
+            const limit = parseInt(document.getElementById('scraped-bins-limit')?.value || '200', 10) || 200;
 
             const params = new URLSearchParams();
             if (countries.length) params.set('country', countries.join(','));
@@ -6030,13 +6118,18 @@
             params.set('limit', String(limit));
             if (refresh) params.set('refresh', '1');
 
-            const btn = document.getElementById('scrape-bins-run-btn');
-            const status = document.getElementById('scrape-bins-status');
-            const results = document.getElementById('scrape-bins-results');
+            const runBtn = document.getElementById('scraped-bins-run');
+            const refreshBtn = document.getElementById('scraped-bins-refresh');
+            const totalEl = document.getElementById('scraped-bins-total');
+            const durationWrap = document.getElementById('scraped-bins-duration');
+            const durationVal = document.getElementById('scraped-bins-duration-val');
+            const results = document.getElementById('scraped-bins-results');
 
-            scrapeState.running = true;
-            if (btn) btn.disabled = true;
-            if (status) { status.textContent = 'Harvesting upstream catalogs...'; status.classList.add('loading'); }
+            if (runBtn) runBtn.disabled = true;
+            if (refreshBtn) refreshBtn.disabled = true;
+            setScrapedBinsButtonsEnabled(false);
+            scrapedBinsState.running = true;
+            setScrapedBinsStatus(`Harvesting ${countries.length} countries from binlist.io...`, { loading: true });
             if (results) {
                 results.replaceChildren();
                 const loading = document.createElement('div');
@@ -6045,9 +6138,9 @@
                 results.appendChild(loading);
             }
 
-            if (scrapeState.abort) { try { scrapeState.abort.abort(); } catch {} }
+            if (scrapedBinsState.abort) { try { scrapedBinsState.abort.abort(); } catch {} }
             const controller = new AbortController();
-            scrapeState.abort = controller;
+            scrapedBinsState.abort = controller;
 
             try {
                 const response = await fetch(`/api/scrape-valid-bins?${params.toString()}`, {
@@ -6058,44 +6151,39 @@
                 const payload = await response.json();
                 if (!payload.ok) throw new Error(payload.error || 'Scrape failed');
 
-                scrapeState.lastResults = payload.results || [];
+                scrapedBinsState.lastResults = payload.results || [];
+                scrapedBinsState.lastPayload = payload;
 
-                // Stat chips.
-                const totalEl = document.getElementById('scrape-bins-total');
-                if (totalEl) totalEl.textContent = payload.total;
-                const timingEl = document.getElementById('scrape-bins-timing');
-                if (timingEl) timingEl.textContent = `${payload.duration_ms}ms${payload.cached ? ' · cached' : ''}`;
-
-                renderScrapeAttempts(payload.attempts || []);
-
-                if (status) {
-                    status.classList.remove('loading');
-                    const s = payload.stats && payload.stats.schemes ? Object.keys(payload.stats.schemes).length : 0;
-                    const c = payload.stats && payload.stats.countries ? Object.keys(payload.stats.countries).length : 0;
-                    status.textContent = `Harvested ${payload.total} BINs from ${c} countries, ${s} schemes (${payload.duration_ms}ms${payload.cached ? ', from cache' : ''}).`;
+                if (totalEl) totalEl.textContent = payload.total.toLocaleString();
+                if (durationWrap && durationVal) {
+                    durationWrap.style.display = '';
+                    durationVal.textContent = `${payload.duration_ms}${payload.cached ? ' · cached' : ''}`;
                 }
+                renderScrapedBinsAttempts(payload.attempts || []);
 
                 if (results) {
                     results.replaceChildren();
                     if (!payload.results || payload.results.length === 0) {
                         const empty = document.createElement('div');
                         empty.className = 'checker-empty';
-                        empty.textContent = 'No BINs harvested. Try a different country or refresh.';
+                        empty.textContent = 'No BINs harvested. Try different countries or click the refresh icon to bypass the cache.';
                         results.appendChild(empty);
+                        setScrapedBinsButtonsEnabled(false);
                     } else {
-                        payload.results.forEach(item => results.appendChild(renderScrapedRow(item)));
+                        payload.results.forEach(item => results.appendChild(renderScrapedBinsRow(item)));
+                        setScrapedBinsButtonsEnabled(true);
                     }
                 }
 
-                if (typeof showLiveToast === 'function') {
-                    showLiveToast(`Scraped ${payload.total} BINs in ${payload.duration_ms}ms`);
-                }
+                const countryCount = payload.stats && payload.stats.countries ? Object.keys(payload.stats.countries).length : 0;
+                const schemeCount = payload.stats && payload.stats.schemes ? Object.keys(payload.stats.schemes).length : 0;
+                setScrapedBinsStatus(
+                    `Harvested ${payload.total} BINs across ${countryCount} countries and ${schemeCount} schemes in ${payload.duration_ms}ms${payload.cached ? ' (from cache)' : ''}.`,
+                );
+                if (typeof showLiveToast === 'function') showLiveToast(`Scraped ${payload.total} BINs in ${payload.duration_ms}ms`);
             } catch (err) {
                 if (err.name === 'AbortError') return;
-                if (status) {
-                    status.classList.remove('loading');
-                    status.textContent = `Scrape failed: ${err.message || err}`;
-                }
+                setScrapedBinsStatus(`Harvest failed: ${err.message || err}`);
                 if (results) {
                     results.replaceChildren();
                     const fail = document.createElement('div');
@@ -6104,42 +6192,59 @@
                     results.appendChild(fail);
                 }
             } finally {
-                scrapeState.running = false;
-                if (btn) btn.disabled = false;
+                scrapedBinsState.running = false;
+                if (runBtn) runBtn.disabled = false;
+                if (refreshBtn) refreshBtn.disabled = false;
             }
         }
 
-        function exportScrapedBins(format) {
-            if (!scrapeState.lastResults || scrapeState.lastResults.length === 0) {
-                alert('No scraped BINs to export yet. Run a harvest first.');
+        function copyScrapedBins() {
+            const rows = scrapedBinsState.lastResults || [];
+            if (rows.length === 0) { alert('Nothing to copy. Run a harvest first.'); return; }
+            const lines = rows.map(r => r.bin).filter(Boolean);
+            const text = lines.join('\n');
+            if (!navigator.clipboard || !navigator.clipboard.writeText) {
+                alert('Clipboard API unavailable in this browser.');
                 return;
             }
+            navigator.clipboard.writeText(text).then(() => {
+                if (typeof showLiveToast === 'function') showLiveToast(`Copied ${lines.length} BINs to clipboard`);
+            }).catch(() => alert('Copy failed.'));
+        }
+
+        function exportScrapedBins(format) {
+            const payload = scrapedBinsState.lastPayload;
+            const rows = scrapedBinsState.lastResults || [];
+            if (rows.length === 0) { alert('Nothing to export. Run a harvest first.'); return; }
+
             const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
             let blob, filename;
             if (format === 'csv') {
-                const headers = ['bin', 'scheme', 'type', 'category', 'issuer', 'country', 'alpha2', 'currency', 'region', 'capital'];
+                const headers = ['bin', 'scheme', 'type', 'category', 'issuer', 'country', 'alpha2', 'region', 'capital', 'currency'];
                 const csvRows = [headers.join(',')];
-                scrapeState.lastResults.forEach(it => {
-                    const row = [
-                        it.bin,
-                        it.scheme || '',
-                        it.type || '',
-                        it.category || '',
-                        (it.issuer || '').replace(/,/g, ' '),
-                        (it.country && it.country.name || '').replace(/,/g, ' '),
-                        it.country && it.country.alpha2 || '',
-                        it.country && it.country.currency || '',
-                        it.country && it.country.region || '',
-                        it.country && it.country.capital || '',
+                rows.forEach(r => {
+                    const c = r.country || {};
+                    const cells = [
+                        r.bin,
+                        r.scheme || '',
+                        r.type || '',
+                        r.category || '',
+                        (r.issuer || '').replace(/,/g, ' '),
+                        (c.name || '').replace(/,/g, ' '),
+                        c.alpha2 || '',
+                        c.region || '',
+                        c.capital || '',
+                        c.currency || '',
                     ];
-                    csvRows.push(row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
+                    csvRows.push(cells.map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
                 });
                 blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8' });
                 filename = `scraped-bins-${stamp}.csv`;
             } else {
-                blob = new Blob([JSON.stringify(scrapeState.lastResults, null, 2)], { type: 'application/json' });
+                blob = new Blob([JSON.stringify(payload || { results: rows }, null, 2)], { type: 'application/json' });
                 filename = `scraped-bins-${stamp}.json`;
             }
+
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
